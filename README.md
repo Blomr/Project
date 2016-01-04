@@ -1,8 +1,8 @@
 # PostNL Werktijden & Salaris
-
+  
 
 ### Proposal
-  return
+  
 
 #### Het probleem
 
@@ -12,7 +12,7 @@ achteraf in een online-omgeving van PostNL aan te geven, waar uiteindelijk het s
 Tegenwoordig houd ik mijn werktijden bij in Google Keep. Dit zijn echter alleen notities. De tijd die ik 
 meer of minder heb gewerkt, moet ik zelf uitrekenen. Dit kan makkelijker. Daarnaast heb ik op deze manier
 ook geen overzicht welk bedrag aan salaris ik aan het einde van de maand hoor te ontvangen.
-
+  
 
 #### De oplossing
 
@@ -26,7 +26,7 @@ het maandloon uitrekenen. Zo heb ik alles op een rijtje en hoef ik geen dingen z
 #### Schetsen
 
 ![sketches](/doc/sketches.jpg)
-
+  
 
 #### Data sets & sources
 
@@ -35,7 +35,7 @@ daldagen. Per wijk zijn er dus twee verschillende tijden. Ik zou de tijden van a
 zetten, maar ik heb besloten om dit door de gebruiker zelf te laten doen. Dit komt omdat de tijden na een
 bepaalde periode aangepast kunnen worden door het bedrijf. Hierdoor kan de app niet meer goed zijn werk doen.
 Daardoor vind ik fijner werken als de gebruiker zelf de instellingen aan kan passen.
-
+  
 
 #### Onderdelen
 
@@ -54,19 +54,19 @@ Daardoor vind ik fijner werken als de gebruiker zelf de instellingen aan kan pas
 - Instellingen: Via de andere drie schermen kan je bij de instellingen komen. Hier kan je aangeven hoeveel contracturen
   je hebt en wat je salaris is, en wat je krijgt voor overuren. Daarnaast kan je wijken toevoegen. Per
   wijk kan je voor de dal- en piekdag een richttijd instellen.
-	
+  	
 	
 #### Platform & API's
 
 Ik wil voor elk onderdeel een layout in XML maken en bijbehorende programmatuur in java. Voor het opslaan van de data wil 
 ik gebruik maken van een database.	
-
+  
 
 #### Potentiële problemen
 
 Ik heb nog nooit eerder in Android Studio met een database gewerkt. Hier zou ik nog eerst zorgvuldig onderzoek naar moeten
 doen.
-
+  
 
 #### Vergelijkbare apps
 
