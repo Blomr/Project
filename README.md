@@ -25,7 +25,7 @@ het maandloon uitrekenen. Zo heb ik alles op een rijtje en hoef ik geen dingen z
 
 #### Schetsen
 
-(hier komen schetsen)
+![sketches](/doc/sketches.jpg)
 
 
 #### Data sets & sources
@@ -50,6 +50,7 @@ Daardoor vind ik fijner werken als de gebruiker zelf de instellingen aan kan pas
 - Werkdag: Bij dit scherm zie je de lopen die je al eerder hebt toegevoegd en daarnaast kan je ook een loop toevoegen.
   Je geeft zelf aan welke wijk het is, of het een piek- of daldag is en wat de begin- en eindtijd is. De app
   komt zelf met de richttijd en rekent uit wat de tijd is die je te veel of te weinig hebt gelopen.
+  
 - Instellingen: Via de andere drie schermen kan je bij de instellingen komen. Hier kan je aangeven hoeveel contracturen
   je hebt en wat je salaris is, en wat je krijgt voor overuren. Daarnaast kan je wijken toevoegen. Per
   wijk kan je voor de dal- en piekdag een richttijd instellen.
