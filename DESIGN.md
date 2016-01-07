@@ -40,6 +40,7 @@ AddWalk.java
 - onClickCancel
 - onClickSettings
 - onEditTextChangedListener
+Data van wijken, richttijden, contracturen en salaris worden opgehaald van shared preferences.
 
 Settings.java
 - onCreate
