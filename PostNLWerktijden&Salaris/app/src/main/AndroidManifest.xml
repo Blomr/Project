@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="nl.mprog.postnlwerktijdensalaris">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity android:name=".Months">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Days">
+        </activity>
+        <activity android:name=".Walks">
+        </activity>
+        <activity android:name=".AddWalk">
+        </activity>
+        <activity android:name=".Settings">
+        </activity>
+        <activity android:name=".ContractAndSalary">
+        </activity>
+        <activity android:name=".Districts">
+        </activity>
+        <activity android:name=".AddDistrict">
+        </activity>
+    </application>
+
+</manifest>

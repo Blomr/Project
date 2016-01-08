@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".AddDistrict">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wijk toevoegen"
+        android:textSize="22sp"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"/>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Wijkcode: "
+            android:id="@+id/textWijkcode"/>
+
+        <EditText
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/wijkCodeEditText"
+            android:layout_toRightOf="@id/textWijkcode"
+            android:layout_toEndOf="@id/textWijkcode"
+            android:layout_alignBaseline="@id/textWijkcode"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tijd piekdag: "
+            android:id="@+id/textTijdPiekdag"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/textWijkcode"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/piekdagHour"
+            android:layout_alignLeft="@id/wijkCodeEditText"
+            android:layout_alignBaseline="@id/textTijdPiekdag"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" : "
+            android:id="@+id/colon1"
+            android:layout_toRightOf="@id/piekdagHour"
+            android:layout_toEndOf="@id/piekdagHour"
+            android:layout_alignBottom="@id/textTijdPiekdag"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/piekdagMin"
+            android:layout_toRightOf="@id/colon1"
+            android:layout_toEndOf="@id/colon1"
+            android:layout_alignBaseline="@id/textTijdPiekdag"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tijd daldag: "
+            android:id="@+id/textTijdDaldag"
+            android:layout_below="@id/textTijdPiekdag"
+            android:layout_marginTop="30dp"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/daldagHour"
+            android:layout_toRightOf="@id/textTijdDaldag"
+            android:layout_toEndOf="@id/textTijdDaldag"
+            android:layout_alignBaseline="@id/textTijdDaldag"
+            android:layout_alignLeft="@id/piekdagHour"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" : "
+            android:id="@+id/colon2"
+            android:layout_toRightOf="@id/daldagHour"
+            android:layout_toEndOf="@id/daldagHour"
+            android:layout_alignBottom="@id/textTijdDaldag"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:id="@+id/daldagMin"
+            android:layout_toRightOf="@id/colon2"
+            android:layout_toEndOf="@id/colon2"
+            android:layout_alignBaseline="@id/textTijdDaldag"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="opslaan"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="annuleren"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

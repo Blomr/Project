@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">PostNL Werktijden &amp; Salaris</string>
+    <string-array name="settingsListView">
+        <item>Contracturen en salaris</item>
+        <item>Wijken</item>
+    </string-array>
+</resources>

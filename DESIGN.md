@@ -13,8 +13,10 @@ Mimimum
 - De gegevens dienen opgeslagen, inzichtelijk en aanpasbaar te zijn bij later gebruik.
 
 Optioneel
-- Om de hoeveelheid activities te verkleinen, kan de invoer van gegevens op de vorige activity
-  plaatsvinden, waarbij editTexts en buttons dynamisch aangemaakt worden.
+- De invoer van een loop kan op de walks-activity plaatsvinden in plaats van een eigen 
+  activity, waarbij editTexts en buttons dynamisch aangemaakt worden.
+- De listview kan veranderd worden naar een blok-stijl zoals bij Google Keep, waarbij 
+  je items kan verwijderen door te swipen.
   
 
 #### Classes en methods
@@ -40,7 +42,7 @@ AddWalk.java
 - onClickCancel
 - onClickSettings
 - onEditTextChangedListener
-Data van wijken, richttijden, contracturen en salaris worden opgehaald van shared preferences.
+Data van contracturen en salaris worden opgehaald van shared preferences.
 
 Settings.java
 - onCreate

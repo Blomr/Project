@@ -17,4 +17,10 @@
 
 ### Dag 4 - do 7 jan
 - Database structuur uitwerken.
+- Project aanmaken in Android Studio.
+- Months, Days, Walks en AddWalk aangemaakt en elkaar verbonden.
 
+### Dag 5 - vr 8 jan
+- Activities van instellingen maken.
+- Prototype afmaken.
+- Presentatie voortgang geven.
