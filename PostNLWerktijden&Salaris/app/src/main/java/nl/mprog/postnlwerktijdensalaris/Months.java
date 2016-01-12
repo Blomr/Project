@@ -20,17 +20,17 @@ public class Months extends AppCompatActivity {
 
         listViewMonths = (ListView) findViewById(R.id.listViewMonths);
 
-        ArrayList<ListItemObj> listItems = new ArrayList<>();
-        ListItemObj item1 = new ListItemObj("december 2015", 4, 117.34, "18:46");
+        ArrayList<MonthObject> listItems = new ArrayList<>();
+        MonthObject item1 = new MonthObject("december 2015", 4, 117.34, "18:46");
         listItems.add(item1);
-        ListItemObj item2 = new ListItemObj("november 2015", 3, 114.63, "19:51");
+        MonthObject item2 = new MonthObject("november 2015", 3, 114.63, "19:51");
         listItems.add(item2);
-        ListItemObj item3 = new ListItemObj("oktober 2015", 4, 119.74, "19:23");
+        MonthObject item3 = new MonthObject("oktober 2015", 4, 119.74, "19:23");
         listItems.add(item3);
-        ListItemObj item4 = new ListItemObj("september 2015", 4, 112.85, "18:58");
+        MonthObject item4 = new MonthObject("september 2015", 4, 112.85, "18:58");
         listItems.add(item4);
 
-        CustomAdapter adapter = new CustomAdapter(this, R.layout.listview_layout_1, listItems);
+        MonthAdapter adapter = new MonthAdapter(this, R.layout.listview_layout, listItems);
         listViewMonths.setAdapter(adapter);
 
         listViewMonths.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -49,20 +49,7 @@ public class Months extends AppCompatActivity {
 
     public void onClickAddMonth(View view) {
         Intent goToDays = new Intent(Months.this, Days.class);
+        goToDays.putExtra("newMonth", true);
         startActivity(goToDays);
-    }
-
-    public class ListItemObj {
-        public String upLeft;
-        public String downLeft;
-        public String upRight;
-        public String downRight;
-
-        public ListItemObj(String month, int days, double salary, String time) {
-            this.upLeft = month;
-            this.downLeft = Integer.toString(days);
-            this.upRight = Double.toString(salary);
-            this.downRight = time;
-        }
     }
 }

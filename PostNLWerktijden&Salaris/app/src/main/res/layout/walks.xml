@@ -35,4 +35,35 @@
         android:layout_alignParentEnd="true"
         android:onClick="onClickAddWalk"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/okButtonDay"
+        android:text="ok"
+        android:layout_toLeftOf="@id/settingsButtonWalks"
+        android:layout_toStartOf="@id/settingsButtonWalks"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:visibility="gone"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editTitleDay"
+        android:hint="vul de datum in"
+        android:layout_toLeftOf="@id/okButtonDay"
+        android:layout_toStartOf="@id/okButtonDay"
+        android:layout_alignBottom="@id/okButtonDay"
+        android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/titleDay"
+        android:visibility="gone"
+        android:textSize="22sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="5dp"/>
+
 </RelativeLayout>

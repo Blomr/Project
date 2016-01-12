@@ -64,7 +64,7 @@ AddDistrict.java
 Model classes
 - Month.java - Month, Amount of days, Total salary, Total time
 - Day.java - Day, Districts, Total time, Goal time, Extra time
-- Walk.java - District, Begin time, End time, Goal time, Extra time, Total time
+- Walk.java - District code, Begin time, End time, Goal time, Extra time, Total time
 - District.java - District code, Busy day time, Calm day time
 
 

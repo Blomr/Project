@@ -35,3 +35,4 @@
 - Custom adapter was een heel karwei, overal op internet werd het anders uitgelegd.
 
 ### Dag 7 - Di 12 jan
+- 
