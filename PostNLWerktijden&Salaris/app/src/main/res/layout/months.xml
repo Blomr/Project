@@ -25,4 +25,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/listViewMonths"
         android:layout_below="@id/settingsButtonMonths"/>
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/plusbutton"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onClickAddMonth"/>
 </RelativeLayout>

@@ -24,3 +24,14 @@
 - Activities van instellingen maken.
 - Prototype afmaken.
 - Presentatie voortgang geven.
+
+### Weekend - za 9 jan, zo 10 jan
+- Onderzoek doen naar opzetten SQLite database.
+- Onderzoek doen naar het rekenen met tijd in java.
+
+### Dag 6 - Ma 11 jan
+- Database opzetten: onCreate en onUpdate gemaakt.
+- Listview aanpassen: listitem-layout in XML en custom adapter.
+- Custom adapter was een heel karwei, overal op internet werd het anders uitgelegd.
+
+### Dag 7 - Di 12 jan

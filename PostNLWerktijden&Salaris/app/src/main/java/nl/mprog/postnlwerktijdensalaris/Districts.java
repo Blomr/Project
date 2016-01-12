@@ -2,7 +2,6 @@ package nl.mprog.postnlwerktijdensalaris;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,8 +12,8 @@ public class Districts extends AppCompatActivity {
     ListView listViewDistricts;
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.districts);
 
         listViewDistricts = (ListView) findViewById(R.id.listViewDistricts);
