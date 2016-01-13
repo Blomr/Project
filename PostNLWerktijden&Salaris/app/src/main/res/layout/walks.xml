@@ -9,6 +9,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Walks">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/titleDay"
+        android:visibility="gone"
+        android:textSize="22sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="5dp"/>
+
     <ImageView
         android:layout_width="36dp"
         android:layout_height="36dp"
@@ -29,6 +39,7 @@
     <ImageView
         android:layout_width="70dp"
         android:layout_height="70dp"
+        android:id="@+id/addButtonWalks"
         android:src="@drawable/plusbutton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
@@ -44,7 +55,8 @@
         android:layout_toStartOf="@id/settingsButtonWalks"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:onClick="onClickOkWalks"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -59,11 +71,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/titleDay"
-        android:visibility="gone"
-        android:textSize="22sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="5dp"/>
+        android:visibility="invisible"
+        android:id="@+id/idMonthWalks"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:id="@+id/idDayWalks"/>
 
 </RelativeLayout>

@@ -49,7 +49,6 @@ public class Months extends AppCompatActivity {
 
     public void onClickAddMonth(View view) {
         Intent goToDays = new Intent(Months.this, Days.class);
-        goToDays.putExtra("newMonth", true);
         startActivity(goToDays);
     }
 }

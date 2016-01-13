@@ -12,8 +12,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/titleMonth"
+        android:visibility="gone"
         android:textSize="22sp"
-        android:id="@+id/settingsTitle"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
         android:layout_marginTop="5dp"/>
@@ -38,6 +39,7 @@
     <ImageView
         android:layout_width="70dp"
         android:layout_height="70dp"
+        android:id="@+id/addButtonDays"
         android:src="@drawable/plusbutton"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
@@ -53,7 +55,8 @@
         android:layout_toStartOf="@id/settingsButtonDays"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:onClick="onClickOkDays"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -68,17 +71,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/titleMonth"
-        android:visibility="gone"
-        android:textSize="22sp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="5dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/idMonth"
+        android:id="@+id/idMonthDays"
         android:visibility="invisible"/>
 
 </RelativeLayout>

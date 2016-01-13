@@ -31,9 +31,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String WALKS_COLUMN_ID1 = "id1";
     private static final String WALKS_COLUMN_ID2 = "id2";
     private static final String WALKS_COLUMN_ID3 = "id3";
-    private static final String WALKS_COLUMN_DISTRICT = "district";
-    private static final String WALKS_COLUMN_TIMEBEGIN = "timeBegin";
-    private static final String WALKS_COLUMN_TIMEEND = "timeEnd";
+    private static final String WALKS_COLUMN_DISTRICTCODE = "districtCode";
+    private static final String WALKS_COLUMN_TIMEBEGIN1 = "timeBegin1";
+    private static final String WALKS_COLUMN_TIMEEND1 = "timeEnd1";
+    private static final String WALKS_COLUMN_TIMEBEGIN2 = "timeBegin2";
+    private static final String WALKS_COLUMN_TIMEEND2 = "timeEnd2";
+    private static final String WALKS_COLUMN_TIMEBEGIN3 = "timeBegin3";
+    private static final String WALKS_COLUMN_TIMEEND3 = "timeEnd3";
     private static final String WALKS_COLUMN_TIMEGOAL = "goal";
     private static final String WALKS_COLUMN_TIMEEXTRA = "extra";
     private static final String WALKS_COLUMN_TIMETOTAL = "timeTotal";
@@ -67,9 +71,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             WALKS_COLUMN_ID1 + " INTEGER, " +
             WALKS_COLUMN_ID2 + " INTEGER, " +
             WALKS_COLUMN_ID3 + " INTEGER, " +
-            WALKS_COLUMN_DISTRICT + " TEXT, " +
-            WALKS_COLUMN_TIMEBEGIN + " TEXT, " +
-            WALKS_COLUMN_TIMEEND + " TEXT, " +
+            WALKS_COLUMN_DISTRICTCODE + " TEXT, " +
+            WALKS_COLUMN_TIMEBEGIN1 + " TEXT, " +
+            WALKS_COLUMN_TIMEEND1 + " TEXT, " +
+            WALKS_COLUMN_TIMEBEGIN2 + " TEXT, " +
+            WALKS_COLUMN_TIMEEND2 + " TEXT, " +
+            WALKS_COLUMN_TIMEBEGIN3 + " TEXT, " +
+            WALKS_COLUMN_TIMEEND3 + " TEXT, " +
             WALKS_COLUMN_TIMEGOAL + " TEXT, " +
             WALKS_COLUMN_TIMEEXTRA + " TEXT, " +
             WALKS_COLUMN_TIMETOTAL + " TEXT )";
@@ -93,23 +101,82 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(MONTHS_COLUMN_SALARY, monthObject.salary);
         values.put(MONTHS_COLUMN_TIME, monthObject.time);
 
-        db.insert(MONTHS_TABLE_NAME, null, values);
+        int lastId = (int) db.insert(MONTHS_TABLE_NAME, null, values);
         db.close();
+        return lastId;
 
-        db = this.getReadableDatabase();
+        /*db = this.getReadableDatabase();
         String query = "SELECT ROWID from " + MONTHS_TABLE_NAME + " order by ROWID DESC limit 1";
         Cursor cursor = db.rawQuery(query, null);
-        return cursor.getInt(0);
+        int lastId = cursor.getInt(0);
+        cursor.close();
+        return lastId;*/
     }
 
-    public void addDay(DayObject dayObject) {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public int addDay(DayObject dayObject) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT (*) FROM " + DAYS_TABLE_NAME + "WHERE " + DAYS_COLUMN_ID1 + "= ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(dayObject.id1)});
+        int count = 0;
+        if(cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                count = cursor.getInt(0);
+            }
+            cursor.close();
+        }
+        db.close();
+
+        db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(DAYS_COLUMN_ID1, dayObject.id1);
+        values.put(DAYS_COLUMN_ID2, count + 1);
         values.put(DAYS_COLUMN_DAY, dayObject.day);
         values.put(DAYS_COLUMN_DISTRICTS, dayObject.districts);
         values.put(DAYS_COLUMN_TIMETOTAL, dayObject.timeTotal);
         values.put(DAYS_COLUMN_TIMEGOAL, dayObject.timeGoal);
         values.put(DAYS_COLUMN_TIMEEXTRA, dayObject.timeExtra);
+
+        db.insert(DAYS_TABLE_NAME, null, values);
+        db.close();
+        return count + 1;
+    }
+
+    public int addWalk(WalkObject walkObject) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT (*) FROM " + WALKS_TABLE_NAME + "WHERE " + WALKS_COLUMN_ID1 + "= ? " + "AND " + WALKS_COLUMN_ID2 + "= ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(walkObject.id1), String.valueOf(walkObject.id2)});
+        int count = 0;
+        if(cursor != null) {
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                count = cursor.getInt(0);
+            }
+            cursor.close();
+        }
+        db.close();
+
+        db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(WALKS_COLUMN_ID1, walkObject.id1);
+        values.put(WALKS_COLUMN_ID2, walkObject.id2);
+        values.put(WALKS_COLUMN_ID3, count + 1);
+        values.put(WALKS_COLUMN_DISTRICTCODE, walkObject.districtCode);
+        values.put(WALKS_COLUMN_TIMEBEGIN1, walkObject.timeBegin1);
+        values.put(WALKS_COLUMN_TIMEEND1, walkObject.timeEnd1);
+        values.put(WALKS_COLUMN_TIMEBEGIN2, walkObject.timeBegin1);
+        values.put(WALKS_COLUMN_TIMEEND2, walkObject.timeEnd1);
+        values.put(WALKS_COLUMN_TIMEBEGIN3, walkObject.timeBegin1);
+        values.put(WALKS_COLUMN_TIMEEND3, walkObject.timeEnd1);
+        values.put(WALKS_COLUMN_TIMEGOAL, walkObject.timeGoal);
+        values.put(WALKS_COLUMN_TIMEEXTRA, walkObject.timeExtra);
+        values.put(WALKS_COLUMN_TIMETOTAL, walkObject.timeTotal);
+
+
+        db.insert(WALKS_TABLE_NAME, null, values);
+        db.close();
+        return count + 1;
     }
 }

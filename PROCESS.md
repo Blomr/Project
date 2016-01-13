@@ -35,4 +35,12 @@
 - Custom adapter was een heel karwei, overal op internet werd het anders uitgelegd.
 
 ### Dag 7 - Di 12 jan
-- 
+- Add-buttons van maanden en dagen koppelen aan editText voor het invoeren van een titel.
+- Titel van maanden en dagen wegschrijven naar database.
+- Model classes maken.
+- Custom adapter opdelen naar model classes.
+
+### Dag 8 - Wo 13 jan
+- Add-button van lopen aan editText voor het invoeren van een titel.
+- Titel van lopen wegschrijven naar database.
+- Edittexts voor invoeren tijden geschikt maken voor foute invoering.
