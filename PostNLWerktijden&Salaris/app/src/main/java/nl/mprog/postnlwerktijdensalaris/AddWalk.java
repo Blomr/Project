@@ -16,6 +16,18 @@ public class AddWalk extends AppCompatActivity{
     int idMonth;
     int idDay;
     int idWalk;
+    String beginHour1;
+    String beginMin1;
+    String endHour1;
+    String endMin1;
+    String beginHour2;
+    String beginMin2;
+    String endHour2;
+    String endMin2;
+    String beginHour3;
+    String beginMin3;
+    String endHour3;
+    String endMin3;
     EditText editBeginHour1;
     EditText editBeginMin1;
     EditText editEndHour1;
@@ -29,6 +41,7 @@ public class AddWalk extends AppCompatActivity{
     EditText editEndHour3;
     EditText editEndMin3;
     TextView districtCodeView;
+    TextView dayTypeView;
     TextView timeGoalView;
 
     @Override
@@ -54,11 +67,52 @@ public class AddWalk extends AppCompatActivity{
         editEndMin3 = (EditText) findViewById(R.id.endMin3);
 
         districtCodeView = (TextView) findViewById(R.id.districtCode);
+        dayTypeView = (TextView) findViewById(R.id.dayType);
         timeGoalView = (TextView) findViewById(R.id.timeGoal);
 
-        /*if (idWalk != 0) {
+        if (idWalk != 0) {
+            DatabaseHandler db = new DatabaseHandler(AddWalk.this);
+            WalkObject walkObj = db.getWalk(idMonth, idDay, idWalk);
 
-        }*/
+            beginHour1 = walkObj.timeBegin1.substring(0, 2);
+            editBeginHour1.setText(beginHour1);
+
+            beginMin1 = walkObj.timeBegin1.substring(3);
+            editBeginMin1.setText(beginMin1);
+
+            endHour1 = walkObj.timeEnd1.substring(0, 2);
+            editEndHour1.setText(endHour1);
+
+            endMin1 = walkObj.timeEnd1.substring(3);
+            editEndMin1.setText(endMin1);
+
+            beginHour2 = walkObj.timeBegin2.substring(0, 2);
+            editBeginHour2.setText(beginHour2);
+
+            beginMin2 = walkObj.timeBegin2.substring(3);
+            editBeginMin2.setText(beginMin2);
+
+            endHour2 = walkObj.timeEnd2.substring(0, 2);
+            editEndHour2.setText(endHour2);
+
+            endMin2 = walkObj.timeEnd2.substring(3);
+            editEndMin2.setText(endMin2);
+
+            beginHour3 = walkObj.timeBegin3.substring(0, 2);
+            editBeginHour3.setText(beginHour3);
+
+            beginMin3 = walkObj.timeBegin3.substring(3);
+            editBeginMin3.setText(beginMin3);
+
+            endHour3 = walkObj.timeEnd3.substring(0, 2);
+            editEndHour3.setText(endHour3);
+
+            endMin3 = walkObj.timeEnd3.substring(3);
+            editEndMin3.setText(endMin3);
+
+            districtCodeView.setText(walkObj.districtCode);
+            dayTypeView.setText(walkObj.dayType);
+        }
     }
 
     public void onClickSettings(View view) {
@@ -111,49 +165,50 @@ public class AddWalk extends AppCompatActivity{
         }
         else {
             String districtCode = districtCodeView.getText().toString();
+            String dayType = dayTypeView.getText().toString();
             String timeGoalStr = timeGoalView.getText().toString();
 
             if (timeGoalStr.length() == 4) {
                 timeGoalStr = "0" + timeGoalStr;
             }
 
-            String beginHour1 = editBeginHour1.getText().toString();
-            String beginMin1 = editBeginMin1.getText().toString();
+            beginHour1 = editBeginHour1.getText().toString();
+            beginMin1 = editBeginMin1.getText().toString();
             String timeBegin1Str = beginHour1 + ":" + beginMin1;
             if (timeBegin1Str.length() == 4) {
                 timeBegin1Str = "0" + timeBegin1Str;
             }
 
-            String endHour1 = editEndHour1.getText().toString();
-            String endMin1 = editEndMin1.getText().toString();
+            endHour1 = editEndHour1.getText().toString();
+            endMin1 = editEndMin1.getText().toString();
             String timeEnd1Str = endHour1 + ":" + endMin1;
             if (timeEnd1Str.length() == 4) {
                 timeEnd1Str = "0" + timeEnd1Str;
             }
 
-            String beginHour2 = editBeginHour2.getText().toString();
-            String beginMin2 = editBeginMin2.getText().toString();
+            beginHour2 = editBeginHour2.getText().toString();
+            beginMin2 = editBeginMin2.getText().toString();
             String timeBegin2Str = beginHour2 + ":" + beginMin2;
             if (timeBegin2Str.length() == 4) {
                 timeBegin2Str = "0" + timeBegin2Str;
             }
 
-            String endHour2 = editEndHour2.getText().toString();
-            String endMin2 = editEndMin2.getText().toString();
+            endHour2 = editEndHour2.getText().toString();
+            endMin2 = editEndMin2.getText().toString();
             String timeEnd2Str = endHour2 + ":" + endMin2;
             if (timeEnd2Str.length() == 4) {
                 timeEnd2Str = "0" + timeEnd2Str;
             }
 
-            String beginHour3 = editBeginHour3.getText().toString();
-            String beginMin3 = editBeginMin3.getText().toString();
+            beginHour3 = editBeginHour3.getText().toString();
+            beginMin3 = editBeginMin3.getText().toString();
             String timeBegin3Str = beginHour3 + ":" + beginMin3;
             if (timeBegin3Str.length() == 4) {
                 timeBegin3Str = "0" + timeBegin3Str;
             }
 
-            String endHour3 = editEndHour3.getText().toString();
-            String endMin3 = editEndMin3.getText().toString();
+            endHour3 = editEndHour3.getText().toString();
+            endMin3 = editEndMin3.getText().toString();
             String timeEnd3Str = endHour3 + ":" + endMin3;
             if (timeEnd3Str.length() == 4) {
                 timeEnd3Str = "0" + timeEnd3Str;
@@ -253,11 +308,11 @@ public class AddWalk extends AppCompatActivity{
             long timeExtraMinRest = Math.abs(timeExtraMin) % 60;
             String timeExtraStr = timeExtraHours + ":" + timeExtraMinRest;
 
-            WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, timeBegin1Str,
+            WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1Str,
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
                     timeExtraStr, timeTotalStr);
 
-            DatabaseHelper db = new DatabaseHelper(AddWalk.this);
+            DatabaseHandler db = new DatabaseHandler(AddWalk.this);
             if (idWalk == 0) {
                 db.addWalk(walkObj);
             }
@@ -265,5 +320,54 @@ public class AddWalk extends AppCompatActivity{
     }
 
     public void onClickCancel(View view) {
+        finish();
+    }
+
+    public void onClickBeginHour1(View view) {
+        editBeginHour1.setText("");
+    }
+
+    public void onClickBeginMin1(View view) {
+        editBeginMin1.setText("");
+    }
+
+    public void onClickEndHour1(View view) {
+        editEndHour1.setText("");
+    }
+
+    public void onClickEndMin1(View view) {
+        editEndMin1.setText("");
+    }
+
+    public void onClickBeginHour2(View view) {
+        editBeginHour2.setText("");
+    }
+
+    public void onClickBeginMin2(View view) {
+        editBeginMin2.setText("");
+    }
+
+    public void onClickEndHour2(View view) {
+        editEndHour2.setText("");
+    }
+
+    public void onClickEndMin2(View view) {
+        editEndMin2.setText("");
+    }
+
+    public void onClickBeginHour3(View view) {
+        editBeginHour3.setText("");
+    }
+
+    public void onClickBeginMin3(View view) {
+        editBeginMin3.setText("");
+    }
+
+    public void onClickEndHour3(View view) {
+        editEndHour3.setText("");
+    }
+
+    public void onClickEndMin3(View view) {
+        editEndMin3.setText("");
     }
 }

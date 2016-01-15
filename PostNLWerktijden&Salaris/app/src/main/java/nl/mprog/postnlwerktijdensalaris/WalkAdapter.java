@@ -48,6 +48,10 @@ public class WalkAdapter extends ArrayAdapter {
         String timeBeginEnd3 = listItemObj.timeBegin3 + " - " + listItemObj.timeEnd3;
         textViewUpRight3.setText(timeBeginEnd3);
 
+        TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
+        String idItem = Integer.toString(listItemObj.id3);
+        textViewUpCenter.setText(idItem);
+
         return view;
     }
 }

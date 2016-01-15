@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "Database.db";
@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String WALKS_COLUMN_TIMEEXTRA = "extra";
     private static final String WALKS_COLUMN_TIMETOTAL = "timeTotal";
 
-    public DatabaseHelper(Context context)
+    public DatabaseHandler(Context context)
     {
         super(context, DATABASE_NAME , null, DATABASE_VERSION);
     }
@@ -115,7 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int addDay(DayObject dayObject) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT COUNT (*) FROM " + DAYS_TABLE_NAME + "WHERE " + DAYS_COLUMN_ID1 + "= ?";
+        String query = "SELECT COUNT (*) FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_ID1 + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(dayObject.id1)});
         int count = 0;
         if(cursor != null) {
@@ -145,8 +145,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int addWalk(WalkObject walkObject) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT COUNT (*) FROM " + WALKS_TABLE_NAME + "WHERE " + WALKS_COLUMN_ID1 + "= ? " + "AND " + WALKS_COLUMN_ID2 + "= ?";
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(walkObject.id1), String.valueOf(walkObject.id2)});
+        String query = "SELECT COUNT (*) FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_ID1 +
+                       " = ? AND " + WALKS_COLUMN_ID2 + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(walkObject.id1),
+                        String.valueOf(walkObject.id2)});
         int count = 0;
         if(cursor != null) {
             if (cursor.getCount() > 0) {
@@ -178,5 +180,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(WALKS_TABLE_NAME, null, values);
         db.close();
         return count + 1;
+    }
+
+    public WalkObject getWalk(int idMonth, int idDay, int idWalk) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_ID1 + " = ? AND "
+                       + WALKS_COLUMN_ID2 + " = ? AND " + WALKS_COLUMN_ID3 + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMonth), String.valueOf(idDay),
+                String.valueOf(idWalk)});
+        cursor.moveToFirst();
+
+        String districtCode = cursor.getString(3);
+        String dayType = cursor.getString(4);
+        String timeBegin1 = cursor.getString(5);
+        String timeEnd1 = cursor.getString(6);
+        String timeBegin2 = cursor.getString(7);
+        String timeEnd2 = cursor.getString(8);
+        String timeBegin3 = cursor.getString(9);
+        String timeEnd3 = cursor.getString(10);
+        String timeGoal = cursor.getString(11);
+        String timeExtra = cursor.getString(12);
+        String timeTotal = cursor.getString(13);
+        cursor.close();
+
+        WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1,
+                             timeEnd1, timeBegin2, timeEnd2, timeBegin3, timeEnd3, timeGoal, timeExtra,
+                             timeTotal);
+
+        return walkObj;
     }
 }

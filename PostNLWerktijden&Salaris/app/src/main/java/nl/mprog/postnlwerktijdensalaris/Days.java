@@ -91,7 +91,7 @@ public class Days extends AppCompatActivity {
             title.setText(getText);
 
             MonthObject monthObj = new MonthObject(0, getText, 0, 0.00, "0:00");
-            DatabaseHelper db = new DatabaseHelper(Days.this);
+            DatabaseHandler db = new DatabaseHandler(Days.this);
             idMonth = db.addMonth(monthObj);
         }
         else {

@@ -42,13 +42,17 @@ public class Walks extends AppCompatActivity {
             listViewWalks = (ListView) findViewById(R.id.listViewWalks);
 
             ArrayList<WalkObject> listItems = new ArrayList<>();
-            WalkObject item1 = new WalkObject(1, 1, 4, "41B", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item1 = new WalkObject(1, 1, 4, "41B", "piekdag", "11:35", "13:23", "18:46",
+                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item1);
-            WalkObject item2 = new WalkObject(1, 1, 3, "41J", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item2 = new WalkObject(1, 1, 3, "41J", "piekdag", "11:35", "13:23", "18:46",
+                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item2);
-            WalkObject item3 = new WalkObject(1, 1, 2, "41K", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item3 = new WalkObject(1, 1, 2, "41K", "piekdag", "11:35", "13:23", "18:46",
+                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item3);
-            WalkObject item4 = new WalkObject(1, 1, 1, "41Z", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item4 = new WalkObject(1, 1, 1, "41Z", "piekdag", "11:35", "13:23", "18:46",
+                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item4);
 
             WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
@@ -69,7 +73,7 @@ public class Walks extends AppCompatActivity {
     }
 
     public void onClickOkWalks(View view) {
-        String getText = String.valueOf(R.id.editTitleDay);
+        String getText = editTitle.getText().toString();
 
         if (!getText.equals("")) {
             editTitle.setVisibility(View.GONE);
@@ -81,7 +85,7 @@ public class Walks extends AppCompatActivity {
             title.setText(getText);
 
             DayObject dayObj = new DayObject(idMonth, 0, getText, "", "0:00", "0:00", "0:00");
-            DatabaseHelper db = new DatabaseHelper(Walks.this);
+            DatabaseHandler db = new DatabaseHandler(Walks.this);
             idDay = db.addDay(dayObj);
         }
         else {

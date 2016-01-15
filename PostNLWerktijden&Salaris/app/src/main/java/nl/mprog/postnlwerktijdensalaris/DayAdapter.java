@@ -42,6 +42,10 @@ public class DayAdapter extends ArrayAdapter {
         String timeBeginEnd = listItemObj.timeGoal + " + " + listItemObj.timeExtra;
         textViewDownRight.setText(timeBeginEnd);
 
+        TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
+        String idItem = Integer.toString(listItemObj.id2);
+        textViewUpCenter.setText(idItem);
+
         return view;
     }
 }
