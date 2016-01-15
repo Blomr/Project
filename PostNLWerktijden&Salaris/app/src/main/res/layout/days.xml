@@ -68,10 +68,4 @@
         android:layout_alignBottom="@id/okButtonMonth"
         android:visibility="gone"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/idMonthDays"
-        android:visibility="invisible"/>
-
 </RelativeLayout>

@@ -16,8 +16,6 @@ import java.util.ArrayList;
 public class Walks extends AppCompatActivity {
 
     ListView listViewWalks;
-    TextView idMonthView;
-    TextView idDayView;
     EditText editTitle;
     Button okButton;
     ImageView addButton;
@@ -29,14 +27,8 @@ public class Walks extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.walks);
 
-        idMonthView = (TextView) findViewById(R.id.idMonthWalks);
-        idDayView = (TextView) findViewById(R.id.idDayWalks);
-
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
-
-        String idMonthString = Integer.toString(idMonth);
-        idMonthView.setText(idMonthString);
 
         if (idDay == 0) {
             editTitle = (EditText) findViewById(R.id.editTitleDay);
@@ -50,13 +42,13 @@ public class Walks extends AppCompatActivity {
             listViewWalks = (ListView) findViewById(R.id.listViewWalks);
 
             ArrayList<WalkObject> listItems = new ArrayList<>();
-            WalkObject item1 = new WalkObject(1, 1, "41B", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item1 = new WalkObject(1, 1, 4, "41B", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item1);
-            WalkObject item2 = new WalkObject(1, 1, "41J", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item2 = new WalkObject(1, 1, 3, "41J", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item2);
-            WalkObject item3 = new WalkObject(1, 1, "41K", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item3 = new WalkObject(1, 1, 2, "41K", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item3);
-            WalkObject item4 = new WalkObject(1, 1, "41Z", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
+            WalkObject item4 = new WalkObject(1, 1, 1, "41Z", "11:35", "13:23", "18:46", "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item4);
 
             WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
@@ -88,11 +80,9 @@ public class Walks extends AppCompatActivity {
             title.setVisibility(View.VISIBLE);
             title.setText(getText);
 
-            DayObject dayObj = new DayObject(idMonth, getText, "", "0:00", "0:00", "0:00");
+            DayObject dayObj = new DayObject(idMonth, 0, getText, "", "0:00", "0:00", "0:00");
             DatabaseHelper db = new DatabaseHelper(Walks.this);
             idDay = db.addDay(dayObj);
-            String idDayString = Integer.toString(idDay);
-            idDayView.setText(idDayString);
         }
         else {
             Toast.makeText(Walks.this, "Vul een titel in", Toast.LENGTH_SHORT).show();

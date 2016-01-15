@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:text="41B"
                 android:textSize="20sp"
-                android:id="@+id/code"/>
+                android:id="@+id/districtCode"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -240,6 +240,24 @@
                 android:inputType="number"
                 android:id="@+id/endMin3"/>
 
+        </GridLayout>
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rowCount="1"
+            android:columnCount="2"
+            android:layout_marginTop="40dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Richttijd: "
+                android:textSize="20sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timeGoal"
+                android:text="2:11"
+                android:textSize="20sp"/>
         </GridLayout>
     </LinearLayout>
 

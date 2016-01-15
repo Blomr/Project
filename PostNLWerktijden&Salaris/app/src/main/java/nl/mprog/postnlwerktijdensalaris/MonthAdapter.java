@@ -41,6 +41,10 @@ public class MonthAdapter extends ArrayAdapter {
         TextView textViewDownRight = (TextView) view.findViewById(R.id.listItemDownRight);
         textViewDownRight.setText(listItemObj.time);
 
+        TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
+        String idString = Integer.toString(listItemObj.id);
+        textViewUpCenter.setText(idString);
+
         return view;
     }
 }

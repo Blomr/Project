@@ -39,7 +39,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/contractHours"
+            android:inputType="number"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,7 +51,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/contractMins"
+            android:inputType="number"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -64,7 +68,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/salaryHour"
+            android:inputType="number"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -74,7 +80,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/salaryMin"
+            android:inputType="number"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -89,7 +97,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/extraHour"
+            android:inputType="number"
+            android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -99,7 +109,9 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:inputType="number"/>
+            android:id="@+id/extraMin"
+            android:inputType="number"
+            android:gravity="center"/>
 
     </GridLayout>
 
@@ -109,7 +121,8 @@
         android:text="opslaan"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickSave"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -117,5 +130,7 @@
         android:text="annuleren"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickCancel"/>
+
 </RelativeLayout>

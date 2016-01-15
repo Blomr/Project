@@ -41,6 +41,15 @@
 - Custom adapter opdelen naar model classes.
 
 ### Dag 8 - Wo 13 jan
-- Add-button van lopen aan editText voor het invoeren van een titel.
+- Add-button van lopen koppelen aan editText voor het invoeren van een titel.
 - Titel van lopen wegschrijven naar database.
+- Add-buttons van volgende scherm komt pas tevoorschijn als op ok-button is gedrukt.
 - Edittexts voor invoeren tijden geschikt maken voor foute invoering.
+
+### Dag 9 - Do 14 jan
+- Contracturen & salaris opslaan in shared preferences.
+- Ingevoerde tijden uit editTexts halen en opslaan in database.
+- Berekeningen met tijden uitvoeren en resultaten in database opslaan.
+
+### Dag 10 - Vr 15 jan
+-

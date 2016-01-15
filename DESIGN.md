@@ -17,6 +17,8 @@ Optioneel
   activity, waarbij editTexts en buttons dynamisch aangemaakt worden.
 - De listview kan veranderd worden naar een blok-stijl zoals bij Google Keep, waarbij 
   je items kan verwijderen door te swipen.
+- In Addwalk kan een preview gegeven worden van de totale tijd en de tijd die de gebruiker
+  te veel of te weinig heeft gelopen.
   
 
 #### Classes en methods
