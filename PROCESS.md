@@ -52,4 +52,6 @@
 - Berekeningen met tijden uitvoeren en resultaten in database opslaan.
 
 ### Dag 10 - Vr 15 jan
--
+- Walk ophalen uit database en toevoegen in editTexts in AddWalk.
+- OnClick op editTexts gezet zodat getallen verdwijnen.
+- Presentatie geven.
