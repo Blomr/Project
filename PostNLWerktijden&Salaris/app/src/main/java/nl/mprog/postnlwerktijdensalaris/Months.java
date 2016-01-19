@@ -42,6 +42,7 @@ public class Months extends AppCompatActivity {
                 Intent goToDays = new Intent(Months.this, Days.class);
                 goToDays.putExtra("idMonth", idMonth);
                 startActivity(goToDays);
+                finish();
             }
         });
     }

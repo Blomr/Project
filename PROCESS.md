@@ -55,3 +55,9 @@
 - Walk ophalen uit database en toevoegen in editTexts in AddWalk.
 - OnClick op editTexts gezet zodat getallen verdwijnen.
 - Presentatie geven.
+
+### Weekend - za 16 jan, zo 17 jan
+- Methods getWalkOfDay, getDaysOfMonth en getMonths schrijven in DatabaseHandler.
+
+### Dag 11 - Ma 18 jan
+- AddWalk afmaken, nu ook gegevens wegschrijven naar months- en days-table.

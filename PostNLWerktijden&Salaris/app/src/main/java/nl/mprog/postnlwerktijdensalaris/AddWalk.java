@@ -1,6 +1,7 @@
 package nl.mprog.postnlwerktijdensalaris;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -306,7 +307,11 @@ public class AddWalk extends AppCompatActivity{
             long timeExtraMin = timeExtraMs / 1000 / 60;
             long timeExtraHours = timeExtraMin / 60;
             long timeExtraMinRest = Math.abs(timeExtraMin) % 60;
-            String timeExtraStr = timeExtraHours + ":" + timeExtraMinRest;
+            String timeExtraMinRestStr = Long.toString(timeExtraMinRest);
+            if (timeExtraMinRestStr.length() == 1) {
+                timeExtraMinRestStr = "0" + timeExtraMinRestStr;
+            }
+            String timeExtraStr = timeExtraHours + ":" + timeExtraMinRestStr;
 
             WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1Str,
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
@@ -314,7 +319,23 @@ public class AddWalk extends AppCompatActivity{
 
             DatabaseHandler db = new DatabaseHandler(AddWalk.this);
             if (idWalk == 0) {
-                db.addWalk(walkObj);
+                SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
+                int contractHours = sharedPref.getInt("contractHours", 0);
+                int contractMins = sharedPref.getInt("contractMins", 0);
+                int salaryEuro = sharedPref.getInt("salaryEuro", 0);
+                int salaryCents = sharedPref.getInt("salaryCents", 0);
+                int extraEuro = sharedPref.getInt("extraEuro", 0);
+                int extraCents = sharedPref.getInt("extraCents", 0);
+
+                Bundle bundle = new Bundle();
+                bundle.putInt("contractHours", contractHours);
+                bundle.putInt("contractMins", contractMins);
+                bundle.putInt("salaryEuro", salaryEuro);
+                bundle.putInt("salaryCents", salaryCents);
+                bundle.putInt("extraEuro", extraEuro);
+                bundle.putInt("extraCents", extraCents);
+
+                db.addWalk(walkObj, bundle);
             }
         }
     }

@@ -68,7 +68,7 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:id="@+id/salaryHour"
+            android:id="@+id/salaryEuro"
             android:inputType="number"
             android:gravity="center"/>
 
@@ -80,7 +80,7 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:id="@+id/salaryMin"
+            android:id="@+id/salaryCents"
             android:inputType="number"
             android:gravity="center"/>
 
@@ -97,7 +97,7 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:id="@+id/extraHour"
+            android:id="@+id/extraEuro"
             android:inputType="number"
             android:gravity="center"/>
 
@@ -109,7 +109,7 @@
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:id="@+id/extraMin"
+            android:id="@+id/extraCents"
             android:inputType="number"
             android:gravity="center"/>
 

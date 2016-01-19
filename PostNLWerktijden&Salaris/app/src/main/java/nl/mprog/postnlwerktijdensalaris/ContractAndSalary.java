@@ -13,24 +13,24 @@ public class ContractAndSalary extends AppCompatActivity {
 
     int contractHours;
     int contractMins;
-    int salaryHour;
-    int salaryMin;
-    int extraHour;
-    int extraMin;
+    int salaryEuro;
+    int salaryCents;
+    int extraEuro;
+    int extraCents;
 
     String contractHoursStr;
     String contractMinsStr;
-    String salaryHourStr;
-    String salaryMinStr;
-    String extraHourStr;
-    String extraMinStr;
+    String salaryEuroStr;
+    String salaryCentsStr;
+    String extraEuroStr;
+    String extraCentsStr;
 
     EditText editContractHours;
     EditText editContractMins;
-    EditText editSalaryHour;
-    EditText editSalaryMin;
-    EditText editExtraHour;
-    EditText editExtraMin;
+    EditText editSalaryEuro;
+    EditText editSalaryCents;
+    EditText editExtraEuro;
+    EditText editExtraCents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +39,18 @@ public class ContractAndSalary extends AppCompatActivity {
 
         editContractHours = (EditText) findViewById(R.id.contractHours);
         editContractMins = (EditText) findViewById(R.id.contractMins);
-        editSalaryHour = (EditText) findViewById(R.id.salaryHour);
-        editSalaryMin = (EditText) findViewById(R.id.salaryMin);
-        editExtraHour = (EditText) findViewById(R.id.extraHour);
-        editExtraMin = (EditText) findViewById(R.id.extraMin);
+        editSalaryEuro = (EditText) findViewById(R.id.salaryEuro);
+        editSalaryCents = (EditText) findViewById(R.id.salaryCents);
+        editExtraEuro = (EditText) findViewById(R.id.extraEuro);
+        editExtraCents = (EditText) findViewById(R.id.extraCents);
 
         sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
         contractHours = sharedPref.getInt("contractHours", 0);
         contractMins = sharedPref.getInt("contractMins", 0);
-        salaryHour = sharedPref.getInt("salaryHour", 0);
-        salaryMin = sharedPref.getInt("salaryMin", 0);
-        extraHour = sharedPref.getInt("extraHour", 0);
-        extraMin = sharedPref.getInt("extraMin", 0);
+        salaryEuro = sharedPref.getInt("salaryEuro", 0);
+        salaryCents = sharedPref.getInt("salaryCents", 0);
+        extraEuro = sharedPref.getInt("extraEuro", 0);
+        extraCents = sharedPref.getInt("extraCents", 0);
 
         contractHoursStr = Integer.toString(contractHours);
         editContractHours.setText(contractHoursStr);
@@ -61,30 +61,30 @@ public class ContractAndSalary extends AppCompatActivity {
         }
         editContractMins.setText(contractMinsStr);
 
-        salaryHourStr = Integer.toString(salaryHour);
-        editSalaryHour.setText(salaryHourStr);
+        salaryEuroStr = Integer.toString(salaryEuro);
+        editSalaryEuro.setText(salaryEuroStr);
 
-        salaryMinStr = Integer.toString(salaryMin);
-        if (salaryMinStr.length() == 1) {
-            salaryMinStr = "0" + salaryMinStr;
+        salaryCentsStr = Integer.toString(salaryCents);
+        if (salaryCentsStr.length() == 1) {
+            salaryCentsStr = "0" + salaryCentsStr;
         }
-        editSalaryMin.setText(salaryMinStr);
+        editSalaryCents.setText(salaryCentsStr);
 
-        extraHourStr = Integer.toString(extraHour);
-        editExtraHour.setText(extraHourStr);
+        extraEuroStr = Integer.toString(extraEuro);
+        editExtraEuro.setText(extraEuroStr);
 
-        extraMinStr = Integer.toString(extraMin);
-        if (extraMinStr.length() == 1) {
-            extraMinStr = "0" + extraMinStr;
+        extraCentsStr = Integer.toString(extraCents);
+        if (extraCentsStr.length() == 1) {
+            extraCentsStr = "0" + extraCentsStr;
         }
-        editExtraMin.setText(extraMinStr);
+        editExtraCents.setText(extraCentsStr);
     }
 
     public void onClickSave(View view) {
 
         contractHours = Integer.parseInt(editContractHours.getText().toString());
-        salaryHour = Integer.parseInt(editSalaryHour.getText().toString());
-        extraHour = Integer.parseInt(editExtraHour.getText().toString());
+        salaryEuro = Integer.parseInt(editSalaryEuro.getText().toString());
+        extraEuro = Integer.parseInt(editExtraEuro.getText().toString());
 
         contractMinsStr = editContractMins.getText().toString();
         if (contractMinsStr.charAt(0) == '0') {
@@ -92,25 +92,25 @@ public class ContractAndSalary extends AppCompatActivity {
         }
         contractMins = Integer.parseInt(contractMinsStr);
 
-        salaryMinStr = editSalaryMin.getText().toString();
-        if (salaryMinStr.charAt(0) == '0') {
-            salaryMinStr = String.valueOf(salaryMinStr.charAt(1));
+        salaryCentsStr = editSalaryCents.getText().toString();
+        if (salaryCentsStr.charAt(0) == '0') {
+            salaryCentsStr = String.valueOf(salaryCentsStr.charAt(1));
         }
-        salaryMin = Integer.parseInt(salaryMinStr);
+        salaryCents = Integer.parseInt(salaryCentsStr);
 
-        extraMinStr = editExtraMin.getText().toString();
-        if (extraMinStr.charAt(0) == '0') {
-            extraMinStr = String.valueOf(extraMinStr.charAt(1));
+        extraCentsStr = editExtraCents.getText().toString();
+        if (extraCentsStr.charAt(0) == '0') {
+            extraCentsStr = String.valueOf(extraCentsStr.charAt(1));
         }
-        extraMin = Integer.parseInt(extraMinStr);
+        extraCents = Integer.parseInt(extraCentsStr);
 
         sharedPrefEdit = sharedPref.edit();
         sharedPrefEdit.putInt("contractHours", contractHours);
         sharedPrefEdit.putInt("contractMins", contractMins);
-        sharedPrefEdit.putInt("salaryHour", salaryHour);
-        sharedPrefEdit.putInt("salaryMin", salaryMin);
-        sharedPrefEdit.putInt("extraHour", extraHour);
-        sharedPrefEdit.putInt("extraMin", extraMin);
+        sharedPrefEdit.putInt("salaryEuro", salaryEuro);
+        sharedPrefEdit.putInt("salaryCents", salaryCents);
+        sharedPrefEdit.putInt("extraEuro", extraEuro);
+        sharedPrefEdit.putInt("extraCents", extraCents);
         sharedPrefEdit.apply();
 
         finish();
