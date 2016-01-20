@@ -275,12 +275,12 @@ public class AddWalk extends AppCompatActivity{
                 e.printStackTrace();
             }
 
-            long timeDiffMin = ((timeDifference1 / 1000 / 60)
+            long timeTotalMin = ((timeDifference1 / 1000 / 60)
                     + (timeDifference2 / 1000 / 60) +
                     (timeDifference3 / 1000 / 60));
 
-            long timeDiffHours = timeDiffMin / 60;
-            long timeDiffMinRest = timeDiffMin % 60;
+            long timeTotalHours = timeTotalMin / 60;
+            long timeTotalMinRest = timeTotalMin % 60;
 
             Date timeGoal = null;
             try {
@@ -289,7 +289,12 @@ public class AddWalk extends AppCompatActivity{
                 e.printStackTrace();
             }
 
-            String timeTotalStr = timeDiffHours + ":" + timeDiffMinRest;
+            String timeTotalMinRestStr = Long.toString(timeTotalMinRest);
+            if (timeTotalMinRestStr.length() == 1) {
+                timeTotalMinRestStr = "0" + timeTotalMinRestStr;
+            }
+            String timeTotalStr = timeTotalHours + ":" + timeTotalMinRestStr;
+
             Date timeTotal = null;
             try {
                 timeTotal = format.parse(timeTotalStr);
@@ -312,6 +317,13 @@ public class AddWalk extends AppCompatActivity{
                 timeExtraMinRestStr = "0" + timeExtraMinRestStr;
             }
             String timeExtraStr = timeExtraHours + ":" + timeExtraMinRestStr;
+
+            if (timeGoalStr.charAt(0) == '0') {
+                timeGoalStr = timeGoalStr.substring(1);
+            }
+            if (timeExtraMin < 0 && timeExtraHours == 0) {
+                timeExtraStr = "-" + timeExtraStr;
+            }
 
             WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1Str,
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
@@ -337,10 +349,29 @@ public class AddWalk extends AppCompatActivity{
 
                 db.addWalk(walkObj, bundle);
             }
+
+            Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+            goToWalks.putExtra("idMonth", idMonth);
+            goToWalks.putExtra("idDay", idDay);
+            startActivity(goToWalks);
+            finish();
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+        goToWalks.putExtra("idMonth", idMonth);
+        goToWalks.putExtra("idDay", idDay);
+        startActivity(goToWalks);
+        finish();
+    }
+
     public void onClickCancel(View view) {
+        Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+        goToWalks.putExtra("idMonth", idMonth);
+        goToWalks.putExtra("idDay", idDay);
+        startActivity(goToWalks);
         finish();
     }
 

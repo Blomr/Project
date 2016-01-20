@@ -21,7 +21,7 @@ public class Months extends AppCompatActivity {
 
         listViewMonths = (ListView) findViewById(R.id.listViewMonths);
 
-        ArrayList<MonthObject> listItems = new ArrayList<>();
+        /*ArrayList<MonthObject> listItems = new ArrayList<>();
         MonthObject item1 = new MonthObject(4, "december 2015", 4, 117.34, "18:46");
         listItems.add(item1);
         MonthObject item2 = new MonthObject(3, "november 2015", 3, 114.63, "19:51");
@@ -29,9 +29,12 @@ public class Months extends AppCompatActivity {
         MonthObject item3 = new MonthObject(2, "oktober 2015", 4, 119.74, "19:23");
         listItems.add(item3);
         MonthObject item4 = new MonthObject(1, "september 2015", 4, 112.85, "18:58");
-        listItems.add(item4);
+        listItems.add(item4);*/
 
-        final MonthAdapter adapter = new MonthAdapter(this, R.layout.listview_layout, listItems);
+        DatabaseHandler db = new DatabaseHandler(Months.this);
+        ArrayList<MonthObject> listItems = db.getMonths();
+
+        MonthAdapter adapter = new MonthAdapter(this, R.layout.listview_layout, listItems);
         listViewMonths.setAdapter(adapter);
 
         listViewMonths.setOnItemClickListener(new AdapterView.OnItemClickListener() {

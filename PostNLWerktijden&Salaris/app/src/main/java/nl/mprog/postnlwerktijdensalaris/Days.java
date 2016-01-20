@@ -40,7 +40,7 @@ public class Days extends AppCompatActivity {
         else {
             listViewDays = (ListView) findViewById(R.id.listViewDays);
 
-            ArrayList<DayObject> listItems = new ArrayList<>();
+            /*ArrayList<DayObject> listItems = new ArrayList<>();
             DayObject item1 = new DayObject(1, 4, "Za 23 nov 15", "41B, 41J", "5:13", "4:23", "0:49");
             listItems.add(item1);
             DayObject item2 = new DayObject(1, 3, "Za 16 nov 15", "41B, 41J", "5:01", "4:23", "0:50");
@@ -48,8 +48,10 @@ public class Days extends AppCompatActivity {
             DayObject item3 = new DayObject(1, 2, "Za 9 nov 15", "41B, 41K", "4:55", "4:23", "0:21");
             listItems.add(item3);
             DayObject item4 = new DayObject(1, 1, "Za 2 nov 15", "41B, 41J", "5:11", "5:00", "0:11");
-            listItems.add(item4);
+            listItems.add(item4);*/
 
+            DatabaseHandler db = new DatabaseHandler(Days.this);
+            ArrayList<DayObject> listItems = db.getDaysOfMonth(idMonth);
             DayAdapter adapter = new DayAdapter(this, R.layout.listview_layout, listItems);
             listViewDays.setAdapter(adapter);
 
@@ -97,5 +99,12 @@ public class Days extends AppCompatActivity {
         else {
             Toast.makeText(Days.this, "Vul een titel in", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent goToMonths = new Intent(Days.this, Months.class);
+        startActivity(goToMonths);
+        finish();
     }
 }

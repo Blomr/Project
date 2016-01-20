@@ -60,4 +60,12 @@
 - Methods getWalkOfDay, getDaysOfMonth en getMonths schrijven in DatabaseHandler.
 
 ### Dag 11 - Ma 18 jan
-- AddWalk afmaken, nu ook gegevens wegschrijven naar months- en days-table.
+- AddWalk in databasehandler afmaken, nu ook gegevens wegschrijven naar months- en days-table.
+- Salaris uitrekenen en weergeven in months.
+
+### Dag 12 - Di 19 jan
+- Debuggen van databasehandler en verbeteren van WalkAdapter.
+- Walks.java wordt nu correct weergegeven
+
+### Dag 13 - Wo 20 jan
+-

@@ -33,20 +33,30 @@ public class WalkAdapter extends ArrayAdapter {
         textViewUpLeft.setText(listItemObj.districtCode);
 
         TextView textViewDownLeft = (TextView) view.findViewById(R.id.listItemDownLeft);
-        String timeGoalExtraTotal = listItemObj.timeGoal + " + " + listItemObj.timeExtra + " = " + listItemObj.timeTotal;
+        String timeGoalExtraTotal;
+        if (listItemObj.timeExtra.charAt(0) == '-') {
+            timeGoalExtraTotal = listItemObj.timeGoal + " - " + listItemObj.timeExtra.substring(1) + " = " + listItemObj.timeTotal;
+        }
+        else {
+            timeGoalExtraTotal = listItemObj.timeGoal + " + " + listItemObj.timeExtra + " = " + listItemObj.timeTotal;
+        }
         textViewDownLeft.setText(timeGoalExtraTotal);
 
         TextView textViewUpRight1 = (TextView) view.findViewById(R.id.listItemUpRight1);
         String timeBeginEnd1 = listItemObj.timeBegin1 + " - " + listItemObj.timeEnd1;
         textViewUpRight1.setText(timeBeginEnd1);
 
-        TextView textViewUpRight2 = (TextView) view.findViewById(R.id.listItemUpRight2);
-        String timeBeginEnd2 = listItemObj.timeBegin2 + " - " + listItemObj.timeEnd2;
-        textViewUpRight2.setText(timeBeginEnd2);
+        if (!listItemObj.timeBegin2.equals("00:00") && !listItemObj.timeEnd2.equals("00:00")) {
+            TextView textViewUpRight2 = (TextView) view.findViewById(R.id.listItemUpRight2);
+            String timeBeginEnd2 = listItemObj.timeBegin2 + " - " + listItemObj.timeEnd2;
+            textViewUpRight2.setText(timeBeginEnd2);
+        }
 
-        TextView textViewUpRight3 = (TextView) view.findViewById(R.id.listItemUpRight3);
-        String timeBeginEnd3 = listItemObj.timeBegin3 + " - " + listItemObj.timeEnd3;
-        textViewUpRight3.setText(timeBeginEnd3);
+        if (!listItemObj.timeBegin3.equals("00:00") && !listItemObj.timeEnd3.equals("00:00")) {
+            TextView textViewUpRight3 = (TextView) view.findViewById(R.id.listItemUpRight3);
+            String timeBeginEnd3 = listItemObj.timeBegin3 + " - " + listItemObj.timeEnd3;
+            textViewUpRight3.setText(timeBeginEnd3);
+        }
 
         TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
         String idItem = Integer.toString(listItemObj.id3);

@@ -41,7 +41,7 @@ public class Walks extends AppCompatActivity {
         else {
             listViewWalks = (ListView) findViewById(R.id.listViewWalks);
 
-            ArrayList<WalkObject> listItems = new ArrayList<>();
+            /*ArrayList<WalkObject> listItems = new ArrayList<>();
             WalkObject item1 = new WalkObject(1, 1, 4, "41B", "piekdag", "11:35", "13:23", "18:46",
                                "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
             listItems.add(item1);
@@ -53,8 +53,10 @@ public class Walks extends AppCompatActivity {
             listItems.add(item3);
             WalkObject item4 = new WalkObject(1, 1, 1, "41Z", "piekdag", "11:35", "13:23", "18:46",
                                "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
-            listItems.add(item4);
+            listItems.add(item4);*/
 
+            DatabaseHandler db = new DatabaseHandler(Walks.this);
+            ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
             WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
             listViewWalks.setAdapter(adapter);
         }
@@ -91,5 +93,13 @@ public class Walks extends AppCompatActivity {
         else {
             Toast.makeText(Walks.this, "Vul een titel in", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent goToDays = new Intent(Walks.this, Days.class);
+        goToDays.putExtra("idMonth", idMonth);
+        startActivity(goToDays);
+        finish();
     }
 }
