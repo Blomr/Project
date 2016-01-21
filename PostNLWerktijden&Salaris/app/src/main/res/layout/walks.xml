@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/titleDay"
-        android:visibility="gone"
+        android:visibility="invisible"
         android:textSize="22sp"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"

@@ -33,10 +33,18 @@ public class MonthAdapter extends ArrayAdapter {
         textViewUpLeft.setText(listItemObj.month);
 
         TextView textViewDownLeft = (TextView) view.findViewById(R.id.listItemDownLeft);
-        textViewDownLeft.setText(listItemObj.days);
+        String daysStr;
+        if (listItemObj.days == 1) {
+            daysStr = listItemObj.days + " dag";
+        }
+        else {
+            daysStr = listItemObj.days + " dagen";
+        }
+        textViewDownLeft.setText(daysStr);
 
         TextView textViewUpRight = (TextView) view.findViewById(R.id.listItemUpRight1);
-        textViewUpRight.setText(listItemObj.salary);
+        String salaryStr = "€" + listItemObj.salary;
+        textViewUpRight.setText(salaryStr);
 
         TextView textViewDownRight = (TextView) view.findViewById(R.id.listItemDownRight);
         textViewDownRight.setText(listItemObj.time);

@@ -358,8 +358,7 @@ public class AddWalk extends AppCompatActivity{
         }
     }
 
-    @Override
-    public void onBackPressed() {
+    public void onClickCancel(View view) {
         Intent goToWalks = new Intent(AddWalk.this, Walks.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);
@@ -367,7 +366,8 @@ public class AddWalk extends AppCompatActivity{
         finish();
     }
 
-    public void onClickCancel(View view) {
+    @Override
+    public void onBackPressed() {
         Intent goToWalks = new Intent(AddWalk.this, Walks.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);

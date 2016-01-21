@@ -1,9 +1,11 @@
 package nl.mprog.postnlwerktijdensalaris;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -15,7 +17,6 @@ import java.util.ArrayList;
 
 public class Walks extends AppCompatActivity {
 
-    ListView listViewWalks;
     EditText editTitle;
     Button okButton;
     ImageView addButton;
@@ -34,28 +35,20 @@ public class Walks extends AppCompatActivity {
             editTitle = (EditText) findViewById(R.id.editTitleDay);
             okButton = (Button) findViewById(R.id.okButtonDay);
             addButton = (ImageView) findViewById(R.id.addButtonWalks);
+
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);
             addButton.setVisibility(View.INVISIBLE);
         }
         else {
-            listViewWalks = (ListView) findViewById(R.id.listViewWalks);
+            ListView listViewWalks = (ListView) findViewById(R.id.listViewWalks);
+            TextView titleDayView = (TextView) findViewById(R.id.titleDay);
 
-            /*ArrayList<WalkObject> listItems = new ArrayList<>();
-            WalkObject item1 = new WalkObject(1, 1, 4, "41B", "piekdag", "11:35", "13:23", "18:46",
-                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
-            listItems.add(item1);
-            WalkObject item2 = new WalkObject(1, 1, 3, "41J", "piekdag", "11:35", "13:23", "18:46",
-                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
-            listItems.add(item2);
-            WalkObject item3 = new WalkObject(1, 1, 2, "41K", "piekdag", "11:35", "13:23", "18:46",
-                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
-            listItems.add(item3);
-            WalkObject item4 = new WalkObject(1, 1, 1, "41Z", "piekdag", "11:35", "13:23", "18:46",
-                               "22:34", "22:34", "13:34", "2:11", "0:11", "2:22");
-            listItems.add(item4);*/
+            String titleDay = getIntent().getStringExtra("titleDay");
+            titleDayView.setText(titleDay);
+            titleDayView.setVisibility(View.VISIBLE);
 
-            DatabaseHandler db = new DatabaseHandler(Walks.this);
+            DatabaseHandler db = new DatabaseHandler(this);
             ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
             WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
             listViewWalks.setAdapter(adapter);
@@ -80,6 +73,10 @@ public class Walks extends AppCompatActivity {
         if (!getText.equals("")) {
             editTitle.setVisibility(View.GONE);
             okButton.setVisibility(View.GONE);
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
             addButton.setVisibility(View.VISIBLE);
 
             TextView title = (TextView) findViewById(R.id.titleDay);

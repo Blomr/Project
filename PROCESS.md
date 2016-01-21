@@ -65,7 +65,14 @@
 
 ### Dag 12 - Di 19 jan
 - Debuggen van databasehandler en verbeteren van WalkAdapter.
+- Begin met debuggen van Days-gedeelte.
 - Walks.java wordt nu correct weergegeven
 
 ### Dag 13 - Wo 20 jan
+- Verder debuggen van databasehandler.
+- Ook Days.java en Months.java worden nu correct weergegeven.
+- Wegschrijven van wijken naar database werkt.
+- Ophalen van wijken uit de database en vervolgens in listview zetten.
+
+### Dag 14 - Do 21 jan
 -

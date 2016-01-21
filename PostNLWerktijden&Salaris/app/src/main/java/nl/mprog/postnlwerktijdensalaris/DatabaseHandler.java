@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +49,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String WALKS_COLUMN_TIMEEXTRA = "timeExtra";
     private static final String WALKS_COLUMN_TIMETOTAL = "timeTotal";
 
+    private static final String DISTRICTS_TABLE_NAME = "districts";
+    private static final String DISTRICTS_COLUMN_ID = "id";
+    private static final String DISTRICTS_COLUMN_DISTRICTCODE = "districtCode";
+    private static final String DISTRICTS_COLUMN_TIMEGOALBUSY = "timeBusyDay";
+    private static final String DISTRICTS_COLUMN_TIMEGOALCALM = "timeCalmDay";
+
     public DatabaseHandler(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -55,40 +62,47 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String query1 = "CREATE TABLE " + MONTHS_TABLE_NAME +  " ( " +
-            MONTHS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            MONTHS_COLUMN_MONTH + " TEXT, " +
-            MONTHS_COLUMN_DAYS + " INTEGER, " +
-            MONTHS_COLUMN_SALARY + " DOUBLE, " +
-            MONTHS_COLUMN_TIME + " TEXT )";
-        db.execSQL(query1);
+        String queryMonths = "CREATE TABLE " + MONTHS_TABLE_NAME +  " ( " +
+                             MONTHS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                             MONTHS_COLUMN_MONTH + " TEXT, " +
+                             MONTHS_COLUMN_DAYS + " INTEGER, " +
+                             MONTHS_COLUMN_SALARY + " DOUBLE, " +
+                             MONTHS_COLUMN_TIME + " TEXT )";
+        db.execSQL(queryMonths);
 
-        String query2 = "CREATE TABLE " + DAYS_TABLE_NAME +  " ( " +
-            DAYS_COLUMN_IDMONTH + " INTEGER, " +
-            DAYS_COLUMN_IDDAY + " INTEGER, " +
-            DAYS_COLUMN_DAY + " TEXT, " +
-            DAYS_COLUMN_DISTRICTS + " TEXT, " +
-            DAYS_COLUMN_TIMETOTAL + " TEXT, " +
-            DAYS_COLUMN_TIMEGOAL + " TEXT, " +
-            DAYS_COLUMN_TIMEEXTRA + " TEXT )";
-        db.execSQL(query2);
+        String queryDays = "CREATE TABLE " + DAYS_TABLE_NAME +  " ( " +
+                           DAYS_COLUMN_IDMONTH + " INTEGER, " +
+                           DAYS_COLUMN_IDDAY + " INTEGER, " +
+                           DAYS_COLUMN_DAY + " TEXT, " +
+                           DAYS_COLUMN_DISTRICTS + " TEXT, " +
+                           DAYS_COLUMN_TIMETOTAL + " TEXT, " +
+                           DAYS_COLUMN_TIMEGOAL + " TEXT, " +
+                           DAYS_COLUMN_TIMEEXTRA + " TEXT )";
+        db.execSQL(queryDays);
 
-        String query3 = "CREATE TABLE " + WALKS_TABLE_NAME +  " ( " +
-            WALKS_COLUMN_IDMONTH + " INTEGER, " +
-            WALKS_COLUMN_IDDAY + " INTEGER, " +
-            WALKS_COLUMN_IDWALK + " INTEGER, " +
-            WALKS_COLUMN_DISTRICTCODE + " TEXT, " +
-            WALKS_COLUMN_DAYTYPE + " TEXT, " +
-            WALKS_COLUMN_TIMEBEGIN1 + " TEXT, " +
-            WALKS_COLUMN_TIMEEND1 + " TEXT, " +
-            WALKS_COLUMN_TIMEBEGIN2 + " TEXT, " +
-            WALKS_COLUMN_TIMEEND2 + " TEXT, " +
-            WALKS_COLUMN_TIMEBEGIN3 + " TEXT, " +
-            WALKS_COLUMN_TIMEEND3 + " TEXT, " +
-            WALKS_COLUMN_TIMEGOAL + " TEXT, " +
-            WALKS_COLUMN_TIMEEXTRA + " TEXT, " +
-            WALKS_COLUMN_TIMETOTAL + " TEXT )";
-        db.execSQL(query3);
+        String queryWalks = "CREATE TABLE " + WALKS_TABLE_NAME +  " ( " +
+                            WALKS_COLUMN_IDMONTH + " INTEGER, " +
+                            WALKS_COLUMN_IDDAY + " INTEGER, " +
+                            WALKS_COLUMN_IDWALK + " INTEGER, " +
+                            WALKS_COLUMN_DISTRICTCODE + " TEXT, " +
+                            WALKS_COLUMN_DAYTYPE + " TEXT, " +
+                            WALKS_COLUMN_TIMEBEGIN1 + " TEXT, " +
+                            WALKS_COLUMN_TIMEEND1 + " TEXT, " +
+                            WALKS_COLUMN_TIMEBEGIN2 + " TEXT, " +
+                            WALKS_COLUMN_TIMEEND2 + " TEXT, " +
+                            WALKS_COLUMN_TIMEBEGIN3 + " TEXT, " +
+                            WALKS_COLUMN_TIMEEND3 + " TEXT, " +
+                            WALKS_COLUMN_TIMEGOAL + " TEXT, " +
+                            WALKS_COLUMN_TIMEEXTRA + " TEXT, " +
+                            WALKS_COLUMN_TIMETOTAL + " TEXT )";
+        db.execSQL(queryWalks);
+
+        String queryDistricts = "CREATE TABLE " + DISTRICTS_TABLE_NAME + " ( " +
+                                DISTRICTS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                DISTRICTS_COLUMN_DISTRICTCODE + " TEXT, " +
+                                DISTRICTS_COLUMN_TIMEGOALBUSY + " TEXT, " +
+                                DISTRICTS_COLUMN_TIMEGOALCALM + " TEXT )";
+        db.execSQL(queryDistricts);
     }
 
     @Override
@@ -96,11 +110,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + MONTHS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + DAYS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + WALKS_TABLE_NAME);
-        this.onCreate(db);
+        db.execSQL("DROP TABLE IF EXISTS " + DISTRICTS_TABLE_NAME);
+        onCreate(db);
     }
 
     public int addMonth(MonthObject monthObject) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(MONTHS_COLUMN_MONTH, monthObject.month);
@@ -110,11 +125,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         int lastId = (int) db.insert(MONTHS_TABLE_NAME, null, values);
         db.close();
+
         return lastId;
     }
 
     public int addDay(DayObject dayObject) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         int idDay = 0;
         boolean foundFreeId = false;
         while (!foundFreeId) {
@@ -138,7 +154,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         days += 1;
 
-        db = this.getWritableDatabase();
+        db = getWritableDatabase();
 
         ContentValues dayValues = new ContentValues();
         dayValues.put(DAYS_COLUMN_IDMONTH, dayObject.id1);
@@ -154,14 +170,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         monthValues.put(MONTHS_COLUMN_DAYS, days);
         db.update(MONTHS_TABLE_NAME, monthValues, MONTHS_COLUMN_ID + " = ?",
                   new String[]{Integer.toString(dayObject.id1)});
-
         db.close();
 
         return idDay;
     }
 
-    public int addWalk(WalkObject walkObject, Bundle sharedPref) {
-        SQLiteDatabase db = this.getReadableDatabase();
+    public void addWalk(WalkObject walkObject, Bundle sharedPref) {
+        SQLiteDatabase db = getReadableDatabase();
 
         // read from walks table
         int idWalk = 0;
@@ -197,13 +212,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor = db.rawQuery(query, new String[]{Integer.toString(walkObject.id1)});
 
         cursor.moveToFirst();
-        double salaryMonth = cursor.getDouble(3);
         String timeMonth = cursor.getString(4);
         cursor.close();
 
         db.close();
 
-        db = this.getWritableDatabase();
+        db = getWritableDatabase();
 
         // insert into walks table
         ContentValues walkValues = new ContentValues();
@@ -257,9 +271,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (timeExtraDay.charAt(0) == '-') {
             timeExtraDay = timeExtraDay.substring(1);
             timeDayNegative = true;
-            if (timeExtraDay.length() == 4) {
-                timeExtraDay = "0" + timeExtraDay;
-            }
+        }
+        if (timeExtraDay.length() == 4) {
+            timeExtraDay = "0" + timeExtraDay;
         }
         try {
             timeExtraDayCur = format.parse(timeExtraDay);
@@ -290,6 +304,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             walkObject.timeExtra = walkObject.timeExtra.substring(1);
             timeWalkNegative = true;
         }
+        if (walkObject.timeExtra.length() == 4) {
+            walkObject.timeExtra = "0" + walkObject.timeExtra;
+        }
         try {
             timeExtraWalk = format.parse(walkObject.timeExtra);
         } catch (java.text.ParseException e) {
@@ -301,65 +318,65 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         long timeExtraMs = 0;
 
         try {
-            timeTotalMs = timeTotalDayCur.getTime() + timeTotalWalk.getTime();
+            timeTotalMs = timeTotalDayCur.getTime() + timeTotalWalk.getTime() + 7200000;
+        } catch (java.lang.NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            timeGoalMs = timeGoalDayCur.getTime() + timeGoalWalk.getTime() + 7200000;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
         if (!timeDayNegative && !timeWalkNegative) {
             try {
-                timeGoalMs = timeGoalDayCur.getTime() + timeGoalWalk.getTime();
+                timeExtraMs = timeExtraDayCur.getTime() + timeExtraWalk.getTime() + 7200000;
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else if (!timeDayNegative && timeWalkNegative){
             try {
-                timeGoalMs = timeGoalDayCur.getTime() - timeGoalWalk.getTime();
+                timeExtraMs = timeExtraDayCur.getTime() + 3600000 - (timeExtraWalk.getTime() + 3600000);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else {
             try {
-                timeGoalMs = -1 * timeGoalDayCur.getTime() - timeGoalWalk.getTime();
+                timeExtraMs = -1 * (timeExtraDayCur.getTime() + 3600000) - (timeExtraWalk.getTime() + 3600000);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
 
-        try {
-            timeExtraMs = timeExtraDayCur.getTime() + timeExtraWalk.getTime();
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
         long timeTotalMin = timeTotalMs / 1000 / 60;
         long timeTotalHours = timeTotalMin / 60;
-        long timeTotalMinRest = timeTotalMin % 60;
-        String timeTotalMinRestStr = Long.toString(timeTotalMinRest);
-        if (timeTotalMinRestStr.length() == 1) {
-            timeTotalMinRestStr = "0" + timeTotalMinRestStr;
+        long timeTotalMinRes = timeTotalMin % 60;
+        String timeTotalMinResStr = Long.toString(timeTotalMinRes);
+        if (timeTotalMinResStr.length() == 1) {
+            timeTotalMinResStr = "0" + timeTotalMinResStr;
         }
-        timeTotalDay = timeTotalHours + ":" + timeTotalMinRestStr;
+        timeTotalDay = timeTotalHours + ":" + timeTotalMinResStr;
 
         long timeGoalMin = timeGoalMs / 1000 / 60;
         long timeGoalHours = timeGoalMin / 60;
-        long timeGoalMinRest = Math.abs(timeGoalMin % 60);
-        String timeGoalMinRestStr = Long.toString(timeGoalMinRest);
-        if (timeGoalMinRestStr.length() == 1) {
-            timeGoalMinRestStr = "0" + timeGoalMinRestStr;
+        long timeGoalMinRes = timeGoalMin % 60;
+        String timeGoalMinResStr = Long.toString(timeGoalMinRes);
+        if (timeGoalMinResStr.length() == 1) {
+            timeGoalMinResStr = "0" + timeGoalMinResStr;
         }
-        timeGoalDay = timeGoalHours + ":" + timeGoalMinRestStr;
+        timeGoalDay = timeGoalHours + ":" + timeGoalMinResStr;
 
         long timeExtraMin = timeExtraMs / 1000 / 60;
         long timeExtraHours = timeExtraMin / 60;
-        long timeExtraMinRest = timeExtraMin % 60;
-        String timeExtraMinRestStr = Long.toString(timeExtraMinRest);
-        if (timeExtraMinRestStr.length() == 1) {
-            timeExtraMinRestStr = "0" + timeExtraMinRestStr;
+        long timeExtraMinRes = Math.abs(timeExtraMin % 60);
+        String timeExtraMinResStr = Long.toString(timeExtraMinRes);
+        if (timeExtraMinResStr.length() == 1) {
+            timeExtraMinResStr = "0" + timeExtraMinResStr;
         }
-        timeExtraDay = timeExtraHours + ":" + timeExtraMinRestStr;
+        timeExtraDay = timeExtraHours + ":" + timeExtraMinResStr;
 
         if (timeExtraMin < 0 && timeExtraHours == 0) {
             timeExtraDay = "-" + timeExtraDay;
@@ -372,7 +389,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         dayValues.put(DAYS_COLUMN_TIMEEXTRA, timeExtraDay);
 
         db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY +
-                " = ?", new String[]{Integer.toString(walkObject.id1), Integer.toString(walkObject.id2)});
+                  " = ?", new String[]{Integer.toString(walkObject.id1), Integer.toString(walkObject.id2)});
 
         // update months table
         if (timeMonth.length() == 4) {
@@ -388,7 +405,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         long timeMonthMs = 0;
         try {
-            timeMonthMs = timeMonthCur.getTime() + timeTotalWalk.getTime();
+            timeMonthMs = timeMonthCur.getTime() + timeTotalWalk.getTime() + 7200000;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
@@ -398,7 +415,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         long timeMonthMinRes = timeMonthMin % 60;
         String timeMonthMinResStr = Long.toString(timeMonthMinRes);
         if (timeMonthMinResStr.length() == 1) {
-            timeMonthMinResStr = "0" + timeExtraMinRestStr;
+            timeMonthMinResStr = "0" + timeMonthMinResStr;
         }
         timeMonth = timeMonthHours + ":" + timeMonthMinResStr;
 
@@ -420,6 +437,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         String timeContractStr = contractHoursStr + ":" + contractMinsStr;
+
         Date timeContract = null;
         try {
             timeContract = format.parse(timeContractStr);
@@ -429,7 +447,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         long timeExtraMonthMs = 0;
         try {
-            timeExtraMonthMs = timeMonthMs - timeContract.getTime();
+            timeExtraMonthMs = timeMonthMs - (timeContract.getTime() + 3600000);
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
@@ -448,7 +466,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         if (timeExtraMonthMin <= 0) {
             salaryContractHours = timeMonthHours * salaryContractHour;
-            salaryContractMins = timeMonthMinRes / 60 * salaryContractHour;
+            salaryContractMins = ((double) timeMonthMinRes) / 60 * salaryContractHour;
         }
         else {
             salaryContractHours = contractHours * salaryContractHour;
@@ -457,25 +475,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             salaryExtraMins = timeExtraMonthMinRest / 60 * salaryExtraHour;
         }
 
-        double salaryWalk = salaryContractHours + salaryContractMins + salaryExtraHours +
-                            salaryExtraMins;
+        double salaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
+                             salaryExtraMins;
 
-        double salaryTotal = salaryMonth + salaryWalk;
+        DecimalFormat threeDecFormat = new DecimalFormat("#.##");
+        String salaryTotalStr = threeDecFormat.format(salaryTotal).replaceAll(",",".");
+        salaryTotal = Double.parseDouble(salaryTotalStr);
 
         ContentValues monthValues = new ContentValues();
         monthValues.put(MONTHS_COLUMN_SALARY, salaryTotal);
         monthValues.put(MONTHS_COLUMN_TIME, timeMonth);
 
         db.update(MONTHS_TABLE_NAME, monthValues, MONTHS_COLUMN_ID + " = ?",
-                new String[]{Integer.toString(walkObject.id1)});
-
+                  new String[]{Integer.toString(walkObject.id1)});
         db.close();
+    }
 
-        return idWalk;
+    public void addDistrict(DistrictObject districtObject) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DISTRICTS_COLUMN_DISTRICTCODE, districtObject.districtCode);
+        values.put(DISTRICTS_COLUMN_TIMEGOALBUSY, districtObject.timeGoalBusy);
+        values.put(DISTRICTS_COLUMN_TIMEGOALCALM, districtObject.timeGoalCalm);
+
+        db.insert(DISTRICTS_TABLE_NAME, null, values);
+        db.close();
     }
 
     public WalkObject getWalk(int idMonth, int idDay, int idWalk) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH + " = ? AND "
                        + WALKS_COLUMN_IDDAY + " = ? AND " + WALKS_COLUMN_IDWALK + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMonth), String.valueOf(idDay),
@@ -504,7 +533,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<WalkObject> getWalksOfDay(int idMonth, int idDay) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         ArrayList<WalkObject> walkObjects = new ArrayList<>();
         String query = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH + " = ? AND "
                        + WALKS_COLUMN_IDDAY + " = ?";
@@ -538,7 +567,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<DayObject> getDaysOfMonth(int idMonth) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         ArrayList<DayObject> dayObjects = new ArrayList<>();
         String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(idMonth)});
@@ -564,7 +593,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<MonthObject> getMonths() {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = getReadableDatabase();
         ArrayList<MonthObject> monthObjects = new ArrayList<>();
         String query = "SELECT * FROM " + MONTHS_TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
@@ -585,5 +614,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return monthObjects;
+    }
+
+    public ArrayList<DistrictObject> getDistricts() {
+        SQLiteDatabase db = getReadableDatabase();
+        ArrayList<DistrictObject> districtObjects = new ArrayList<>();
+        String query = "SELECT * FROM " + DISTRICTS_TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()) {
+            int id = cursor.getInt(0);
+            String districtCode = cursor.getString(1);
+            String timeGoalBusy = cursor.getString(2);
+            String timeGoalCalm = cursor.getString(3);
+
+            DistrictObject districtObj = new DistrictObject(id, districtCode, timeGoalBusy, timeGoalCalm);
+
+            districtObjects.add(districtObj);
+            cursor.moveToNext();
+        }
+        cursor.close();
+        db.close();
+        return districtObjects;
     }
 }

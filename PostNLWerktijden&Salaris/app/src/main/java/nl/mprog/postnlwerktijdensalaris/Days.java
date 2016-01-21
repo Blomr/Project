@@ -1,9 +1,11 @@
 package nl.mprog.postnlwerktijdensalaris;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +18,6 @@ import java.util.ArrayList;
 
 public class Days extends AppCompatActivity {
 
-    ListView listViewDays;
     EditText editTitle;
     Button okButton;
     ImageView addButton;
@@ -33,24 +34,20 @@ public class Days extends AppCompatActivity {
             editTitle = (EditText) findViewById(R.id.editTitleMonth);
             okButton = (Button) findViewById(R.id.okButtonMonth);
             addButton = (ImageView) findViewById(R.id.addButtonDays);
+
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);
             addButton.setVisibility(View.INVISIBLE);
         }
         else {
-            listViewDays = (ListView) findViewById(R.id.listViewDays);
+            ListView listViewDays = (ListView) findViewById(R.id.listViewDays);
+            TextView titleMonthView = (TextView) findViewById(R.id.titleMonth);
 
-            /*ArrayList<DayObject> listItems = new ArrayList<>();
-            DayObject item1 = new DayObject(1, 4, "Za 23 nov 15", "41B, 41J", "5:13", "4:23", "0:49");
-            listItems.add(item1);
-            DayObject item2 = new DayObject(1, 3, "Za 16 nov 15", "41B, 41J", "5:01", "4:23", "0:50");
-            listItems.add(item2);
-            DayObject item3 = new DayObject(1, 2, "Za 9 nov 15", "41B, 41K", "4:55", "4:23", "0:21");
-            listItems.add(item3);
-            DayObject item4 = new DayObject(1, 1, "Za 2 nov 15", "41B, 41J", "5:11", "5:00", "0:11");
-            listItems.add(item4);*/
+            String titleMonth = getIntent().getStringExtra("titleMonth");
+            titleMonthView.setText(titleMonth);
+            titleMonthView.setVisibility(View.VISIBLE);
 
-            DatabaseHandler db = new DatabaseHandler(Days.this);
+            DatabaseHandler db = new DatabaseHandler(this);
             ArrayList<DayObject> listItems = db.getDaysOfMonth(idMonth);
             DayAdapter adapter = new DayAdapter(this, R.layout.listview_layout, listItems);
             listViewDays.setAdapter(adapter);
@@ -59,11 +56,17 @@ public class Days extends AppCompatActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     TextView idView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                    TextView titleDayView = (TextView) view.findViewById(R.id.listItemUpLeft);
+
                     int idDay = Integer.parseInt(idView.getText().toString());
+                    String titleDay = titleDayView.getText().toString();
+
                     Intent goToWalks = new Intent(Days.this, Walks.class);
                     goToWalks.putExtra("idMonth", idMonth);
                     goToWalks.putExtra("idDay", idDay);
+                    goToWalks.putExtra("titleDay", titleDay);
                     startActivity(goToWalks);
+                    finish();
                 }
             });
         }
@@ -86,6 +89,10 @@ public class Days extends AppCompatActivity {
         if (!getText.equals("")) {
             editTitle.setVisibility(View.GONE);
             okButton.setVisibility(View.GONE);
+
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
             addButton.setVisibility(View.VISIBLE);
 
             TextView title = (TextView) findViewById(R.id.titleMonth);

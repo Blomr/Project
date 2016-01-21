@@ -32,7 +32,7 @@
         <EditText
             android:layout_width="70dp"
             android:layout_height="wrap_content"
-            android:id="@+id/wijkCodeEditText"
+            android:id="@+id/editDistrictCode"
             android:layout_toRightOf="@id/textWijkcode"
             android:layout_toEndOf="@id/textWijkcode"
             android:layout_alignBaseline="@id/textWijkcode"
@@ -52,7 +52,8 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:id="@+id/piekdagHour"
-            android:layout_alignLeft="@id/wijkCodeEditText"
+            android:layout_alignLeft="@id/editDistrictCode"
+            android:layout_alignStart="@id/editDistrictCode"
             android:layout_alignBaseline="@id/textTijdPiekdag"/>
 
         <TextView
@@ -89,7 +90,8 @@
             android:layout_toRightOf="@id/textTijdDaldag"
             android:layout_toEndOf="@id/textTijdDaldag"
             android:layout_alignBaseline="@id/textTijdDaldag"
-            android:layout_alignLeft="@id/piekdagHour"/>
+            android:layout_alignLeft="@id/piekdagHour"
+            android:layout_alignStart="@id/piekdagHour"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -117,7 +119,8 @@
         android:text="opslaan"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickSave"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -125,6 +128,7 @@
         android:text="annuleren"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:onClick="onClickCancel"/>
 
 </RelativeLayout>
