@@ -658,7 +658,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
                        " = ? AND " + DAYS_COLUMN_IDDAY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(idMonth),
-                Integer.toString(idDay)});
+                        Integer.toString(idDay)});
         cursor.moveToFirst();
 
         String dayName = cursor.getString(2);
@@ -692,5 +692,302 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                   + WALKS_COLUMN_IDWALK + " = ?", new String[]{Integer.toString(idMonth),
                   Integer.toString(idDay), Integer.toString(idWalk)});
         db.close();
+    }
+
+    public void editMonthName(int idMonth, String monthName) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(MONTHS_COLUMN_MONTH, monthName);
+        db.update(MONTHS_TABLE_NAME, values, MONTHS_COLUMN_ID + " = ?",
+                new String[]{Integer.toString(idMonth)});
+        db.close();
+    }
+
+    public void editDayName(int idMonth, int idDay, String dayName) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DAYS_COLUMN_DAY, dayName);
+        db.update(DAYS_TABLE_NAME, values, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY +
+                  " = ?", new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
+        db.close();
+    }
+
+    public void editWalk(WalkObject walkObject, Bundle sharedPref) {
+        SQLiteDatabase db = getReadableDatabase();
+        String queryWalk = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH +
+                           " = ? AND " + WALKS_COLUMN_IDDAY + " = ? AND " + WALKS_COLUMN_IDWALK + " = ?";
+        Cursor cursor = db.rawQuery(queryWalk, new String[]{Integer.toString(walkObject.id1),
+                Integer.toString(walkObject.id2), Integer.toString(walkObject.id3)});
+        cursor.moveToFirst();
+
+        String districtCode = cursor.getString(3);
+        String dayType = cursor.getString(4);
+        String timeBegin1 = cursor.getString(5);
+        String timeEnd1 = cursor.getString(6);
+        String timeBegin2 = cursor.getString(7);
+        String timeEnd2 = cursor.getString(8);
+        String timeBegin3 = cursor.getString(9);
+        String timeEnd3 = cursor.getString(10);
+        String timeGoal = cursor.getString(11);
+        String timeExtra = cursor.getString(12);
+        String timeTotal = cursor.getString(13);
+        cursor.close();
+
+        WalkObject oldWalkObj = new WalkObject(walkObject.id1, walkObject.id2, walkObject.id3,
+                                districtCode, dayType, timeBegin1, timeEnd1, timeBegin2, timeEnd2,
+                                timeBegin3, timeEnd3, timeGoal, timeExtra, timeTotal);
+
+        String queryDay = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
+                          " = ? AND " + DAYS_COLUMN_IDDAY + " = ?";
+        cursor = db.rawQuery(queryDay, new String[]{Integer.toString(walkObject.id1),
+                             Integer.toString(walkObject.id2)});
+        cursor.moveToFirst();
+
+        String day = cursor.getString(2);
+        String districts = cursor.getString(3);
+        timeTotal = cursor.getString(4);
+        timeGoal = cursor.getString(5);
+        timeExtra = cursor.getString(6);
+        cursor.close();
+
+        DayObject oldDayObj = new DayObject(walkObject.id1, walkObject.id2, day, districts,
+                              timeTotal, timeGoal, timeExtra);
+
+        String queryMonth = "SELECT * FROM " + MONTHS_TABLE_NAME + " WHERE " + MONTHS_COLUMN_ID + " = ?";
+        cursor = db.rawQuery(queryMonth, new String[]{Integer.toString(walkObject.id1)});
+        cursor.moveToFirst();
+
+        String month = cursor.getString(1);
+        int days = cursor.getInt(2);
+        double salary = cursor.getDouble(3);
+        String time = cursor.getString(4);
+        cursor.close();
+        db.close();
+
+        MonthObject oldMonthObj = new MonthObject(walkObject.id1, month, days, salary, time);
+
+        db = getWritableDatabase();
+        ContentValues walkValues = new ContentValues();
+        walkValues.put(WALKS_COLUMN_DISTRICTCODE, walkObject.districtCode);
+        walkValues.put(WALKS_COLUMN_DAYTYPE, walkObject.dayType);
+        walkValues.put(WALKS_COLUMN_TIMEBEGIN1, walkObject.timeBegin1);
+        walkValues.put(WALKS_COLUMN_TIMEEND1, walkObject.timeEnd1);
+        walkValues.put(WALKS_COLUMN_TIMEBEGIN2, walkObject.timeBegin2);
+        walkValues.put(WALKS_COLUMN_TIMEEND2, walkObject.timeEnd2);
+        walkValues.put(WALKS_COLUMN_TIMEBEGIN3, walkObject.timeBegin3);
+        walkValues.put(WALKS_COLUMN_TIMEEND3, walkObject.timeEnd3);
+        walkValues.put(WALKS_COLUMN_TIMEGOAL, walkObject.timeGoal);
+        walkValues.put(WALKS_COLUMN_TIMEEXTRA, walkObject.timeExtra);
+        walkValues.put(WALKS_COLUMN_TIMETOTAL, walkObject.timeTotal);
+        db.update(WALKS_TABLE_NAME, walkValues, WALKS_COLUMN_IDMONTH + " = ? AND " + WALKS_COLUMN_IDDAY +
+                  " = ? AND " + WALKS_COLUMN_IDWALK + " = ?", new String[]{Integer.toString(walkObject.id1),
+                  Integer.toString(walkObject.id2), Integer.toString(walkObject.id3)});
+
+        String newDistricts = oldDayObj.districts.replaceFirst(oldWalkObj.districtCode,
+                              walkObject.districtCode);
+
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        Date oldDayTimeTotal = null;
+        Date oldWalkTimeTotal = null;
+        Date newWalkTimeTotal = null;
+
+        if (oldDayObj.timeTotal.length() == 4) {
+            oldDayObj.timeTotal = "0" + oldDayObj.timeTotal;
+        }
+        try {
+            oldDayTimeTotal = format.parse(oldDayObj.timeTotal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (oldWalkObj.timeTotal.length() == 4) {
+            oldWalkObj.timeTotal = "0" + oldWalkObj.timeTotal;
+        }
+        try {
+            oldWalkTimeTotal = format.parse(oldWalkObj.timeTotal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (walkObject.timeTotal.length() == 4) {
+            walkObject.timeTotal = "0" + walkObject.timeTotal;
+        }
+        try {
+            newWalkTimeTotal = format.parse(walkObject.timeTotal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        long newTimeTotalMs = 0;
+        try {
+            newTimeTotalMs = oldDayTimeTotal.getTime() + 3600000 - (oldWalkTimeTotal.getTime() +
+                             3600000) + newWalkTimeTotal.getTime() + 3600000;
+        } catch (java.lang.NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        long newTimeTotalMin = newTimeTotalMs / 1000 / 60;
+        long newTimeTotalHour = newTimeTotalMin / 60;
+        long newTimeTotalMinRest = newTimeTotalMin % 60;
+
+        String newTimeTotalMinRestStr = Long.toString(newTimeTotalMinRest);
+        if (newTimeTotalMinRestStr.length() == 1) {
+            newTimeTotalMinRestStr = "0" + newTimeTotalMinRestStr;
+        }
+        String newDayTimeTotal = newTimeTotalHour + ":" + newTimeTotalMinRestStr;
+
+        Date oldDayTimeGoal = null;
+        Date oldWalkTimeGoal = null;
+        Date newWalkTimeGoal = null;
+
+        if (oldDayObj.timeGoal.length() == 4) {
+            oldDayObj.timeGoal = "0" + oldDayObj.timeGoal;
+        }
+        try {
+            oldDayTimeGoal = format.parse(oldDayObj.timeGoal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (oldWalkObj.timeGoal.length() == 4) {
+            oldWalkObj.timeGoal = "0" + oldWalkObj.timeGoal;
+        }
+        try {
+            oldWalkTimeGoal = format.parse(oldWalkObj.timeGoal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (walkObject.timeGoal.length() == 4) {
+            walkObject.timeGoal = "0" + walkObject.timeGoal;
+        }
+        try {
+            newWalkTimeGoal = format.parse(walkObject.timeGoal);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        long newTimeGoalMs = 0;
+        try {
+            newTimeGoalMs = oldDayTimeGoal.getTime() + 3600000 - (oldWalkTimeGoal.getTime() +
+                    3600000) + newWalkTimeGoal.getTime() + 3600000;
+        } catch (java.lang.NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        long newTimeGoalMin = newTimeGoalMs / 1000 / 60;
+        long newTimeGoalHour = newTimeGoalMin / 60;
+        long newTimeGoalMinRest = newTimeGoalMin % 60;
+
+        String newTimeGoalMinRestStr = Long.toString(newTimeGoalMinRest);
+        if (newTimeGoalMinRestStr.length() == 1) {
+            newTimeGoalMinRestStr = "0" + newTimeGoalMinRestStr;
+        }
+        String newDayTimeGoal = newTimeGoalHour + ":" + newTimeGoalMinRestStr;
+
+        Date oldDayTimeExtra = null;
+        Date oldWalkTimeExtra = null;
+        Date newWalkTimeExtra = null;
+
+        boolean oldDayTimeNeg = false;
+        if (oldDayObj.timeExtra.charAt(0) == '-') {
+            oldDayObj.timeExtra = oldDayObj.timeExtra.substring(1);
+            oldDayTimeNeg = true;
+        }
+        if (oldDayObj.timeExtra.length() == 4) {
+            oldDayObj.timeExtra = "0" + oldDayObj.timeExtra;
+        }
+        try {
+            oldDayTimeExtra = format.parse(oldDayObj.timeExtra);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        boolean oldWalkTimeNeg = false;
+        if (oldWalkObj.timeExtra.charAt(0) == '-') {
+            oldWalkObj.timeExtra = oldWalkObj.timeExtra.substring(1);
+            oldWalkTimeNeg = true;
+        }
+        if (oldWalkObj.timeExtra.length() == 4) {
+            oldWalkObj.timeExtra = "0" + oldWalkObj.timeExtra;
+        }
+        try {
+            oldWalkTimeExtra = format.parse(oldWalkObj.timeExtra);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        boolean newWalkTimeNeg = false;
+        if (walkObject.timeExtra.charAt(0) == '-') {
+            walkObject.timeExtra = walkObject.timeExtra.substring(1);
+            newWalkTimeNeg = true;
+        }
+        if (walkObject.timeExtra.length() == 4) {
+            walkObject.timeExtra = "0" + walkObject.timeExtra;
+        }
+        try {
+            newWalkTimeExtra = format.parse(walkObject.timeExtra);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        long newTimeExtraMs = 0;
+        if (!oldDayTimeNeg && !oldWalkTimeNeg && !newWalkTimeNeg) {
+            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 - (oldWalkTimeExtra.getTime() +
+                             3600000) + newWalkTimeExtra.getTime() + 3600000;
+        }
+        else if (!oldDayTimeNeg && !oldWalkTimeNeg && newWalkTimeNeg) {
+            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 - (oldWalkTimeExtra.getTime() +
+                             3600000) - (newWalkTimeExtra.getTime() + 3600000);
+        }
+        else if (!oldDayTimeNeg && oldWalkTimeNeg && !newWalkTimeNeg) {
+            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 + oldWalkTimeExtra.getTime() +
+                             3600000 + newWalkTimeExtra.getTime() + 3600000;
+        }
+        else if (!oldDayTimeNeg && oldWalkTimeNeg && newWalkTimeNeg) {
+            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 + oldWalkTimeExtra.getTime() +
+                             3600000 - (newWalkTimeExtra.getTime() + 3600000);
+        }
+        else if (oldDayTimeNeg && !oldWalkTimeNeg && !newWalkTimeNeg) {
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) - (oldWalkTimeExtra.getTime()
+                             + 3600000) + newWalkTimeExtra.getTime() + 3600000;
+        }
+        else if (oldDayTimeNeg && !oldWalkTimeNeg && newWalkTimeNeg) {
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) - (oldWalkTimeExtra.getTime()
+                             + 3600000) - (newWalkTimeExtra.getTime() + 3600000);
+        }
+        else if (oldDayTimeNeg && oldWalkTimeNeg && !newWalkTimeNeg) {
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) + oldWalkTimeExtra.getTime()
+                             + 3600000 + newWalkTimeExtra.getTime() + 3600000;
+        }
+        else {
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) + oldWalkTimeExtra.getTime()
+                             + 3600000 - (newWalkTimeExtra.getTime() + 3600000);
+        }
+
+        long newTimeExtraMin = newTimeExtraMs / 1000 / 60;
+        long newTimeExtraHour = Math.abs(newTimeExtraMin / 60);
+        long newTimeExtraMinRest = newTimeExtraMin % 60;
+
+        String newTimeExtraMinRestStr = Long.toString(newTimeExtraMinRest);
+        if (newTimeExtraMinRestStr.length() == 1) {
+            newTimeExtraMinRestStr = "0" + newTimeExtraMinRestStr;
+        }
+        String newDayTimeExtra = newTimeExtraHour + ":" + newTimeExtraMinRestStr;
+
+        if (newTimeExtraMin < 0 && newTimeExtraHour == 0) {
+            newDayTimeExtra = "-" + newDayTimeExtra;
+        }
+
+        ContentValues dayValues = new ContentValues();
+        dayValues.put(DAYS_COLUMN_DISTRICTS, newDistricts);
+        dayValues.put(DAYS_COLUMN_TIMETOTAL, newDayTimeTotal);
+        dayValues.put(DAYS_COLUMN_TIMEGOAL, newDayTimeGoal);
+        dayValues.put(DAYS_COLUMN_TIMEEXTRA, newDayTimeExtra);
+        db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY
+                  + " = ?", new String[]{Integer.toString(walkObject.id1),
+                  Integer.toString(walkObject.id2)});
+
+
     }
 }

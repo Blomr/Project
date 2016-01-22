@@ -81,4 +81,7 @@
 - Delete-methods in databasehandler.
 
 ### Dag 15 - Vr 22 jan
-- 
+- EditName-methods voor Days en Walks gemaakt in databasehandler.
+- Aanpassingen voor Walks-table en Days-table in EditWalk-method in databasehandler gemaakt.
+- Presentatie geven.
+
