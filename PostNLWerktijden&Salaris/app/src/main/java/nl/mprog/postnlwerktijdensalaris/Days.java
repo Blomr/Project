@@ -43,14 +43,14 @@ public class Days extends AppCompatActivity {
             ListView listViewDays = (ListView) findViewById(R.id.listViewDays);
             TextView titleMonthView = (TextView) findViewById(R.id.titleMonth);
 
-            String titleMonth = getIntent().getStringExtra("titleMonth");
-            titleMonthView.setText(titleMonth);
-            titleMonthView.setVisibility(View.VISIBLE);
-
             DatabaseHandler db = new DatabaseHandler(this);
             ArrayList<DayObject> listItems = db.getDaysOfMonth(idMonth);
             DayAdapter adapter = new DayAdapter(this, R.layout.listview_layout, listItems);
             listViewDays.setAdapter(adapter);
+
+            String titleMonth = db.getMonthName(idMonth);
+            titleMonthView.setText(titleMonth);
+            titleMonthView.setVisibility(View.VISIBLE);
 
             listViewDays.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -74,7 +74,10 @@ public class Days extends AppCompatActivity {
 
     public void onClickSettings(View view) {
         Intent goToSettings = new Intent(Days.this, Settings.class);
+        goToSettings.putExtra("prevActivity", "Days");
+        goToSettings.putExtra("idMonth", idMonth);
         startActivity(goToSettings);
+        finish();
     }
 
     public void onClickAddDay(View view) {

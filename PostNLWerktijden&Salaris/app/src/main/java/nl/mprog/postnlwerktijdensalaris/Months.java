@@ -47,7 +47,9 @@ public class Months extends AppCompatActivity {
 
     public void onClickSettings(View view) {
         Intent goToSettings = new Intent(Months.this, Settings.class);
+        goToSettings.putExtra("prevActivity", "Months");
         startActivity(goToSettings);
+        finish();
     }
 
     public void onClickAddMonth(View view) {

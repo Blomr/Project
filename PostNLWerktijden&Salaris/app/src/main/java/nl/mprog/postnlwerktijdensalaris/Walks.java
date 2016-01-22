@@ -30,34 +30,39 @@ public class Walks extends AppCompatActivity {
 
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
+        addButton = (ImageView) findViewById(R.id.addButtonWalks);
 
         if (idDay == 0) {
             editTitle = (EditText) findViewById(R.id.editTitleDay);
             okButton = (Button) findViewById(R.id.okButtonDay);
-            addButton = (ImageView) findViewById(R.id.addButtonWalks);
 
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);
-            addButton.setVisibility(View.INVISIBLE);
         }
         else {
             ListView listViewWalks = (ListView) findViewById(R.id.listViewWalks);
             TextView titleDayView = (TextView) findViewById(R.id.titleDay);
 
-            String titleDay = getIntent().getStringExtra("titleDay");
-            titleDayView.setText(titleDay);
-            titleDayView.setVisibility(View.VISIBLE);
-
             DatabaseHandler db = new DatabaseHandler(this);
             ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
             WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
             listViewWalks.setAdapter(adapter);
+
+            String titleDay = db.getDayName(idMonth, idDay);
+            titleDayView.setText(titleDay);
+            titleDayView.setVisibility(View.VISIBLE);
+
+            checkForDistricts();
         }
     }
 
     public void onClickSettings(View view) {
         Intent goToSettings = new Intent(Walks.this, Settings.class);
+        goToSettings.putExtra("prevActivity", "Walks");
+        goToSettings.putExtra("idMonth", idMonth);
+        goToSettings.putExtra("idDay", idDay);
         startActivity(goToSettings);
+        finish();
     }
 
     public void onClickAddWalk(View view) {
@@ -77,7 +82,7 @@ public class Walks extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
-            addButton.setVisibility(View.VISIBLE);
+            checkForDistricts();
 
             TextView title = (TextView) findViewById(R.id.titleDay);
             title.setVisibility(View.VISIBLE);
@@ -89,6 +94,17 @@ public class Walks extends AppCompatActivity {
         }
         else {
             Toast.makeText(Walks.this, "Vul een titel in", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void checkForDistricts() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        if (db.getDistricts().size() != 0) {
+            addButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            TextView addDistrictMessage = (TextView) findViewById(R.id.addDistrictMessage);
+            addDistrictMessage.setVisibility(View.VISIBLE);
         }
     }
 

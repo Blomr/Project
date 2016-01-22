@@ -3,13 +3,18 @@ package nl.mprog.postnlwerktijdensalaris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class AddWalk extends AppCompatActivity{
@@ -29,6 +34,8 @@ public class AddWalk extends AppCompatActivity{
     String beginMin3;
     String endHour3;
     String endMin3;
+    final String busyDay = "Piekdag";
+    final String calmDay = "Daldag";
     EditText editBeginHour1;
     EditText editBeginMin1;
     EditText editEndHour1;
@@ -44,6 +51,12 @@ public class AddWalk extends AppCompatActivity{
     TextView districtCodeView;
     TextView dayTypeView;
     TextView timeGoalView;
+    Spinner spinnerDistrict;
+    Spinner spinnerDayType;
+    ArrayList<String> districtCodes;
+    ArrayAdapter adapterDistrict;
+    SharedPreferences prefs;
+    SharedPreferences.Editor prefsEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +66,7 @@ public class AddWalk extends AppCompatActivity{
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
         idWalk = getIntent().getIntExtra("idWalk", 0);
+        boolean fromSettings = getIntent().getBooleanExtra("fromSettings", false);
 
         editBeginHour1 = (EditText) findViewById(R.id.beginHour1);
         editBeginMin1 = (EditText) findViewById(R.id.beginMin1);
@@ -67,12 +81,138 @@ public class AddWalk extends AppCompatActivity{
         editEndHour3 = (EditText) findViewById(R.id.endHour3);
         editEndMin3 = (EditText) findViewById(R.id.endMin3);
 
-        districtCodeView = (TextView) findViewById(R.id.districtCode);
-        dayTypeView = (TextView) findViewById(R.id.dayType);
+        if (fromSettings) {
+            prefs = getPreferences(MODE_PRIVATE);
+            idMonth = prefs.getInt("idMonth", 0);
+            idDay = prefs.getInt("idDay", 0);
+            idWalk = prefs.getInt("idWalk", 0);
+            editBeginHour1.setText(prefs.getString("beginHour1", ""));
+            editBeginMin1.setText(prefs.getString("beginMin1", ""));
+            editEndHour1.setText(prefs.getString("endHour1", ""));
+            editEndMin1.setText(prefs.getString("endMin1", ""));
+            editBeginHour2.setText(prefs.getString("beginHour2", ""));
+            editBeginMin2.setText(prefs.getString("beginMin2", ""));
+            editEndHour2.setText(prefs.getString("endHour2", ""));
+            editEndMin2.setText(prefs.getString("endMin2", ""));
+            editBeginHour3.setText(prefs.getString("beginHour3", ""));
+            editBeginMin3.setText(prefs.getString("beginMin3", ""));
+            editEndHour3.setText(prefs.getString("endHour3", ""));
+            editEndMin3.setText(prefs.getString("endMin3", ""));
+        }
+
         timeGoalView = (TextView) findViewById(R.id.timeGoal);
 
+        DatabaseHandler db = new DatabaseHandler(this);
+        final ArrayList<DistrictObject> districtObjects = db.getDistricts();
+        districtCodes = new ArrayList<>();
+        for (DistrictObject districtObj : districtObjects) {
+            districtCodes.add(districtObj.districtCode);
+        }
+
+        spinnerDistrict = (Spinner) findViewById(R.id.spinnerDistrict);
+        adapterDistrict = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, districtCodes);
+        spinnerDistrict.setAdapter(adapterDistrict);
+
+        spinnerDayType = (Spinner) findViewById(R.id.spinnerDayType);
+        String districtCode = spinnerDistrict.getSelectedItem().toString();
+        DistrictObject currentObj = null;
+        final ArrayList<String> dayTypes = new ArrayList<>();
+        for (DistrictObject districtObj : districtObjects) {
+            if (districtObj.districtCode.equals(districtCode)) {
+                currentObj = districtObj;
+                if (!districtObj.timeGoalBusy.equals("0:00")) {
+                    dayTypes.add(busyDay);
+                }
+                if (!districtObj.timeGoalCalm.equals("0:00")) {
+                    dayTypes.add(calmDay);
+                }
+                break;
+            }
+        }
+        final ArrayAdapter adapterDayType = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dayTypes);
+        spinnerDayType.setAdapter(adapterDayType);
+
+        String dayType = spinnerDayType.getSelectedItem().toString();
+        if (dayType.equals(busyDay)) {
+            timeGoalView.setText(currentObj.timeGoalBusy);
+        }
+        else {
+            timeGoalView.setText(currentObj.timeGoalCalm);
+        }
+
+        spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String clickedItem = spinnerDistrict.getItemAtPosition(position).toString();
+                for (DistrictObject districtObj : districtObjects) {
+                    if (districtObj.districtCode.equals(clickedItem)) {
+                        if (!districtObj.timeGoalBusy.equals("0:00")) {
+                            if (!dayTypes.contains(busyDay)) {
+                                dayTypes.add(busyDay);
+                            }
+                        } else {
+                            if (dayTypes.contains(busyDay)) {
+                                dayTypes.remove(busyDay);
+                            }
+                        }
+
+                        if (!districtObj.timeGoalCalm.equals("0:00")) {
+                            if (!dayTypes.contains(calmDay)) {
+                                dayTypes.add(calmDay);
+                            }
+                        } else {
+                            if (dayTypes.contains(calmDay)) {
+                                dayTypes.remove(calmDay);
+                            }
+                        }
+                        adapterDayType.notifyDataSetChanged();
+
+                        String dayType;
+                        try {
+                            dayType = spinnerDayType.getSelectedItem().toString();
+                        } catch (java.lang.IndexOutOfBoundsException e) {
+                            dayType = spinnerDayType.getItemAtPosition(0).toString();
+                        }
+                        if (dayType.equals(busyDay)) {
+                            timeGoalView.setText(districtObj.timeGoalBusy);
+                        } else {
+                            timeGoalView.setText(districtObj.timeGoalCalm);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        spinnerDayType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String clickedItem = spinnerDayType.getItemAtPosition(position).toString();
+                String districtCode = spinnerDistrict.getSelectedItem().toString();
+
+                for (DistrictObject districtObj : districtObjects) {
+                    if (districtObj.districtCode.equals(districtCode)) {
+                        if (clickedItem.equals(busyDay)) {
+                            timeGoalView.setText(districtObj.timeGoalBusy);
+                        } else {
+                            timeGoalView.setText(districtObj.timeGoalCalm);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
         if (idWalk != 0) {
-            DatabaseHandler db = new DatabaseHandler(AddWalk.this);
+            db = new DatabaseHandler(this);
             WalkObject walkObj = db.getWalk(idMonth, idDay, idWalk);
 
             beginHour1 = walkObj.timeBegin1.substring(0, 2);
@@ -117,8 +257,32 @@ public class AddWalk extends AppCompatActivity{
     }
 
     public void onClickSettings(View view) {
+        prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putInt("idMonth", idMonth);
+        prefsEditor.putInt("idDay", idDay);
+        prefsEditor.putInt("idWalk", idWalk);
+        prefsEditor.putString("beginHour1", editBeginHour1.getText().toString());
+        prefsEditor.putString("beginMin1", editBeginMin1.getText().toString());
+        prefsEditor.putString("endHour1", editEndHour1.getText().toString());
+        prefsEditor.putString("endMin1", editEndMin1.getText().toString());
+        prefsEditor.putString("beginHour2", editBeginHour2.getText().toString());
+        prefsEditor.putString("beginMin2", editBeginMin2.getText().toString());
+        prefsEditor.putString("endHour2", editEndHour2.getText().toString());
+        prefsEditor.putString("endMin2", editEndMin2.getText().toString());
+        prefsEditor.putString("beginHour3", editBeginHour3.getText().toString());
+        prefsEditor.putString("beginMin3", editBeginMin3.getText().toString());
+        prefsEditor.putString("endHour3", editEndHour3.getText().toString());
+        prefsEditor.putString("endMin3", editEndMin3.getText().toString());
+        prefsEditor.apply();
+
         Intent goToSettings = new Intent(AddWalk.this, Settings.class);
+        goToSettings.putExtra("prevActivity", "AddWalk");
+        goToSettings.putExtra("idMonth", idMonth);
+        goToSettings.putExtra("idDay", idDay);
+        goToSettings.putExtra("idWalk", idWalk);
         startActivity(goToSettings);
+        finish();
     }
 
     public void onClickSave(View view) {
@@ -350,6 +514,11 @@ public class AddWalk extends AppCompatActivity{
                 db.addWalk(walkObj, bundle);
             }
 
+            if (prefsEditor != null) {
+                prefsEditor.clear();
+                prefsEditor.apply();
+            }
+
             Intent goToWalks = new Intent(AddWalk.this, Walks.class);
             goToWalks.putExtra("idMonth", idMonth);
             goToWalks.putExtra("idDay", idDay);
@@ -359,6 +528,11 @@ public class AddWalk extends AppCompatActivity{
     }
 
     public void onClickCancel(View view) {
+        if (prefsEditor != null) {
+            prefsEditor.clear();
+            prefsEditor.apply();
+        }
+
         Intent goToWalks = new Intent(AddWalk.this, Walks.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);
@@ -368,6 +542,11 @@ public class AddWalk extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
+        if (prefsEditor != null) {
+            prefsEditor.clear();
+            prefsEditor.apply();
+        }
+
         Intent goToWalks = new Intent(AddWalk.this, Walks.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);

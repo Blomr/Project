@@ -638,4 +638,59 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
         return districtObjects;
     }
+
+    public String getMonthName(int id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + MONTHS_TABLE_NAME + " WHERE " + MONTHS_COLUMN_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(id)});
+        cursor.moveToFirst();
+
+        String monthName = cursor.getString(1);
+
+        cursor.close();
+        db.close();
+
+        return monthName;
+    }
+
+    public String getDayName(int idMonth, int idDay) {
+        SQLiteDatabase db = getReadableDatabase();
+        String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
+                       " = ? AND " + DAYS_COLUMN_IDDAY + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(idMonth),
+                Integer.toString(idDay)});
+        cursor.moveToFirst();
+
+        String dayName = cursor.getString(2);
+
+        cursor.close();
+        db.close();
+
+        return dayName;
+    }
+
+    public void deleteMonth(int idMonth) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(MONTHS_TABLE_NAME, MONTHS_COLUMN_ID + " = ?", new String[]{Integer.toString(idMonth)});
+        db.delete(DAYS_TABLE_NAME, DAYS_COLUMN_IDMONTH + " = ?", new String[]{Integer.toString(idMonth)});
+        db.delete(WALKS_TABLE_NAME, WALKS_COLUMN_IDMONTH + " = ?", new String[]{Integer.toString(idMonth)});
+        db.close();
+    }
+
+    public void deleteDay(int idMonth, int idDay) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DAYS_TABLE_NAME, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY + " = ?",
+                  new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
+        db.delete(WALKS_TABLE_NAME, WALKS_COLUMN_IDMONTH + " = ? AND " + WALKS_COLUMN_IDDAY + " = ?",
+                  new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
+        db.close();
+    }
+
+    public void deleteWalk(int idMonth, int idDay, int idWalk) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(WALKS_TABLE_NAME, WALKS_COLUMN_IDMONTH + " = ? AND " + WALKS_COLUMN_IDDAY + " = ? AND "
+                  + WALKS_COLUMN_IDWALK + " = ?", new String[]{Integer.toString(idMonth),
+                  Integer.toString(idDay), Integer.toString(idWalk)});
+        db.close();
+    }
 }

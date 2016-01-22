@@ -27,6 +27,15 @@ public class AddDistrict extends AppCompatActivity {
         String calmHour = editCalmHour.getText().toString();
         String calmMin = editCalmMin.getText().toString();
 
+        if (editBusyHour.getText().toString().equals("") && editBusyMin.getText().toString().equals("")) {
+            busyHour = "0";
+            busyMin = "0";
+        }
+        if (editCalmHour.getText().toString().equals("") && editCalmMin.getText().toString().equals("")) {
+            calmHour = "0";
+            calmMin = "0";
+        }
+
         if (busyMin.length() == 1) {
             busyMin = "0" + busyMin;
         }

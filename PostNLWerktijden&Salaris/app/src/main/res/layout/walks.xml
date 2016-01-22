@@ -44,6 +44,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:visibility="invisible"
         android:onClick="onClickAddWalk"/>
 
     <Button
@@ -67,5 +68,15 @@
         android:layout_toStartOf="@id/okButtonDay"
         android:layout_alignBottom="@id/okButtonDay"
         android:visibility="gone"/>
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/addDistrictMessage"
+        android:text="Voeg een wijk toe in de instellingen om verder te gaan."
+        android:textSize="20sp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

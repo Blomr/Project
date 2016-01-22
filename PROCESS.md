@@ -75,4 +75,10 @@
 - Ophalen van wijken uit de database en vervolgens in listview zetten.
 
 ### Dag 14 - Do 21 jan
--
+- Spinners werkend in AddWalk, in plaats van bewerk-knoppen.
+- Edittexts opslaan in shared preferences als gebruiker naar instellingen gaat.
+- Eerst geprobeerd met savedinstancestate, maar erachter gekomen dat dat niet werkt.
+- Delete-methods in databasehandler.
+
+### Dag 15 - Vr 22 jan
+- 
