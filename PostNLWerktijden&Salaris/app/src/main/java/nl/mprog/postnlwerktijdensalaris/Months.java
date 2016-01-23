@@ -1,5 +1,7 @@
 package nl.mprog.postnlwerktijdensalaris;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,9 +23,9 @@ public class Months extends AppCompatActivity {
 
         listViewMonths = (ListView) findViewById(R.id.listViewMonths);
 
-        DatabaseHandler db = new DatabaseHandler(this);
-        ArrayList<MonthObject> listItems = db.getMonths();
-        MonthAdapter adapter = new MonthAdapter(this, R.layout.listview_layout, listItems);
+        final DatabaseHandler db = new DatabaseHandler(this);
+        final ArrayList<MonthObject> listItems = db.getMonths();
+        final MonthAdapter adapter = new MonthAdapter(this, R.layout.listview_layout, listItems);
         listViewMonths.setAdapter(adapter);
 
         listViewMonths.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -41,6 +43,31 @@ public class Months extends AppCompatActivity {
                 startActivity(goToDays);
 
                 finish();
+            }
+        });
+
+        listViewMonths.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                TextView idMonthView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                final int idMonth = Integer.parseInt(idMonthView.getText().toString());
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(Months.this);
+                builder.setMessage("Weet u zeker dat u deze maand wil verwijderen?");
+                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        db.deleteMonth(idMonth);
+                        listItems.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+                builder.setNegativeButton("annuleren", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                return true;
             }
         });
     }

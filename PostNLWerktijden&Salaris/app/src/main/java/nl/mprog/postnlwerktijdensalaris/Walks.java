@@ -1,11 +1,15 @@
 package nl.mprog.postnlwerktijdensalaris;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -20,6 +24,7 @@ public class Walks extends AppCompatActivity {
     EditText editTitle;
     Button okButton;
     ImageView addButton;
+    TextView titleDayView;
     int idMonth;
     int idDay;
 
@@ -41,11 +46,11 @@ public class Walks extends AppCompatActivity {
         }
         else {
             ListView listViewWalks = (ListView) findViewById(R.id.listViewWalks);
-            TextView titleDayView = (TextView) findViewById(R.id.titleDay);
+            titleDayView = (TextView) findViewById(R.id.titleDay);
 
-            DatabaseHandler db = new DatabaseHandler(this);
-            ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
-            WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
+            final DatabaseHandler db = new DatabaseHandler(this);
+            final ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
+            final WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
             listViewWalks.setAdapter(adapter);
 
             String titleDay = db.getDayName(idMonth, idDay);
@@ -53,6 +58,39 @@ public class Walks extends AppCompatActivity {
             titleDayView.setVisibility(View.VISIBLE);
 
             checkForDistricts();
+
+            listViewWalks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                    TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                    final int idWalk = Integer.parseInt(idWalkView.getText().toString());
+                    final Bundle sharedPrefBundle = new Bundle();
+                    SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
+                    sharedPrefBundle.putInt("contractHours", sharedPref.getInt("contractHours", 0));
+                    sharedPrefBundle.putInt("contractMins", sharedPref.getInt("contractMins", 0));
+                    sharedPrefBundle.putInt("salaryEuro", sharedPref.getInt("salaryEuro", 0));
+                    sharedPrefBundle.putInt("salaryCents", sharedPref.getInt("salaryCents", 0));
+                    sharedPrefBundle.putInt("extraEuro", sharedPref.getInt("extraEuro", 0));
+                    sharedPrefBundle.putInt("extraCents", sharedPref.getInt("extraCents", 0));
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Walks.this);
+                    builder.setMessage("Weet u zeker dat u deze loop wil verwijderen?");
+                    builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            db.deleteWalk(idMonth, idDay, idWalk, sharedPrefBundle);
+                            listItems.remove(position);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
+                    builder.setNegativeButton("annuleren", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    });
+                    return true;
+                }
+            });
         }
     }
 
@@ -88,9 +126,14 @@ public class Walks extends AppCompatActivity {
             title.setVisibility(View.VISIBLE);
             title.setText(getText);
 
-            DayObject dayObj = new DayObject(idMonth, 0, getText, "", "0:00", "0:00", "0:00");
             DatabaseHandler db = new DatabaseHandler(Walks.this);
-            idDay = db.addDay(dayObj);
+            if (idDay == 0) {
+                DayObject dayObj = new DayObject(idMonth, 0, getText, "", "0:00", "0:00", "0:00");
+                idDay = db.addDay(dayObj);
+            }
+            else {
+                db.editDayName(idMonth, idDay, getText);
+            }
         }
         else {
             Toast.makeText(Walks.this, "Vul een titel in", Toast.LENGTH_SHORT).show();
@@ -114,5 +157,13 @@ public class Walks extends AppCompatActivity {
         goToDays.putExtra("idMonth", idMonth);
         startActivity(goToDays);
         finish();
+    }
+
+    public void onClickTitle(View view) {
+        titleDayView.setVisibility(View.INVISIBLE);
+        editTitle.setVisibility(View.VISIBLE);
+        okButton.setVisibility(View.VISIBLE);
+
+        editTitle.setText(titleDayView.getText().toString());
     }
 }
