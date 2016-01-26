@@ -31,15 +31,11 @@ public class Months extends AppCompatActivity {
         listViewMonths.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView idView = (TextView) view.findViewById(R.id.listItemUpCenter);
-                TextView titleMonthView = (TextView) view.findViewById(R.id.listItemUpLeft);
-
-                int idMonth = Integer.parseInt(idView.getText().toString());
-                String titleMonth = titleMonthView.getText().toString();
+                TextView idMonthView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                int idMonth = Integer.parseInt(idMonthView.getText().toString());
 
                 Intent goToDays = new Intent(Months.this, Days.class);
                 goToDays.putExtra("idMonth", idMonth);
-                goToDays.putExtra("titleMonth", titleMonth);
                 startActivity(goToDays);
 
                 finish();
@@ -67,6 +63,8 @@ public class Months extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                     }
                 });
+                AlertDialog dialog = builder.create();
+                dialog.show();
                 return true;
             }
         });

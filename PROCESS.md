@@ -1,31 +1,31 @@
 # Process book
 
-### Dag 1 - ma 4 jan 
+### Dag 1 - Ma 4 jan 
 - Proposal maken en inleveren.
 - Nadenken over UI en schetsen.
 
-### Dag 2 - di 5 jan
+### Dag 2 - Di 5 jan
 - Beginnen aan Design Document.
 - UI verder uitwerken.
 - Welke informatie wordt getoond op welk scherm.
 - Database structuur uitwerken.
 
-### Dag 3 - wo 6 jan
+### Dag 3 - Wo 6 jan
 - Hoe design te verwerken in Android Studio.
 - User experience uitwerken op papier.
 - Classes en methods vaststellen.
 
-### Dag 4 - do 7 jan
+### Dag 4 - Do 7 jan
 - Database structuur uitwerken.
 - Project aanmaken in Android Studio.
 - Months, Days, Walks en AddWalk aangemaakt en elkaar verbonden.
 
-### Dag 5 - vr 8 jan
+### Dag 5 - Vr 8 jan
 - Activities van instellingen maken.
 - Prototype afmaken.
 - Presentatie voortgang geven.
 
-### Weekend - za 9 jan, zo 10 jan
+### Weekend - Za 9 jan, Zo 10 jan
 - Onderzoek doen naar opzetten SQLite database.
 - Onderzoek doen naar het rekenen met tijd in java.
 
@@ -56,7 +56,7 @@
 - OnClick op editTexts gezet zodat getallen verdwijnen.
 - Presentatie geven.
 
-### Weekend - za 16 jan, zo 17 jan
+### Weekend - Za 16 jan, Zo 17 jan
 - Methods getWalkOfDay, getDaysOfMonth en getMonths schrijven in DatabaseHandler.
 
 ### Dag 11 - Ma 18 jan
@@ -84,4 +84,13 @@
 - EditName-methods voor Days en Walks gemaakt in databasehandler.
 - Aanpassingen voor Walks-table en Days-table in EditWalk-method in databasehandler gemaakt.
 - Presentatie geven.
+
+### Weekend - Za 23 jan, Zo 24 jan
+- Aanpassingen voor Months-table in EditWalk-method in databasehandler gemaakt.
+- Aanpassingen van delete-methods nu ook doorgevoerd in months-table.
+
+### Dag 16 - Ma 25 jan
+- Bug editTexts door hints ipv setTexts opgelost.
+- Herhalingen in databasehandler verplaatsen naar aparte methods.
+
 

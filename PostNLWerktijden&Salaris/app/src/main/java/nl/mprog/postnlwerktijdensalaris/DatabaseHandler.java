@@ -55,6 +55,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String DISTRICTS_COLUMN_TIMEGOALBUSY = "timeBusyDay";
     private static final String DISTRICTS_COLUMN_TIMEGOALCALM = "timeCalmDay";
 
+    private final int ZERO_TIME_VALUE = 3600000;
+
     public DatabaseHandler(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -116,13 +118,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public int addMonth(MonthObject monthObject) {
         SQLiteDatabase db = getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(MONTHS_COLUMN_MONTH, monthObject.month);
         values.put(MONTHS_COLUMN_DAYS, monthObject.days);
         values.put(MONTHS_COLUMN_SALARY, monthObject.salary);
         values.put(MONTHS_COLUMN_TIME, monthObject.time);
-
         int lastId = (int) db.insert(MONTHS_TABLE_NAME, null, values);
         db.close();
 
@@ -148,14 +148,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + MONTHS_TABLE_NAME + " WHERE " + MONTHS_COLUMN_ID + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(dayObject.id1)});
         cursor.moveToFirst();
+
         int days = cursor.getInt(2);
+
         cursor.close();
         db.close();
 
         days += 1;
 
         db = getWritableDatabase();
-
         ContentValues dayValues = new ContentValues();
         dayValues.put(DAYS_COLUMN_IDMONTH, dayObject.id1);
         dayValues.put(DAYS_COLUMN_IDDAY, idDay);
@@ -198,28 +199,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
                        " = ? AND " + DAYS_COLUMN_IDDAY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(walkObject.id1),
-                        Integer.toString(walkObject.id2)});
-
+                Integer.toString(walkObject.id2)});
         cursor.moveToFirst();
+
         String districts = cursor.getString(3);
-        String timeTotalDay = cursor.getString(4);
-        String timeGoalDay = cursor.getString(5);
-        String timeExtraDay = cursor.getString(6);
+        String dayTimeTotalStr = cursor.getString(4);
+        String dayTimeGoalStr = cursor.getString(5);
+        String dayTimeExtraStr = cursor.getString(6);
+
         cursor.close();
 
         // read from months table
         query = "SELECT * FROM " + MONTHS_TABLE_NAME + " WHERE " + MONTHS_COLUMN_ID + " = ?";
         cursor = db.rawQuery(query, new String[]{Integer.toString(walkObject.id1)});
-
         cursor.moveToFirst();
-        String timeMonth = cursor.getString(4);
-        cursor.close();
 
+        String timeMonth = cursor.getString(4);
+
+        cursor.close();
         db.close();
 
-        db = getWritableDatabase();
-
         // insert into walks table
+        db = getWritableDatabase();
         ContentValues walkValues = new ContentValues();
         walkValues.put(WALKS_COLUMN_IDMONTH, walkObject.id1);
         walkValues.put(WALKS_COLUMN_IDDAY, walkObject.id2);
@@ -235,257 +236,99 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         walkValues.put(WALKS_COLUMN_TIMEGOAL, walkObject.timeGoal);
         walkValues.put(WALKS_COLUMN_TIMEEXTRA, walkObject.timeExtra);
         walkValues.put(WALKS_COLUMN_TIMETOTAL, walkObject.timeTotal);
-
         db.insert(WALKS_TABLE_NAME, null, walkValues);
 
         // update days table
         districts = districts + walkObject.districtCode + " ";
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date timeTotalDayCur = null;
-        Date timeGoalDayCur = null;
-        Date timeExtraDayCur = null;
-        Date timeTotalWalk = null;
-        Date timeGoalWalk = null;
-        Date timeExtraWalk = null;
-
-        if (timeTotalDay.length() == 4) {
-            timeTotalDay = "0" + timeTotalDay;
-        }
-        try {
-            timeTotalDayCur = format.parse(timeTotalDay);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (timeGoalDay.length() == 4) {
-            timeGoalDay = "0" + timeGoalDay;
-        }
-        try {
-            timeGoalDayCur = format.parse(timeGoalDay);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date dayTimeTotal = strToDateParser(dayTimeTotalStr);
+        Date dayTimeGoal = strToDateParser(dayTimeGoalStr);
 
         boolean timeDayNegative = false;
-        if (timeExtraDay.charAt(0) == '-') {
-            timeExtraDay = timeExtraDay.substring(1);
+        if (dayTimeExtraStr.charAt(0) == '-') {
+            dayTimeExtraStr = dayTimeExtraStr.substring(1);
             timeDayNegative = true;
         }
-        if (timeExtraDay.length() == 4) {
-            timeExtraDay = "0" + timeExtraDay;
-        }
-        try {
-            timeExtraDayCur = format.parse(timeExtraDay);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date dayTimeExtra = strToDateParser(dayTimeExtraStr);
 
-        if (walkObject.timeTotal.length() == 4) {
-            walkObject.timeTotal = "0" + walkObject.timeTotal;
-        }
-        try {
-            timeTotalWalk = format.parse(walkObject.timeTotal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (walkObject.timeGoal.length() == 4) {
-            walkObject.timeGoal = "0" + walkObject.timeGoal;
-        }
-        try {
-            timeGoalWalk = format.parse(walkObject.timeGoal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date walkTimeTotal = strToDateParser(walkObject.timeTotal);
+        Date walkTimeGoal = strToDateParser(walkObject.timeGoal);
 
         boolean timeWalkNegative = false;
         if (walkObject.timeExtra.charAt(0) == '-') {
             walkObject.timeExtra = walkObject.timeExtra.substring(1);
             timeWalkNegative = true;
         }
-        if (walkObject.timeExtra.length() == 4) {
-            walkObject.timeExtra = "0" + walkObject.timeExtra;
-        }
-        try {
-            timeExtraWalk = format.parse(walkObject.timeExtra);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date walkTimeExtra = strToDateParser(walkObject.timeExtra);
 
         long timeTotalMs = 0;
         long timeGoalMs = 0;
         long timeExtraMs = 0;
 
         try {
-            timeTotalMs = timeTotalDayCur.getTime() + timeTotalWalk.getTime() + 7200000;
+            timeTotalMs = dayTimeTotal.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
         try {
-            timeGoalMs = timeGoalDayCur.getTime() + timeGoalWalk.getTime() + 7200000;
+            timeGoalMs = dayTimeGoal.getTime() + walkTimeGoal.getTime() + ZERO_TIME_VALUE * 2;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
         if (!timeDayNegative && !timeWalkNegative) {
             try {
-                timeExtraMs = timeExtraDayCur.getTime() + timeExtraWalk.getTime() + 7200000;
+                timeExtraMs = dayTimeExtra.getTime() + walkTimeExtra.getTime() + ZERO_TIME_VALUE * 2;
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else if (!timeDayNegative && timeWalkNegative){
             try {
-                timeExtraMs = timeExtraDayCur.getTime() + 3600000 - (timeExtraWalk.getTime() + 3600000);
+                timeExtraMs = dayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
+                              + ZERO_TIME_VALUE);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else {
             try {
-                timeExtraMs = -1 * (timeExtraDayCur.getTime() + 3600000) - (timeExtraWalk.getTime() + 3600000);
+                timeExtraMs = -1 * (dayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                              - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
 
-        long timeTotalMin = timeTotalMs / 1000 / 60;
-        long timeTotalHours = timeTotalMin / 60;
-        long timeTotalMinRes = timeTotalMin % 60;
-        String timeTotalMinResStr = Long.toString(timeTotalMinRes);
-        if (timeTotalMinResStr.length() == 1) {
-            timeTotalMinResStr = "0" + timeTotalMinResStr;
-        }
-        timeTotalDay = timeTotalHours + ":" + timeTotalMinResStr;
-
-        long timeGoalMin = timeGoalMs / 1000 / 60;
-        long timeGoalHours = timeGoalMin / 60;
-        long timeGoalMinRes = timeGoalMin % 60;
-        String timeGoalMinResStr = Long.toString(timeGoalMinRes);
-        if (timeGoalMinResStr.length() == 1) {
-            timeGoalMinResStr = "0" + timeGoalMinResStr;
-        }
-        timeGoalDay = timeGoalHours + ":" + timeGoalMinResStr;
-
-        long timeExtraMin = timeExtraMs / 1000 / 60;
-        long timeExtraHours = timeExtraMin / 60;
-        long timeExtraMinRes = Math.abs(timeExtraMin % 60);
-        String timeExtraMinResStr = Long.toString(timeExtraMinRes);
-        if (timeExtraMinResStr.length() == 1) {
-            timeExtraMinResStr = "0" + timeExtraMinResStr;
-        }
-        timeExtraDay = timeExtraHours + ":" + timeExtraMinResStr;
-
-        if (timeExtraMin < 0 && timeExtraHours == 0) {
-            timeExtraDay = "-" + timeExtraDay;
-        }
+        dayTimeTotalStr = msToTimeStrConverter(timeTotalMs);
+        dayTimeGoalStr = msToTimeStrConverter(timeGoalMs);
+        dayTimeExtraStr = msToTimeStrConverter(timeExtraMs);
 
         ContentValues dayValues = new ContentValues();
         dayValues.put(DAYS_COLUMN_DISTRICTS, districts);
-        dayValues.put(DAYS_COLUMN_TIMETOTAL, timeTotalDay);
-        dayValues.put(DAYS_COLUMN_TIMEGOAL, timeGoalDay);
-        dayValues.put(DAYS_COLUMN_TIMEEXTRA, timeExtraDay);
-
+        dayValues.put(DAYS_COLUMN_TIMETOTAL, dayTimeTotalStr);
+        dayValues.put(DAYS_COLUMN_TIMEGOAL, dayTimeGoalStr);
+        dayValues.put(DAYS_COLUMN_TIMEEXTRA, dayTimeExtraStr);
         db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY +
                   " = ?", new String[]{Integer.toString(walkObject.id1), Integer.toString(walkObject.id2)});
 
         // update months table
-        if (timeMonth.length() == 4) {
-            timeMonth = "0" + timeMonth;
-        }
+        Date timeMonthCur = strToDateParser(timeMonth);
 
-        Date timeMonthCur = null;
+        long monthTimeMs = 0;
         try {
-            timeMonthCur = format.parse(timeMonth);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        long timeMonthMs = 0;
-        try {
-            timeMonthMs = timeMonthCur.getTime() + timeTotalWalk.getTime() + 7200000;
+            monthTimeMs = timeMonthCur.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
-        long timeMonthMin = timeMonthMs / 1000 / 60;
-        long timeMonthHours = timeMonthMin / 60;
-        long timeMonthMinRes = timeMonthMin % 60;
-        String timeMonthMinResStr = Long.toString(timeMonthMinRes);
-        if (timeMonthMinResStr.length() == 1) {
-            timeMonthMinResStr = "0" + timeMonthMinResStr;
-        }
-        timeMonth = timeMonthHours + ":" + timeMonthMinResStr;
-
-        int contractHours = sharedPref.getInt("contractHours");
-        int contractMins = sharedPref.getInt("contractMins");
-        int salaryEuro = sharedPref.getInt("salaryEuro");
-        int salaryCents = sharedPref.getInt("salaryCents");
-        int extraEuro = sharedPref.getInt("extraEuro");
-        int extraCents = sharedPref.getInt("extraCents");
-
-        String contractHoursStr = Integer.toString(contractHours);
-        if (contractHoursStr.length() == 1) {
-            contractHoursStr = "0" + contractHoursStr;
-        }
-
-        String contractMinsStr = Integer.toString(contractMins);
-        if (contractMinsStr.length() == 1) {
-            contractMinsStr = "0" + contractMinsStr;
-        }
-
-        String timeContractStr = contractHoursStr + ":" + contractMinsStr;
-
-        Date timeContract = null;
-        try {
-            timeContract = format.parse(timeContractStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        long timeExtraMonthMs = 0;
-        try {
-            timeExtraMonthMs = timeMonthMs - (timeContract.getTime() + 3600000);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        double salaryContractHour = ((double) salaryCents) / 100 + salaryEuro;
-        double salaryExtraHour = ((double) extraCents) / 100 + extraEuro;
-
-        long timeExtraMonthMin = timeExtraMonthMs / 1000 / 60;
-        long timeExtraMonthHour = timeExtraMonthMin / 60;
-        long timeExtraMonthMinRest = timeExtraMonthMin % 60;
-
-        double salaryContractHours;
-        double salaryContractMins;
-        double salaryExtraHours = 0;
-        double salaryExtraMins = 0;
-
-        if (timeExtraMonthMin <= 0) {
-            salaryContractHours = timeMonthHours * salaryContractHour;
-            salaryContractMins = ((double) timeMonthMinRes) / 60 * salaryContractHour;
-        }
-        else {
-            salaryContractHours = contractHours * salaryContractHour;
-            salaryContractMins = contractMins / 60 * salaryContractHour;
-            salaryExtraHours = timeExtraMonthHour * salaryExtraHour;
-            salaryExtraMins = timeExtraMonthMinRest / 60 * salaryExtraHour;
-        }
-
-        double salaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
-                             salaryExtraMins;
-
-        DecimalFormat threeDecFormat = new DecimalFormat("#.##");
-        String salaryTotalStr = threeDecFormat.format(salaryTotal).replaceAll(",",".");
-        salaryTotal = Double.parseDouble(salaryTotalStr);
+        timeMonth = msToTimeStrConverter(monthTimeMs);
+        double salaryTotal = salaryCalculator(monthTimeMs, sharedPref);
 
         ContentValues monthValues = new ContentValues();
         monthValues.put(MONTHS_COLUMN_SALARY, salaryTotal);
         monthValues.put(MONTHS_COLUMN_TIME, timeMonth);
-
         db.update(MONTHS_TABLE_NAME, monthValues, MONTHS_COLUMN_ID + " = ?",
                   new String[]{Integer.toString(walkObject.id1)});
         db.close();
@@ -493,12 +336,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void addDistrict(DistrictObject districtObject) {
         SQLiteDatabase db = getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(DISTRICTS_COLUMN_DISTRICTCODE, districtObject.districtCode);
         values.put(DISTRICTS_COLUMN_TIMEGOALBUSY, districtObject.timeGoalBusy);
         values.put(DISTRICTS_COLUMN_TIMEGOALCALM, districtObject.timeGoalCalm);
-
         db.insert(DISTRICTS_TABLE_NAME, null, values);
         db.close();
     }
@@ -522,6 +363,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String timeGoal = cursor.getString(11);
         String timeExtra = cursor.getString(12);
         String timeTotal = cursor.getString(13);
+
         cursor.close();
         db.close();
 
@@ -563,6 +405,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+
         return walkObjects;
     }
 
@@ -589,6 +432,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+
         return dayObjects;
     }
 
@@ -613,6 +457,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+
         return monthObjects;
     }
 
@@ -636,6 +481,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
+
         return districtObjects;
     }
 
@@ -685,6 +531,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         int days = cursor.getInt(2);
         String oldMonthTimeStr = cursor.getString(4);
+
         cursor.close();
 
         String queryDays = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
@@ -693,105 +540,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         String dayTimeTotalStr = cursor.getString(4);
+
         cursor.close();
         db.close();
 
         days -= 1;
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date oldMonthTime = null;
-        Date dayTimeTotal = null;
-
-        try {
-            oldMonthTime = format.parse(oldMonthTimeStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-        try {
-            dayTimeTotal = format.parse(dayTimeTotalStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldMonthTime = strToDateParser(oldMonthTimeStr);
+        Date dayTimeTotal = strToDateParser(dayTimeTotalStr);
 
         long newMonthTimeMs = 0;
         try {
-            newMonthTimeMs = oldMonthTime.getTime() + 3600000 - (dayTimeTotal.getTime() + 3600000);
+            newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (dayTimeTotal.getTime()
+                             + ZERO_TIME_VALUE);
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
-        long newMonthTimeMin = newMonthTimeMs / 1000 / 60;
-        long newMonthTimeHour = newMonthTimeMin / 60;
-        long newMonthTimeMinRes = newMonthTimeMin % 60;
-
-        String newMonthTimeMinResStr = Long.toString(newMonthTimeMinRes);
-        if (newMonthTimeMinResStr.length() == 1) {
-            newMonthTimeMinResStr = "0" + newMonthTimeMinResStr;
-        }
-        String newMonthTime = newMonthTimeHour + ":" + newMonthTimeMinResStr;
-
-        int contractHours = sharedPref.getInt("contractHours");
-        int contractMins = sharedPref.getInt("contractMins");
-        int salaryEuro = sharedPref.getInt("salaryEuro");
-        int salaryCents = sharedPref.getInt("salaryCents");
-        int extraEuro = sharedPref.getInt("extraEuro");
-        int extraCents = sharedPref.getInt("extraCents");
-
-        String contractHoursStr = Integer.toString(contractHours);
-        if (contractHoursStr.length() == 1) {
-            contractHoursStr = "0" + contractHoursStr;
-        }
-
-        String contractMinsStr = Integer.toString(contractMins);
-        if (contractMinsStr.length() == 1) {
-            contractMinsStr = "0" + contractMinsStr;
-        }
-
-        String timeContractStr = contractHoursStr + ":" + contractMinsStr;
-
-        Date timeContract = null;
-        try {
-            timeContract = format.parse(timeContractStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        long timeExtraMonthMs = 0;
-        try {
-            timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + 3600000);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        double salaryContractHour = ((double) salaryCents) / 100 + salaryEuro;
-        double salaryExtraHour = ((double) extraCents) / 100 + extraEuro;
-
-        long timeExtraMonthMin = timeExtraMonthMs / 1000 / 60;
-        long timeExtraMonthHour = timeExtraMonthMin / 60;
-        long timeExtraMonthMinRest = timeExtraMonthMin % 60;
-
-        double salaryContractHours;
-        double salaryContractMins;
-        double salaryExtraHours = 0;
-        double salaryExtraMins = 0;
-
-        if (timeExtraMonthMin <= 0) {
-            salaryContractHours = newMonthTimeHour * salaryContractHour;
-            salaryContractMins = ((double) newMonthTimeMinRes) / 60 * salaryContractHour;
-        }
-        else {
-            salaryContractHours = contractHours * salaryContractHour;
-            salaryContractMins = contractMins / 60 * salaryContractHour;
-            salaryExtraHours = timeExtraMonthHour * salaryExtraHour;
-            salaryExtraMins = timeExtraMonthMinRest / 60 * salaryExtraHour;
-        }
-
-        double newSalaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
-                salaryExtraMins;
-
-        DecimalFormat threeDecFormat = new DecimalFormat("#.##");
-        String salaryTotalStr = threeDecFormat.format(newSalaryTotal).replaceAll(",",".");
-        newSalaryTotal = Double.parseDouble(salaryTotalStr);
+        String newMonthTime = msToTimeStrConverter(newMonthTimeMs);
+        double newSalaryTotal = salaryCalculator(newMonthTimeMs, sharedPref);
 
         db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -820,6 +587,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String walkTimeGoalStr = cursor.getString(11);
         String walkTimeExtraStr = cursor.getString(12);
         String walkTimeTotalStr = cursor.getString(13);
+
         cursor.close();
 
         String queryDays = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
@@ -832,6 +600,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String oldDayTimeTotalStr = cursor.getString(4);
         String oldDayTimeGoalStr = cursor.getString(5);
         String oldDayTimeExtraStr = cursor.getString(6);
+
         cursor.close();
 
         String queryMonths = "SELECT * FROM " + MONTHS_TABLE_NAME + " WHERE " + MONTHS_COLUMN_ID + " = ?";
@@ -839,162 +608,85 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         String oldMonthTimeStr = cursor.getString(4);
+
         cursor.close();
         db.close();
 
         districts = districts.replaceFirst(districtCode + " ", "");
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date oldDayTimeTotal = null;
-        Date oldDayTimeGoal = null;
-        Date oldDayTimeExtra = null;
-        Date walkTimeTotal = null;
-        Date walkTimeGoal = null;
-        Date walkTimeExtra = null;
-
-        if (oldDayTimeTotalStr.length() == 4) {
-            oldDayTimeTotalStr = "0" + oldDayTimeTotalStr;
-        }
-        try {
-            oldDayTimeTotal = format.parse(oldDayTimeTotalStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (oldDayTimeGoalStr.length() == 4) {
-            oldDayTimeGoalStr = "0" + oldDayTimeGoalStr;
-        }
-        try {
-            oldDayTimeGoal = format.parse(oldDayTimeGoalStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldDayTimeTotal = strToDateParser(oldDayTimeTotalStr);
+        Date oldDayTimeGoal = strToDateParser(oldDayTimeGoalStr);
 
         boolean oldDayTimeNeg = false;
         if (oldDayTimeExtraStr.charAt(0) == '-') {
             oldDayTimeExtraStr = oldDayTimeExtraStr.substring(1);
             oldDayTimeNeg = true;
         }
-        if (oldDayTimeExtraStr.length() == 4) {
-            oldDayTimeExtraStr = "0" + oldDayTimeExtraStr;
-        }
-        try {
-            oldDayTimeExtra = format.parse(oldDayTimeExtraStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldDayTimeExtra = strToDateParser(oldDayTimeExtraStr);
 
-        if (walkTimeTotalStr.length() == 4) {
-            walkTimeTotalStr = "0" + walkTimeTotalStr;
-        }
-        try {
-            walkTimeTotal = format.parse(walkTimeTotalStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (walkTimeGoalStr.length() == 4) {
-            walkTimeGoalStr = "0" + walkTimeGoalStr;
-        }
-        try {
-            walkTimeGoal = format.parse(walkTimeGoalStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date walkTimeTotal = strToDateParser(walkTimeTotalStr);
+        Date walkTimeGoal = strToDateParser(walkTimeGoalStr);
 
         boolean walkTimeNeg = false;
         if (walkTimeExtraStr.charAt(0) == '-') {
             walkTimeExtraStr = walkTimeExtraStr.substring(1);
             walkTimeNeg = true;
         }
-        if (walkTimeExtraStr.length() == 4) {
-            walkTimeExtraStr = "0" + walkTimeExtraStr;
-        }
-        try {
-            walkTimeExtra = format.parse(walkTimeExtraStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date walkTimeExtra = strToDateParser(walkTimeExtraStr);
 
         long newDayTimeTotalMs = 0;
         long newDayTimeGoalMs = 0;
         long newDayTimeExtraMs = 0;
 
         try {
-            newDayTimeTotalMs = oldDayTimeTotal.getTime() + 3600000 - (walkTimeTotal.getTime()
-                              + 3600000);
+            newDayTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (walkTimeTotal.getTime()
+                                + ZERO_TIME_VALUE);
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
         try {
-            newDayTimeGoalMs = oldDayTimeGoal.getTime() + 3600000 - (walkTimeGoal.getTime()
-                    + 3600000);
+            newDayTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (walkTimeGoal.getTime()
+                               + ZERO_TIME_VALUE);
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
         if (!oldDayTimeNeg && !walkTimeNeg) {
             try {
-                newDayTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 - (walkTimeExtra.getTime()
-                        + 3600000);
+                newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
+                                    + ZERO_TIME_VALUE);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else if (!oldDayTimeNeg && walkTimeNeg) {
             try {
-                newDayTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 + walkTimeExtra.getTime()
-                        + 3600000;
+                newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE + walkTimeExtra.getTime()
+                                    + ZERO_TIME_VALUE;
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else if (oldDayTimeNeg && !walkTimeNeg) {
             try {
-                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000)
-                                    - (walkTimeExtra.getTime() + 3600000);
+                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                                    - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
         else {
             try {
-                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000)
-                                    + (walkTimeExtra.getTime() + 3600000);
+                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                                    + (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
         }
 
-        long newDayTimeTotalMin = newDayTimeTotalMs / 1000 / 60;
-        long newDayTimeTotalHour = newDayTimeTotalMin / 60;
-        long newDayTimeTotalMinRes = newDayTimeTotalMin % 60;
-        String newDayTimeTotalMinResStr = Long.toString(newDayTimeTotalMinRes);
-        if (newDayTimeTotalMinResStr.length() == 1) {
-            newDayTimeTotalMinResStr = "0" + newDayTimeTotalMinResStr;
-        }
-        String newDayTimeTotal = newDayTimeTotalHour + ":" + newDayTimeTotalMinResStr;
-
-        long newDayTimeGoalMin = newDayTimeGoalMs / 1000 / 60;
-        long newDayTimeGoalHour = newDayTimeGoalMin / 60;
-        long newDayTimeGoalMinRes = newDayTimeGoalMin % 60;
-        String newDayTimeGoalMinResStr = Long.toString(newDayTimeGoalMinRes);
-        if (newDayTimeGoalMinResStr.length() == 1) {
-            newDayTimeGoalMinResStr = "0" + newDayTimeGoalMinResStr;
-        }
-        String newDayTimeGoal = newDayTimeGoalHour + ":" + newDayTimeGoalMinResStr;
-
-        long newDayTimeExtraMin = newDayTimeExtraMs / 1000 / 60;
-        long newDayTimeExtraHour = newDayTimeExtraMin / 60;
-        long newDayTimeExtraMinRes = Math.abs(newDayTimeExtraMin % 60);
-        String newDayTimeExtraMinResStr = Long.toString(newDayTimeExtraMinRes);
-        if (newDayTimeExtraMinResStr.length() == 1) {
-            newDayTimeExtraMinResStr = "0" + newDayTimeExtraMinResStr;
-        }
-        String newDayTimeExtra = newDayTimeExtraHour + ":" + newDayTimeExtraMinResStr;
-        if (newDayTimeExtraMin < 0 && newDayTimeExtraHour == 0) {
-            newDayTimeExtra = "-" + newDayTimeExtra;
-        }
+        String newDayTimeTotal = msToTimeStrConverter(newDayTimeTotalMs);
+        String newDayTimeGoal = msToTimeStrConverter(newDayTimeGoalMs);
+        String newDayTimeExtra = msToTimeStrConverter(newDayTimeExtraMs);
 
         db = getWritableDatabase();
         ContentValues dayValues = new ContentValues();
@@ -1005,96 +697,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY + " = ?",
                   new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
 
-        Date oldMonthTime = null;
-
-        if (oldMonthTimeStr.length() == 4) {
-            oldMonthTimeStr = "0" + oldMonthTimeStr;
-        }
-        try {
-            oldMonthTime = format.parse(oldMonthTimeStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldMonthTime = strToDateParser(oldMonthTimeStr);
 
         long newMonthTimeMs = 0;
         try {
-            newMonthTimeMs = oldMonthTime.getTime() + 3600000 - (oldDayTimeTotal.getTime() + 3600000)
-                             + newDayTimeTotalMs;
+            newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (oldDayTimeTotal.getTime()
+                             + ZERO_TIME_VALUE) + newDayTimeTotalMs;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
-        long newMonthTimeMin = newMonthTimeMs / 1000 / 60;
-        long newMonthTimeHour = newMonthTimeMin / 60;
-        long newMonthTimeMinRes = newMonthTimeMin % 60;
-        String newMonthTimeMinResStr = Long.toString(newMonthTimeMinRes);
-        if (newMonthTimeMinResStr.length() == 1) {
-            newMonthTimeMinResStr = "0" + newMonthTimeMinResStr;
-        }
-        String newMonthTime = newMonthTimeHour + ":" + newMonthTimeMinResStr;
-
-        int contractHours = sharedPref.getInt("contractHours");
-        int contractMins = sharedPref.getInt("contractMins");
-        int salaryEuro = sharedPref.getInt("salaryEuro");
-        int salaryCents = sharedPref.getInt("salaryCents");
-        int extraEuro = sharedPref.getInt("extraEuro");
-        int extraCents = sharedPref.getInt("extraCents");
-
-        String contractHoursStr = Integer.toString(contractHours);
-        if (contractHoursStr.length() == 1) {
-            contractHoursStr = "0" + contractHoursStr;
-        }
-
-        String contractMinsStr = Integer.toString(contractMins);
-        if (contractMinsStr.length() == 1) {
-            contractMinsStr = "0" + contractMinsStr;
-        }
-
-        String timeContractStr = contractHoursStr + ":" + contractMinsStr;
-
-        Date timeContract = null;
-        try {
-            timeContract = format.parse(timeContractStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        long timeExtraMonthMs = 0;
-        try {
-            timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + 3600000);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        double salaryContractHour = ((double) salaryCents) / 100 + salaryEuro;
-        double salaryExtraHour = ((double) extraCents) / 100 + extraEuro;
-
-        long timeExtraMonthMin = timeExtraMonthMs / 1000 / 60;
-        long timeExtraMonthHour = timeExtraMonthMin / 60;
-        long timeExtraMonthMinRest = timeExtraMonthMin % 60;
-
-        double salaryContractHours;
-        double salaryContractMins;
-        double salaryExtraHours = 0;
-        double salaryExtraMins = 0;
-
-        if (timeExtraMonthMin <= 0) {
-            salaryContractHours = newMonthTimeHour * salaryContractHour;
-            salaryContractMins = ((double) newMonthTimeMinRes) / 60 * salaryContractHour;
-        }
-        else {
-            salaryContractHours = contractHours * salaryContractHour;
-            salaryContractMins = contractMins / 60 * salaryContractHour;
-            salaryExtraHours = timeExtraMonthHour * salaryExtraHour;
-            salaryExtraMins = timeExtraMonthMinRest / 60 * salaryExtraHour;
-        }
-
-        double newSalaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
-                salaryExtraMins;
-
-        DecimalFormat threeDecFormat = new DecimalFormat("#.##");
-        String salaryTotalStr = threeDecFormat.format(newSalaryTotal).replaceAll(",",".");
-        newSalaryTotal = Double.parseDouble(salaryTotalStr);
+        String newMonthTime = msToTimeStrConverter(newMonthTimeMs);
+        double newSalaryTotal = salaryCalculator(newMonthTimeMs, sharedPref);
 
         ContentValues monthValues = new ContentValues();
         monthValues.put(MONTHS_COLUMN_SALARY, newSalaryTotal);
@@ -1131,7 +745,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String queryWalk = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH +
                            " = ? AND " + WALKS_COLUMN_IDDAY + " = ? AND " + WALKS_COLUMN_IDWALK + " = ?";
         Cursor cursor = db.rawQuery(queryWalk, new String[]{Integer.toString(walkObject.id1),
-                Integer.toString(walkObject.id2), Integer.toString(walkObject.id3)});
+                        Integer.toString(walkObject.id2), Integer.toString(walkObject.id3)});
         cursor.moveToFirst();
 
         String districtCode = cursor.getString(3);
@@ -1145,6 +759,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String timeGoal = cursor.getString(11);
         String timeExtra = cursor.getString(12);
         String timeTotal = cursor.getString(13);
+
         cursor.close();
 
         WalkObject oldWalkObj = new WalkObject(walkObject.id1, walkObject.id2, walkObject.id3,
@@ -1162,6 +777,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         timeTotal = cursor.getString(4);
         timeGoal = cursor.getString(5);
         timeExtra = cursor.getString(6);
+
         cursor.close();
 
         DayObject oldDayObj = new DayObject(walkObject.id1, walkObject.id2, day, districts,
@@ -1175,6 +791,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int days = cursor.getInt(2);
         double salary = cursor.getDouble(3);
         String time = cursor.getString(4);
+
         cursor.close();
         db.close();
 
@@ -1200,198 +817,90 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String newDistricts = oldDayObj.districts.replaceFirst(oldWalkObj.districtCode,
                               walkObject.districtCode);
 
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-        Date oldDayTimeTotal = null;
-        Date oldWalkTimeTotal = null;
-        Date newWalkTimeTotal = null;
-
-        if (oldDayObj.timeTotal.length() == 4) {
-            oldDayObj.timeTotal = "0" + oldDayObj.timeTotal;
-        }
-        try {
-            oldDayTimeTotal = format.parse(oldDayObj.timeTotal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (oldWalkObj.timeTotal.length() == 4) {
-            oldWalkObj.timeTotal = "0" + oldWalkObj.timeTotal;
-        }
-        try {
-            oldWalkTimeTotal = format.parse(oldWalkObj.timeTotal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (walkObject.timeTotal.length() == 4) {
-            walkObject.timeTotal = "0" + walkObject.timeTotal;
-        }
-        try {
-            newWalkTimeTotal = format.parse(walkObject.timeTotal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldDayTimeTotal = strToDateParser(oldDayObj.timeTotal);
+        Date oldWalkTimeTotal = strToDateParser(oldWalkObj.timeTotal);
+        Date newWalkTimeTotal = strToDateParser(walkObject.timeTotal);
 
         long newTimeTotalMs = 0;
         try {
-            newTimeTotalMs = oldDayTimeTotal.getTime() + 3600000 - (oldWalkTimeTotal.getTime() +
-                             3600000) + newWalkTimeTotal.getTime() + 3600000;
+            newTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeTotal.getTime()
+                             + ZERO_TIME_VALUE) + newWalkTimeTotal.getTime() + ZERO_TIME_VALUE;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
-        long newTimeTotalMin = newTimeTotalMs / 1000 / 60;
-        long newTimeTotalHour = newTimeTotalMin / 60;
-        long newTimeTotalMinRest = newTimeTotalMin % 60;
+        String newDayTimeTotal = msToTimeStrConverter(newTimeTotalMs);
 
-        String newTimeTotalMinRestStr = Long.toString(newTimeTotalMinRest);
-        if (newTimeTotalMinRestStr.length() == 1) {
-            newTimeTotalMinRestStr = "0" + newTimeTotalMinRestStr;
-        }
-        String newDayTimeTotal = newTimeTotalHour + ":" + newTimeTotalMinRestStr;
-
-        Date oldDayTimeGoal = null;
-        Date oldWalkTimeGoal = null;
-        Date newWalkTimeGoal = null;
-
-        if (oldDayObj.timeGoal.length() == 4) {
-            oldDayObj.timeGoal = "0" + oldDayObj.timeGoal;
-        }
-        try {
-            oldDayTimeGoal = format.parse(oldDayObj.timeGoal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (oldWalkObj.timeGoal.length() == 4) {
-            oldWalkObj.timeGoal = "0" + oldWalkObj.timeGoal;
-        }
-        try {
-            oldWalkTimeGoal = format.parse(oldWalkObj.timeGoal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (walkObject.timeGoal.length() == 4) {
-            walkObject.timeGoal = "0" + walkObject.timeGoal;
-        }
-        try {
-            newWalkTimeGoal = format.parse(walkObject.timeGoal);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldDayTimeGoal = strToDateParser(oldDayObj.timeGoal);
+        Date oldWalkTimeGoal = strToDateParser(oldWalkObj.timeGoal);
+        Date newWalkTimeGoal = strToDateParser(walkObject.timeGoal);
 
         long newTimeGoalMs = 0;
         try {
-            newTimeGoalMs = oldDayTimeGoal.getTime() + 3600000 - (oldWalkTimeGoal.getTime() +
-                            3600000) + newWalkTimeGoal.getTime() + 3600000;
+            newTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeGoal.getTime()
+                            + ZERO_TIME_VALUE) + newWalkTimeGoal.getTime() + ZERO_TIME_VALUE;
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
-        long newTimeGoalMin = newTimeGoalMs / 1000 / 60;
-        long newTimeGoalHour = newTimeGoalMin / 60;
-        long newTimeGoalMinRest = newTimeGoalMin % 60;
-
-        String newTimeGoalMinRestStr = Long.toString(newTimeGoalMinRest);
-        if (newTimeGoalMinRestStr.length() == 1) {
-            newTimeGoalMinRestStr = "0" + newTimeGoalMinRestStr;
-        }
-        String newDayTimeGoal = newTimeGoalHour + ":" + newTimeGoalMinRestStr;
-
-        Date oldDayTimeExtra = null;
-        Date oldWalkTimeExtra = null;
-        Date newWalkTimeExtra = null;
+        String newDayTimeGoal = msToTimeStrConverter(newTimeGoalMs);
 
         boolean oldDayTimeNeg = false;
         if (oldDayObj.timeExtra.charAt(0) == '-') {
             oldDayObj.timeExtra = oldDayObj.timeExtra.substring(1);
             oldDayTimeNeg = true;
         }
-        if (oldDayObj.timeExtra.length() == 4) {
-            oldDayObj.timeExtra = "0" + oldDayObj.timeExtra;
-        }
-        try {
-            oldDayTimeExtra = format.parse(oldDayObj.timeExtra);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldDayTimeExtra = strToDateParser(oldDayObj.timeExtra);
 
         boolean oldWalkTimeNeg = false;
         if (oldWalkObj.timeExtra.charAt(0) == '-') {
             oldWalkObj.timeExtra = oldWalkObj.timeExtra.substring(1);
             oldWalkTimeNeg = true;
         }
-        if (oldWalkObj.timeExtra.length() == 4) {
-            oldWalkObj.timeExtra = "0" + oldWalkObj.timeExtra;
-        }
-        try {
-            oldWalkTimeExtra = format.parse(oldWalkObj.timeExtra);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date oldWalkTimeExtra = strToDateParser(oldWalkObj.timeExtra);
 
         boolean newWalkTimeNeg = false;
         if (walkObject.timeExtra.charAt(0) == '-') {
             walkObject.timeExtra = walkObject.timeExtra.substring(1);
             newWalkTimeNeg = true;
         }
-        if (walkObject.timeExtra.length() == 4) {
-            walkObject.timeExtra = "0" + walkObject.timeExtra;
-        }
-        try {
-            newWalkTimeExtra = format.parse(walkObject.timeExtra);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date newWalkTimeExtra = strToDateParser(walkObject.timeExtra);
 
-        long newTimeExtraMs = 0;
+        long newTimeExtraMs;
         if (!oldDayTimeNeg && !oldWalkTimeNeg && !newWalkTimeNeg) {
-            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 - (oldWalkTimeExtra.getTime() +
-                             3600000) + newWalkTimeExtra.getTime() + 3600000;
+            newTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE - (oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE) + newWalkTimeExtra.getTime() + ZERO_TIME_VALUE;
         }
         else if (!oldDayTimeNeg && !oldWalkTimeNeg && newWalkTimeNeg) {
-            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 - (oldWalkTimeExtra.getTime() +
-                             3600000) - (newWalkTimeExtra.getTime() + 3600000);
+            newTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE - (oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE) - (newWalkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
         else if (!oldDayTimeNeg && oldWalkTimeNeg && !newWalkTimeNeg) {
-            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 + oldWalkTimeExtra.getTime() +
-                             3600000 + newWalkTimeExtra.getTime() + 3600000;
+            newTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE + oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE + newWalkTimeExtra.getTime() + ZERO_TIME_VALUE;
         }
         else if (!oldDayTimeNeg && oldWalkTimeNeg && newWalkTimeNeg) {
-            newTimeExtraMs = oldDayTimeExtra.getTime() + 3600000 + oldWalkTimeExtra.getTime() +
-                             3600000 - (newWalkTimeExtra.getTime() + 3600000);
+            newTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE + oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE - (newWalkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
         else if (oldDayTimeNeg && !oldWalkTimeNeg && !newWalkTimeNeg) {
-            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) - (oldWalkTimeExtra.getTime()
-                             + 3600000) + newWalkTimeExtra.getTime() + 3600000;
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE) - (oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE) + newWalkTimeExtra.getTime() + ZERO_TIME_VALUE;
         }
         else if (oldDayTimeNeg && !oldWalkTimeNeg && newWalkTimeNeg) {
-            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) - (oldWalkTimeExtra.getTime()
-                             + 3600000) - (newWalkTimeExtra.getTime() + 3600000);
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE) - (oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE) - (newWalkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
         else if (oldDayTimeNeg && oldWalkTimeNeg && !newWalkTimeNeg) {
-            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) + oldWalkTimeExtra.getTime()
-                             + 3600000 + newWalkTimeExtra.getTime() + 3600000;
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE) + oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE + newWalkTimeExtra.getTime() + ZERO_TIME_VALUE;
         }
         else {
-            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + 3600000) + oldWalkTimeExtra.getTime()
-                             + 3600000 - (newWalkTimeExtra.getTime() + 3600000);
+            newTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE) + oldWalkTimeExtra.getTime()
+                             + ZERO_TIME_VALUE - (newWalkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
 
-        long newTimeExtraMin = newTimeExtraMs / 1000 / 60;
-        long newTimeExtraHour = Math.abs(newTimeExtraMin / 60);
-        long newTimeExtraMinRes = newTimeExtraMin % 60;
-
-        String newTimeExtraMinResStr = Long.toString(newTimeExtraMinRes);
-        if (newTimeExtraMinResStr.length() == 1) {
-            newTimeExtraMinResStr = "0" + newTimeExtraMinResStr;
-        }
-        String newDayTimeExtra = newTimeExtraHour + ":" + newTimeExtraMinResStr;
-
-        if (newTimeExtraMin < 0 && newTimeExtraHour == 0) {
-            newDayTimeExtra = "-" + newDayTimeExtra;
-        }
+        String newDayTimeExtra = msToTimeStrConverter(newTimeExtraMs);
 
         ContentValues dayValues = new ContentValues();
         dayValues.put(DAYS_COLUMN_DISTRICTS, newDistricts);
@@ -1402,30 +911,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                   + " = ?", new String[]{Integer.toString(walkObject.id1),
                   Integer.toString(walkObject.id2)});
 
-        if (oldMonthObj.time.length() == 4) {
-            oldMonthObj.time = "0" + oldMonthObj.time;
-        }
+        Date oldMonthTime = strToDateParser(oldMonthObj.time);
 
-        Date oldMonthTime = null;
-        try {
-            oldMonthTime = format.parse(oldMonthObj.time);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        long newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (oldDayTimeTotal.getTime()
+                              + ZERO_TIME_VALUE) + newTimeTotalMs;
 
-        long newMonthTimeMs = oldMonthTime.getTime() + 3600000 - (oldDayTimeTotal.getTime() + 3600000)
-                              + newTimeTotalMs;
+        String newMonthTime = msToTimeStrConverter(newMonthTimeMs);
 
-        long newMonthTimeMin = newMonthTimeMs / 1000 / 60;
-        long newMonthTimeHour = newMonthTimeMin / 60;
-        long newMonthTimeMinRes = newMonthTimeMin % 60;
+        double newSalaryTotal = salaryCalculator(newMonthTimeMs, sharedPref);
 
-        String newMonthTimeMinResStr = Long.toString(newMonthTimeMinRes);
-        if (newMonthTimeMinResStr.length() == 1) {
-            newMonthTimeMinResStr = "0" + newMonthTimeMinResStr;
-        }
-        String newMonthTime = newMonthTimeHour + ":" + newMonthTimeMinResStr;
+        ContentValues monthValues = new ContentValues();
+        monthValues.put(MONTHS_COLUMN_SALARY, newSalaryTotal);
+        monthValues.put(MONTHS_COLUMN_TIME, newMonthTime);
+        db.update(MONTHS_TABLE_NAME, monthValues, MONTHS_COLUMN_ID + " = ?",
+                new String[]{Integer.toString(walkObject.id1)});
+        db.close();
+    }
 
+    private double salaryCalculator(long newMonthTimeMs, Bundle sharedPref) {
         int contractHours = sharedPref.getInt("contractHours");
         int contractMins = sharedPref.getInt("contractMins");
         int salaryEuro = sharedPref.getInt("salaryEuro");
@@ -1443,57 +946,80 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             contractMinsStr = "0" + contractMinsStr;
         }
 
-        String timeContractStr = contractHoursStr + ":" + contractMinsStr;
-
-        Date timeContract = null;
-        try {
-            timeContract = format.parse(timeContractStr);
-        } catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        Date timeContract = strToDateParser(contractHoursStr + ":" + contractMinsStr);
 
         long timeExtraMonthMs = 0;
         try {
-            timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + 3600000);
+            timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + ZERO_TIME_VALUE);
         } catch (java.lang.NullPointerException e) {
             e.printStackTrace();
         }
 
+        long monthHours = newMonthTimeMs / 1000 / 60 / 60;
+        long monthMins = newMonthTimeMs / 1000 / 60 % 60;
+
         double salaryContractHour = ((double) salaryCents) / 100 + salaryEuro;
         double salaryExtraHour = ((double) extraCents) / 100 + extraEuro;
 
-        long timeExtraMonthMin = timeExtraMonthMs / 1000 / 60;
-        long timeExtraMonthHour = timeExtraMonthMin / 60;
-        long timeExtraMonthMinRest = timeExtraMonthMin % 60;
+        long timeExtraMonthHours = timeExtraMonthMs / 1000 / 60 / 60;
+        long timeExtraMonthMins = timeExtraMonthMs / 1000 / 60 % 60;
 
         double salaryContractHours;
         double salaryContractMins;
         double salaryExtraHours = 0;
         double salaryExtraMins = 0;
 
-        if (timeExtraMonthMin <= 0) {
-            salaryContractHours = newMonthTimeHour * salaryContractHour;
-            salaryContractMins = ((double) newMonthTimeMinRes) / 60 * salaryContractHour;
+        if (timeExtraMonthMs <= 0) {
+            salaryContractHours = monthHours * salaryContractHour;
+            salaryContractMins = ((double) monthMins) / 60 * salaryContractHour;
         }
         else {
             salaryContractHours = contractHours * salaryContractHour;
             salaryContractMins = contractMins / 60 * salaryContractHour;
-            salaryExtraHours = timeExtraMonthHour * salaryExtraHour;
-            salaryExtraMins = timeExtraMonthMinRest / 60 * salaryExtraHour;
+            salaryExtraHours = timeExtraMonthHours * salaryExtraHour;
+            salaryExtraMins = timeExtraMonthMins / 60 * salaryExtraHour;
         }
 
         double newSalaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
                 salaryExtraMins;
 
-        DecimalFormat threeDecFormat = new DecimalFormat("#.##");
-        String salaryTotalStr = threeDecFormat.format(newSalaryTotal).replaceAll(",",".");
+        DecimalFormat twoDecFormat = new DecimalFormat("#.##");
+        String salaryTotalStr = twoDecFormat.format(newSalaryTotal).replaceAll(",",".");
         newSalaryTotal = Double.parseDouble(salaryTotalStr);
 
-        ContentValues monthValues = new ContentValues();
-        monthValues.put(MONTHS_COLUMN_SALARY, newSalaryTotal);
-        monthValues.put(MONTHS_COLUMN_TIME, newMonthTime);
-        db.update(MONTHS_TABLE_NAME, monthValues, MONTHS_COLUMN_ID + " = ?",
-                new String[]{Integer.toString(walkObject.id1)});
-        db.close();
+        return newSalaryTotal;
+    }
+
+    private String msToTimeStrConverter(long milliSeconds) {
+        long hours = milliSeconds / 1000 / 60 / 60;
+        long minutes = Math.abs(milliSeconds / 1000 / 60 % 60);
+
+        String minutesStr = Long.toString(minutes);
+        if (minutesStr.length() == 1) {
+            minutesStr = "0" + minutesStr;
+        }
+        String time = hours + ":" + minutesStr;
+
+        if (milliSeconds < 0 && hours == 0) {
+            time = "-" + time;
+        }
+
+        return time;
+    }
+
+    private Date strToDateParser(String timeStr) {
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        Date timeDate = null;
+
+        if (timeStr.length() == 4) {
+            timeStr = "0" + timeStr;
+        }
+        try {
+            timeDate = format.parse(timeStr);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+
+        return timeDate;
     }
 }

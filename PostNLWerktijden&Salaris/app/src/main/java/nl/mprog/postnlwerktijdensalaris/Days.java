@@ -59,16 +59,12 @@ public class Days extends AppCompatActivity {
             listViewDays.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    TextView idView = (TextView) view.findViewById(R.id.listItemUpCenter);
-                    TextView titleDayView = (TextView) view.findViewById(R.id.listItemUpLeft);
-
-                    int idDay = Integer.parseInt(idView.getText().toString());
-                    String titleDay = titleDayView.getText().toString();
+                    TextView idDayView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                    int idDay = Integer.parseInt(idDayView.getText().toString());
 
                     Intent goToWalks = new Intent(Days.this, Walks.class);
                     goToWalks.putExtra("idMonth", idMonth);
                     goToWalks.putExtra("idDay", idDay);
-                    goToWalks.putExtra("titleDay", titleDay);
                     startActivity(goToWalks);
                     finish();
                 }
@@ -103,6 +99,8 @@ public class Days extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                     return true;
                 }
             });

@@ -59,6 +59,21 @@ public class Walks extends AppCompatActivity {
 
             checkForDistricts();
 
+            listViewWalks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                    int idWalk = Integer.parseInt(idWalkView.getText().toString());
+
+                    Intent goToAddWalk = new Intent(Walks.this, AddWalk.class);
+                    goToAddWalk.putExtra("idMonth", idMonth);
+                    goToAddWalk.putExtra("idDay", idDay);
+                    goToAddWalk.putExtra("idWalk", idWalk);
+                    startActivity(goToAddWalk);
+                    finish();
+                }
+            });
+
             listViewWalks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -88,6 +103,8 @@ public class Walks extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                         }
                     });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
                     return true;
                 }
             });

@@ -48,8 +48,6 @@ public class AddWalk extends AppCompatActivity{
     EditText editBeginMin3;
     EditText editEndHour3;
     EditText editEndMin3;
-    TextView districtCodeView;
-    TextView dayTypeView;
     TextView timeGoalView;
     Spinner spinnerDistrict;
     Spinner spinnerDayType;
@@ -251,8 +249,11 @@ public class AddWalk extends AppCompatActivity{
             endMin3 = walkObj.timeEnd3.substring(3);
             editEndMin3.setText(endMin3);
 
-            districtCodeView.setText(walkObj.districtCode);
-            dayTypeView.setText(walkObj.dayType);
+            int districtPos = adapterDistrict.getPosition(walkObj.districtCode);
+            spinnerDistrict.setSelection(districtPos);
+
+            int dayTypePos = adapterDayType.getPosition(walkObj.dayType);
+            spinnerDayType.setSelection(dayTypePos);
         }
     }
 
@@ -286,11 +287,57 @@ public class AddWalk extends AppCompatActivity{
     }
 
     public void onClickSave(View view) {
+
+        if (editBeginHour1.getText().toString().equals("")) {
+            editBeginHour1.setText("0");
+        }
+        if (editBeginMin1.getText().toString().equals("")) {
+            editBeginMin1.setText("00");
+        }
+        if (editEndHour1.getText().toString().equals("")) {
+            editEndHour1.setText("0");
+        }
+        if (editEndMin1.getText().toString().equals("")) {
+            editEndMin1.setText("00");
+        }
+        if (editBeginHour2.getText().toString().equals("")) {
+            editBeginHour2.setText("0");
+        }
+        if (editBeginMin2.getText().toString().equals("")) {
+            editBeginMin2.setText("00");
+        }
+        if (editEndHour2.getText().toString().equals("")) {
+            editEndHour2.setText("0");
+        }
+        if (editEndMin2.getText().toString().equals("")) {
+            editEndMin2.setText("00");
+        }
+        if (editBeginHour3.getText().toString().equals("")) {
+            editBeginHour3.setText("0");
+        }
+        if (editBeginMin3.getText().toString().equals("")) {
+            editBeginMin3.setText("00");
+        }
+        if (editEndHour3.getText().toString().equals("")) {
+            editEndHour3.setText("0");
+        }
+        if (editEndMin3.getText().toString().equals("")) {
+            editEndMin3.setText("00");
+        }
+
         if (editBeginHour1.getText().toString().equals("0")
                 && editBeginMin1.getText().toString().equals("00")
                 && editBeginHour1.getText().toString().equals("0")
                 && editBeginMin1.getText().toString().equals("00")) {
             Toast.makeText(AddWalk.this, "Ongeldige invoer eerste regel", Toast.LENGTH_SHORT).show();
+        }
+        else if (editBeginHour1.getText().toString().length() > 2
+                || editEndHour1.getText().toString().length() > 2
+                || editBeginHour2.getText().toString().length() > 2
+                || editEndHour2.getText().toString().length() > 2
+                || editBeginHour3.getText().toString().length() > 2
+                || editEndHour3.getText().toString().length() > 2) {
+            Toast.makeText(AddWalk.this, "Ongeldige invoer uren", Toast.LENGTH_SHORT).show();
         }
         else if (editBeginMin1.getText().toString().length() != 2
                 || editEndMin1.getText().toString().length() != 2
@@ -326,11 +373,11 @@ public class AddWalk extends AppCompatActivity{
                 || Integer.parseInt(editBeginMin3.getText().toString()) >= 60)
                 || (Integer.parseInt(editEndMin3.getText().toString()) < 0
                 || Integer.parseInt(editEndMin3.getText().toString()) >= 60)) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer minuten", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddWalk.this, "Ongeldige invoer minuten2", Toast.LENGTH_SHORT).show();
         }
         else {
-            String districtCode = districtCodeView.getText().toString();
-            String dayType = dayTypeView.getText().toString();
+            String districtCode = spinnerDistrict.getSelectedItem().toString();
+            String dayType = spinnerDayType.getSelectedItem().toString();
             String timeGoalStr = timeGoalView.getText().toString();
 
             if (timeGoalStr.length() == 4) {
@@ -493,25 +540,28 @@ public class AddWalk extends AppCompatActivity{
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
                     timeExtraStr, timeTotalStr);
 
+            SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
+            int contractHours = sharedPref.getInt("contractHours", 0);
+            int contractMins = sharedPref.getInt("contractMins", 0);
+            int salaryEuro = sharedPref.getInt("salaryEuro", 0);
+            int salaryCents = sharedPref.getInt("salaryCents", 0);
+            int extraEuro = sharedPref.getInt("extraEuro", 0);
+            int extraCents = sharedPref.getInt("extraCents", 0);
+
+            Bundle bundle = new Bundle();
+            bundle.putInt("contractHours", contractHours);
+            bundle.putInt("contractMins", contractMins);
+            bundle.putInt("salaryEuro", salaryEuro);
+            bundle.putInt("salaryCents", salaryCents);
+            bundle.putInt("extraEuro", extraEuro);
+            bundle.putInt("extraCents", extraCents);
+
             DatabaseHandler db = new DatabaseHandler(AddWalk.this);
             if (idWalk == 0) {
-                SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
-                int contractHours = sharedPref.getInt("contractHours", 0);
-                int contractMins = sharedPref.getInt("contractMins", 0);
-                int salaryEuro = sharedPref.getInt("salaryEuro", 0);
-                int salaryCents = sharedPref.getInt("salaryCents", 0);
-                int extraEuro = sharedPref.getInt("extraEuro", 0);
-                int extraCents = sharedPref.getInt("extraCents", 0);
-
-                Bundle bundle = new Bundle();
-                bundle.putInt("contractHours", contractHours);
-                bundle.putInt("contractMins", contractMins);
-                bundle.putInt("salaryEuro", salaryEuro);
-                bundle.putInt("salaryCents", salaryCents);
-                bundle.putInt("extraEuro", extraEuro);
-                bundle.putInt("extraCents", extraCents);
-
                 db.addWalk(walkObj, bundle);
+            }
+            else {
+                db.editWalk(walkObj, bundle);
             }
 
             if (prefsEditor != null) {
