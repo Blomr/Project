@@ -40,6 +40,10 @@ public class DistrictAdapter extends ArrayAdapter {
         String timeGoalCalm = "Daldag: " + listItemObj.timeGoalCalm;
         textViewDownRight.setText(timeGoalCalm);
 
+        TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
+        String idStr = Integer.toString(listItemObj.id);
+        textViewUpCenter.setText(idStr);
+
         return view;
     }
 }

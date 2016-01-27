@@ -34,6 +34,8 @@ public class AddWalk extends AppCompatActivity{
     String beginMin3;
     String endHour3;
     String endMin3;
+    String savedDistrict;
+    String savedDayType;
     final String busyDay = "Piekdag";
     final String calmDay = "Daldag";
     EditText editBeginHour1;
@@ -56,16 +58,22 @@ public class AddWalk extends AppCompatActivity{
     SharedPreferences prefs;
     SharedPreferences.Editor prefsEditor;
 
+    /**
+     * Sets layout and listeners, initialize variables and if exist loads shared preferences
+     * into editTexts. Sets content of selected item in layout, if id is not 0.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addwalk);
 
+        // initialize variables from intent
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
         idWalk = getIntent().getIntExtra("idWalk", 0);
         boolean fromSettings = getIntent().getBooleanExtra("fromSettings", false);
 
+        // initialize editTexts
         editBeginHour1 = (EditText) findViewById(R.id.beginHour1);
         editBeginMin1 = (EditText) findViewById(R.id.beginMin1);
         editEndHour1 = (EditText) findViewById(R.id.endHour1);
@@ -79,6 +87,7 @@ public class AddWalk extends AppCompatActivity{
         editEndHour3 = (EditText) findViewById(R.id.endHour3);
         editEndMin3 = (EditText) findViewById(R.id.endMin3);
 
+        // if user went to settings, load latest changes from shared preferences
         if (fromSettings) {
             prefs = getPreferences(MODE_PRIVATE);
             idMonth = prefs.getInt("idMonth", 0);
@@ -96,10 +105,13 @@ public class AddWalk extends AppCompatActivity{
             editBeginMin3.setText(prefs.getString("beginMin3", ""));
             editEndHour3.setText(prefs.getString("endHour3", ""));
             editEndMin3.setText(prefs.getString("endMin3", ""));
+            savedDistrict = prefs.getString("spinnerDistrict", "");
+            savedDayType = prefs.getString("spinnerDayType", "");
         }
 
         timeGoalView = (TextView) findViewById(R.id.timeGoal);
 
+        // get all district codes from database
         DatabaseHandler db = new DatabaseHandler(this);
         final ArrayList<DistrictObject> districtObjects = db.getDistricts();
         districtCodes = new ArrayList<>();
@@ -107,10 +119,22 @@ public class AddWalk extends AppCompatActivity{
             districtCodes.add(districtObj.districtCode);
         }
 
+        // adapt district codes into spinner
         spinnerDistrict = (Spinner) findViewById(R.id.spinnerDistrict);
         adapterDistrict = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, districtCodes);
         spinnerDistrict.setAdapter(adapterDistrict);
 
+        // if user went to settings, load latest selection into district code spinner
+        if (fromSettings) {
+            for (int i = 0; i < districtCodes.size(); i++) {
+                if (districtCodes.get(i).equals(savedDistrict)) {
+                    spinnerDistrict.setSelection(i);
+                    break;
+                }
+            }
+        }
+
+        // get day types of current selected item and adapt into second spinner
         spinnerDayType = (Spinner) findViewById(R.id.spinnerDayType);
         String districtCode = spinnerDistrict.getSelectedItem().toString();
         DistrictObject currentObj = null;
@@ -130,6 +154,17 @@ public class AddWalk extends AppCompatActivity{
         final ArrayAdapter adapterDayType = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dayTypes);
         spinnerDayType.setAdapter(adapterDayType);
 
+        // if user went to settings, load latest selection into day type spinner
+        if (fromSettings) {
+            for (int i = 0; i < dayTypes.size(); i++) {
+                if (dayTypes.get(i).equals(savedDayType)) {
+                    spinnerDayType.setSelection(i);
+                    break;
+                }
+            }
+        }
+
+        // get time goal of corresponding district code and day type
         String dayType = spinnerDayType.getSelectedItem().toString();
         if (dayType.equals(busyDay)) {
             timeGoalView.setText(currentObj.timeGoalBusy);
@@ -138,17 +173,24 @@ public class AddWalk extends AppCompatActivity{
             timeGoalView.setText(currentObj.timeGoalCalm);
         }
 
+        // set listener on item select changes of district spinner
         spinnerDistrict.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String clickedItem = spinnerDistrict.getItemAtPosition(position).toString();
+
+                // search for district code that is equal to the clicked item
                 for (DistrictObject districtObj : districtObjects) {
                     if (districtObj.districtCode.equals(clickedItem)) {
+
+                        // if time is not equal to 0:00, add day type to spinner if it isn't in there
                         if (!districtObj.timeGoalBusy.equals("0:00")) {
                             if (!dayTypes.contains(busyDay)) {
                                 dayTypes.add(busyDay);
                             }
-                        } else {
+                        }
+                        // else remove it, if it is in the spinner
+                        else {
                             if (dayTypes.contains(busyDay)) {
                                 dayTypes.remove(busyDay);
                             }
@@ -165,6 +207,7 @@ public class AddWalk extends AppCompatActivity{
                         }
                         adapterDayType.notifyDataSetChanged();
 
+                        // get the day type and set the new corresponding time goal
                         String dayType;
                         try {
                             dayType = spinnerDayType.getSelectedItem().toString();
@@ -186,14 +229,18 @@ public class AddWalk extends AppCompatActivity{
             }
         });
 
+        // set listener on item select changes of day type spinner
         spinnerDayType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String clickedItem = spinnerDayType.getItemAtPosition(position).toString();
                 String districtCode = spinnerDistrict.getSelectedItem().toString();
 
+                // search for district code that is equal to the selected item of district spinner
                 for (DistrictObject districtObj : districtObjects) {
                     if (districtObj.districtCode.equals(districtCode)) {
+
+                        // set the right time goal that's corresponding with the clicked item
                         if (clickedItem.equals(busyDay)) {
                             timeGoalView.setText(districtObj.timeGoalBusy);
                         } else {
@@ -209,6 +256,7 @@ public class AddWalk extends AppCompatActivity{
             }
         });
 
+        // if id from intent is not 0, get walkobject from database and set into editTexts
         if (idWalk != 0) {
             db = new DatabaseHandler(this);
             WalkObject walkObj = db.getWalk(idMonth, idDay, idWalk);
@@ -249,6 +297,7 @@ public class AddWalk extends AppCompatActivity{
             endMin3 = walkObj.timeEnd3.substring(3);
             editEndMin3.setText(endMin3);
 
+            // set spinners on right selected items
             int districtPos = adapterDistrict.getPosition(walkObj.districtCode);
             spinnerDistrict.setSelection(districtPos);
 
@@ -257,7 +306,12 @@ public class AddWalk extends AppCompatActivity{
         }
     }
 
+    /**
+     * Handles clicks on settings button.
+     */
     public void onClickSettings(View view) {
+
+        // put editTexts into shared preferences
         prefs = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor prefsEditor = prefs.edit();
         prefsEditor.putInt("idMonth", idMonth);
@@ -275,8 +329,11 @@ public class AddWalk extends AppCompatActivity{
         prefsEditor.putString("beginMin3", editBeginMin3.getText().toString());
         prefsEditor.putString("endHour3", editEndHour3.getText().toString());
         prefsEditor.putString("endMin3", editEndMin3.getText().toString());
+        prefsEditor.putString("spinnerDistrict", spinnerDistrict.getSelectedItem().toString());
+        prefsEditor.putString("spinnerDayType", spinnerDayType.getSelectedItem().toString());
         prefsEditor.apply();
 
+        // put addwalk as previous activity and ids in intent
         Intent goToSettings = new Intent(AddWalk.this, Settings.class);
         goToSettings.putExtra("prevActivity", "AddWalk");
         goToSettings.putExtra("idMonth", idMonth);
@@ -286,8 +343,12 @@ public class AddWalk extends AppCompatActivity{
         finish();
     }
 
+    /**
+     * Handles clicks on save button.
+     */
     public void onClickSave(View view) {
 
+        // if editText is empty, set default value of zero
         if (editBeginHour1.getText().toString().equals("")) {
             editBeginHour1.setText("0");
         }
@@ -325,6 +386,7 @@ public class AddWalk extends AppCompatActivity{
             editEndMin3.setText("00");
         }
 
+        // check for correct input
         if (editBeginHour1.getText().toString().equals("0")
                 && editBeginMin1.getText().toString().equals("00")
                 && editBeginHour1.getText().toString().equals("0")
@@ -375,15 +437,15 @@ public class AddWalk extends AppCompatActivity{
                 || Integer.parseInt(editEndMin3.getText().toString()) >= 60)) {
             Toast.makeText(AddWalk.this, "Ongeldige invoer minuten2", Toast.LENGTH_SHORT).show();
         }
+
+        // if input is correct, begin saving to database
         else {
+
+            // get strings of spinners' selected items
             String districtCode = spinnerDistrict.getSelectedItem().toString();
             String dayType = spinnerDayType.getSelectedItem().toString();
-            String timeGoalStr = timeGoalView.getText().toString();
 
-            if (timeGoalStr.length() == 4) {
-                timeGoalStr = "0" + timeGoalStr;
-            }
-
+            // get strings of editTexts, add 0 if hours is one digit
             beginHour1 = editBeginHour1.getText().toString();
             beginMin1 = editBeginMin1.getText().toString();
             String timeBegin1Str = beginHour1 + ":" + beginMin1;
@@ -435,32 +497,13 @@ public class AddWalk extends AppCompatActivity{
             Date timeBegin3 = null;
             Date timeEnd3 = null;
 
+            // parse string into date object
             try {
                 timeBegin1 = format.parse(timeBegin1Str);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-            try {
                 timeEnd1 = format.parse(timeEnd1Str);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-            try {
                 timeBegin2 = format.parse(timeBegin2Str);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-            try {
                 timeEnd2 = format.parse(timeEnd2Str);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-            try {
-                 timeBegin3 = format.parse(timeBegin3Str);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-            try {
+                timeBegin3 = format.parse(timeBegin3Str);
                 timeEnd3 = format.parse(timeEnd3Str);
             } catch (java.text.ParseException e) {
                 e.printStackTrace();
@@ -470,49 +513,44 @@ public class AddWalk extends AppCompatActivity{
             long timeDifference2 = 0;
             long timeDifference3 = 0;
 
+            // calculate time difference between begin and end
             try {
                 timeDifference1 = timeEnd1.getTime() - timeBegin1.getTime();
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
-            try {
                 timeDifference2 = timeEnd2.getTime() - timeBegin2.getTime();
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
-            try {
                 timeDifference3 = timeEnd3.getTime() - timeBegin3.getTime();
             } catch (java.lang.NullPointerException e) {
                 e.printStackTrace();
             }
 
-            long timeTotalMin = ((timeDifference1 / 1000 / 60)
-                    + (timeDifference2 / 1000 / 60) +
-                    (timeDifference3 / 1000 / 60));
+            // add differences together and calculate total hours and minutes
+            long timeTotalMs = timeDifference1 + timeDifference2 + timeDifference3;
+            long timeTotalHours = timeTotalMs / 1000 / 60 / 60;
+            long timeTotalMins = timeTotalMs / 1000 / 60 % 60;
 
-            long timeTotalHours = timeTotalMin / 60;
-            long timeTotalMinRest = timeTotalMin % 60;
+            // get time goal from textView
+            String timeGoalStr = timeGoalView.getText().toString();
+            if (timeGoalStr.length() == 4) {
+                timeGoalStr = "0" + timeGoalStr;
+            }
+
+            // make total time string from hours and minutes
+            String timeTotalMinsStr = Long.toString(timeTotalMins);
+            if (timeTotalMinsStr.length() == 1) {
+                timeTotalMinsStr = "0" + timeTotalMinsStr;
+            }
+            String timeTotalStr = timeTotalHours + ":" + timeTotalMinsStr;
 
             Date timeGoal = null;
+            Date timeTotal = null;
+
             try {
                 timeGoal = format.parse(timeGoalStr);
-            } catch (java.text.ParseException e) {
-                e.printStackTrace();
-            }
-
-            String timeTotalMinRestStr = Long.toString(timeTotalMinRest);
-            if (timeTotalMinRestStr.length() == 1) {
-                timeTotalMinRestStr = "0" + timeTotalMinRestStr;
-            }
-            String timeTotalStr = timeTotalHours + ":" + timeTotalMinRestStr;
-
-            Date timeTotal = null;
-            try {
                 timeTotal = format.parse(timeTotalStr);
             } catch (java.text.ParseException e) {
                 e.printStackTrace();
             }
 
+            // calculate extra time by subtracting goal time from total time
             long timeExtraMs = 0;
             try {
                 timeExtraMs = timeTotal.getTime() - timeGoal.getTime();
@@ -520,19 +558,20 @@ public class AddWalk extends AppCompatActivity{
                 e.printStackTrace();
             }
 
-            long timeExtraMin = timeExtraMs / 1000 / 60;
-            long timeExtraHours = timeExtraMin / 60;
-            long timeExtraMinRest = Math.abs(timeExtraMin) % 60;
-            String timeExtraMinRestStr = Long.toString(timeExtraMinRest);
-            if (timeExtraMinRestStr.length() == 1) {
-                timeExtraMinRestStr = "0" + timeExtraMinRestStr;
+            // make time string from milliseconds
+            long timeExtraHours = timeExtraMs / 1000 / 60 / 60;
+            long timeExtraMins = Math.abs(timeExtraMs / 1000 / 60 % 60);
+            String timeExtraMinsStr = Long.toString(timeExtraMins);
+            if (timeExtraMinsStr.length() == 1) {
+                timeExtraMinsStr = "0" + timeExtraMinsStr;
             }
-            String timeExtraStr = timeExtraHours + ":" + timeExtraMinRestStr;
+            String timeExtraStr = timeExtraHours + ":" + timeExtraMinsStr;
 
+            // remove first zero if exist and place minus if hours is 0 and time is negative
             if (timeGoalStr.charAt(0) == '0') {
                 timeGoalStr = timeGoalStr.substring(1);
             }
-            if (timeExtraMin < 0 && timeExtraHours == 0) {
+            if (timeExtraMs < 0 && timeExtraHours == 0) {
                 timeExtraStr = "-" + timeExtraStr;
             }
 
@@ -540,22 +579,18 @@ public class AddWalk extends AppCompatActivity{
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
                     timeExtraStr, timeTotalStr);
 
+            // put shared preferences in bundle
             SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
-            int contractHours = sharedPref.getInt("contractHours", 0);
-            int contractMins = sharedPref.getInt("contractMins", 0);
-            int salaryEuro = sharedPref.getInt("salaryEuro", 0);
-            int salaryCents = sharedPref.getInt("salaryCents", 0);
-            int extraEuro = sharedPref.getInt("extraEuro", 0);
-            int extraCents = sharedPref.getInt("extraCents", 0);
 
             Bundle bundle = new Bundle();
-            bundle.putInt("contractHours", contractHours);
-            bundle.putInt("contractMins", contractMins);
-            bundle.putInt("salaryEuro", salaryEuro);
-            bundle.putInt("salaryCents", salaryCents);
-            bundle.putInt("extraEuro", extraEuro);
-            bundle.putInt("extraCents", extraCents);
+            bundle.putInt("contractHours", sharedPref.getInt("contractHours", 0));
+            bundle.putInt("contractMins", sharedPref.getInt("contractMins", 0));
+            bundle.putInt("salaryEuro", sharedPref.getInt("salaryEuro", 0));
+            bundle.putInt("salaryCents", sharedPref.getInt("salaryCents", 0));
+            bundle.putInt("extraEuro", sharedPref.getInt("extraEuro", 0));
+            bundle.putInt("extraCents", sharedPref.getInt("extraCents", 0));
 
+            // depending on idWalk, add or update row in database
             DatabaseHandler db = new DatabaseHandler(AddWalk.this);
             if (idWalk == 0) {
                 db.addWalk(walkObj, bundle);
@@ -564,11 +599,13 @@ public class AddWalk extends AppCompatActivity{
                 db.editWalk(walkObj, bundle);
             }
 
+            // if editTexts were saved, remove shared preferences
             if (prefsEditor != null) {
                 prefsEditor.clear();
                 prefsEditor.apply();
             }
 
+            // go to walks
             Intent goToWalks = new Intent(AddWalk.this, Walks.class);
             goToWalks.putExtra("idMonth", idMonth);
             goToWalks.putExtra("idDay", idDay);
@@ -577,12 +614,16 @@ public class AddWalk extends AppCompatActivity{
         }
     }
 
+    /**
+     * Handles clicks on cancel button.
+     */
     public void onClickCancel(View view) {
         if (prefsEditor != null) {
             prefsEditor.clear();
             prefsEditor.apply();
         }
 
+        // go to walks
         Intent goToWalks = new Intent(AddWalk.this, Walks.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);
@@ -590,6 +631,9 @@ public class AddWalk extends AppCompatActivity{
         finish();
     }
 
+    /**
+     * Override back button
+     */
     @Override
     public void onBackPressed() {
         if (prefsEditor != null) {
@@ -602,53 +646,5 @@ public class AddWalk extends AppCompatActivity{
         goToWalks.putExtra("idDay", idDay);
         startActivity(goToWalks);
         finish();
-    }
-
-    public void onClickBeginHour1(View view) {
-        editBeginHour1.setText("");
-    }
-
-    public void onClickBeginMin1(View view) {
-        editBeginMin1.setText("");
-    }
-
-    public void onClickEndHour1(View view) {
-        editEndHour1.setText("");
-    }
-
-    public void onClickEndMin1(View view) {
-        editEndMin1.setText("");
-    }
-
-    public void onClickBeginHour2(View view) {
-        editBeginHour2.setText("");
-    }
-
-    public void onClickBeginMin2(View view) {
-        editBeginMin2.setText("");
-    }
-
-    public void onClickEndHour2(View view) {
-        editEndHour2.setText("");
-    }
-
-    public void onClickEndMin2(View view) {
-        editEndMin2.setText("");
-    }
-
-    public void onClickBeginHour3(View view) {
-        editBeginHour3.setText("");
-    }
-
-    public void onClickBeginMin3(View view) {
-        editBeginMin3.setText("");
-    }
-
-    public void onClickEndHour3(View view) {
-        editEndHour3.setText("");
-    }
-
-    public void onClickEndMin3(View view) {
-        editEndMin3.setText("");
     }
 }

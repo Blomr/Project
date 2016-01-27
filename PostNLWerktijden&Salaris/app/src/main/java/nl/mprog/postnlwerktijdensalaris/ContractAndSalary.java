@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class ContractAndSalary extends AppCompatActivity {
 
@@ -32,11 +33,15 @@ public class ContractAndSalary extends AppCompatActivity {
     EditText editExtraEuro;
     EditText editExtraCents;
 
+    /**
+     * Sets layout, initialize variables and loads shared preferences into editTexts.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contractandsalary);
 
+        // initialize editTexts
         editContractHours = (EditText) findViewById(R.id.contractHours);
         editContractMins = (EditText) findViewById(R.id.contractMins);
         editSalaryEuro = (EditText) findViewById(R.id.salaryEuro);
@@ -44,6 +49,7 @@ public class ContractAndSalary extends AppCompatActivity {
         editExtraEuro = (EditText) findViewById(R.id.extraEuro);
         editExtraCents = (EditText) findViewById(R.id.extraCents);
 
+        // get shared preferences
         sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
         contractHours = sharedPref.getInt("contractHours", 0);
         contractMins = sharedPref.getInt("contractMins", 0);
@@ -52,9 +58,11 @@ public class ContractAndSalary extends AppCompatActivity {
         extraEuro = sharedPref.getInt("extraEuro", 0);
         extraCents = sharedPref.getInt("extraCents", 0);
 
+        // set shared preferences into editTexts
         contractHoursStr = Integer.toString(contractHours);
         editContractHours.setText(contractHoursStr);
 
+        // if minutes or cents is one digit, add 0
         contractMinsStr = Integer.toString(contractMins);
         if (contractMinsStr.length() == 1) {
             contractMinsStr = "0" + contractMinsStr;
@@ -80,42 +88,55 @@ public class ContractAndSalary extends AppCompatActivity {
         editExtraCents.setText(extraCentsStr);
     }
 
+    /**
+     * Handles clicks on save button.
+     */
     public void onClickSave(View view) {
 
+        // get values from editTexts
         contractHours = Integer.parseInt(editContractHours.getText().toString());
+        contractMins = Integer.parseInt(editContractMins.getText().toString());
         salaryEuro = Integer.parseInt(editSalaryEuro.getText().toString());
-        extraEuro = Integer.parseInt(editExtraEuro.getText().toString());
-
-        contractMinsStr = editContractMins.getText().toString();
-        if (contractMinsStr.charAt(0) == '0') {
-            contractMinsStr = String.valueOf(contractMinsStr.charAt(1));
-        }
-        contractMins = Integer.parseInt(contractMinsStr);
-
         salaryCentsStr = editSalaryCents.getText().toString();
-        if (salaryCentsStr.charAt(0) == '0') {
-            salaryCentsStr = String.valueOf(salaryCentsStr.charAt(1));
-        }
-        salaryCents = Integer.parseInt(salaryCentsStr);
-
+        extraEuro = Integer.parseInt(editExtraEuro.getText().toString());
         extraCentsStr = editExtraCents.getText().toString();
-        if (extraCentsStr.charAt(0) == '0') {
-            extraCentsStr = String.valueOf(extraCentsStr.charAt(1));
+
+        // check if input is correct
+        if (contractMins >= 60) {
+            Toast.makeText(ContractAndSalary.this, "Ongeldige invoer minuten", Toast.LENGTH_SHORT).show();
         }
-        extraCents = Integer.parseInt(extraCentsStr);
+        else if (salaryCentsStr.length() > 2 || extraCentsStr.length() > 2) {
+            Toast.makeText(ContractAndSalary.this, "Ongeldige invoer centen", Toast.LENGTH_SHORT).show();
+        }
+        // if input is correct, delete zeroes in strings if necessary and convert into integers
+        else {
+            if (salaryCentsStr.charAt(0) == '0') {
+                salaryCentsStr = String.valueOf(salaryCentsStr.charAt(1));
+            }
+            salaryCents = Integer.parseInt(salaryCentsStr);
 
-        sharedPrefEdit = sharedPref.edit();
-        sharedPrefEdit.putInt("contractHours", contractHours);
-        sharedPrefEdit.putInt("contractMins", contractMins);
-        sharedPrefEdit.putInt("salaryEuro", salaryEuro);
-        sharedPrefEdit.putInt("salaryCents", salaryCents);
-        sharedPrefEdit.putInt("extraEuro", extraEuro);
-        sharedPrefEdit.putInt("extraCents", extraCents);
-        sharedPrefEdit.apply();
+            if (extraCentsStr.charAt(0) == '0') {
+                extraCentsStr = String.valueOf(extraCentsStr.charAt(1));
+            }
+            extraCents = Integer.parseInt(extraCentsStr);
 
-        finish();
+            // save integers into shared preferences
+            sharedPrefEdit = sharedPref.edit();
+            sharedPrefEdit.putInt("contractHours", contractHours);
+            sharedPrefEdit.putInt("contractMins", contractMins);
+            sharedPrefEdit.putInt("salaryEuro", salaryEuro);
+            sharedPrefEdit.putInt("salaryCents", salaryCents);
+            sharedPrefEdit.putInt("extraEuro", extraEuro);
+            sharedPrefEdit.putInt("extraCents", extraCents);
+            sharedPrefEdit.apply();
+
+            finish();
+        }
     }
 
+    /**
+     * Handles clicks on cancel button.
+     */
     public void onClickCancel(View view) {
         finish();
     }

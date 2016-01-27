@@ -93,4 +93,10 @@
 - Bug editTexts door hints ipv setTexts opgelost.
 - Herhalingen in databasehandler verplaatsen naar aparte methods.
 
+### Dag 17 - Di 26 jan
+- Comments toevoegen.
+- Variabelenamen aanpassen.
+- Vergeten een edit en delete voor districts te maken, dus gauw even toegevoegd.
 
+### Dag 18 - Wo 27 jan
+-
