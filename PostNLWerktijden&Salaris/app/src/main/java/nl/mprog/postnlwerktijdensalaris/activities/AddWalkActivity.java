@@ -25,6 +25,7 @@ import android.widget.Toast;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import nl.mprog.postnlwerktijdensalaris.databasehandler.DatabaseHandler;
 import nl.mprog.postnlwerktijdensalaris.modelclasses.District;
@@ -68,7 +69,7 @@ public class AddWalkActivity extends AppCompatActivity{
     Spinner spinnerDistrict;
     Spinner spinnerDayType;
     ArrayList<String> districtCodes;
-    ArrayAdapter adapterDistrict;
+    ArrayAdapter<String> adapterDistrict;
     SharedPreferences prefs;
     SharedPreferences.Editor prefsEditor;
 
@@ -124,6 +125,7 @@ public class AddWalkActivity extends AppCompatActivity{
         }
 
         timeGoalView = (TextView) findViewById(R.id.timeGoal);
+        TextView titleView = (TextView) findViewById(R.id.addWalkTitle);
 
         // get all district codes from database
         DatabaseHandler dbHandler = new DatabaseHandler(this);
@@ -135,7 +137,8 @@ public class AddWalkActivity extends AppCompatActivity{
 
         // adapt district codes into spinner
         spinnerDistrict = (Spinner) findViewById(R.id.spinnerDistrict);
-        adapterDistrict = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, districtCodes);
+        adapterDistrict = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
+                          districtCodes);
         spinnerDistrict.setAdapter(adapterDistrict);
 
         // if user went to settings, load latest selection into district code spinner
@@ -151,7 +154,7 @@ public class AddWalkActivity extends AppCompatActivity{
         // get day types of current selected item and adapt into second spinner
         spinnerDayType = (Spinner) findViewById(R.id.spinnerDayType);
         String districtCode = spinnerDistrict.getSelectedItem().toString();
-        District currentObj = null;
+        District currentObj = new District(0, "", "", "");
         final ArrayList<String> dayTypes = new ArrayList<>();
         for (District districtObj : districtObjects) {
             if (districtObj.districtCode.equals(districtCode)) {
@@ -165,7 +168,9 @@ public class AddWalkActivity extends AppCompatActivity{
                 break;
             }
         }
-        final ArrayAdapter adapterDayType = new ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, dayTypes);
+        final ArrayAdapter<String> adapterDayType = new ArrayAdapter<>(this,
+                                                    android.R.layout.simple_dropdown_item_1line,
+                                                    dayTypes);
         spinnerDayType.setAdapter(adapterDayType);
 
         // if user went to settings, load latest selection into day type spinner
@@ -270,8 +275,10 @@ public class AddWalkActivity extends AppCompatActivity{
             }
         });
 
-        // if id from intent is not 0, get walk object from database and set into edittexts
+        // if id from intent is not 0, get walk object from database and set into edittexts and set title
         if (idWalk != 0) {
+            titleView.setText(R.string.editWalk);
+
             dbHandler = new DatabaseHandler(this);
             Walk walkObj = dbHandler.getWalk(idMonth, idDay, idWalk);
 
@@ -317,6 +324,11 @@ public class AddWalkActivity extends AppCompatActivity{
 
             int dayTypePos = adapterDayType.getPosition(walkObj.dayType);
             spinnerDayType.setSelection(dayTypePos);
+        }
+
+        // if id is 0, set other title
+        else {
+            titleView.setText(R.string.addWalk);
         }
     }
 
@@ -482,14 +494,14 @@ public class AddWalkActivity extends AppCompatActivity{
                 timeEnd3Str = "0" + timeEnd3Str;
             }
 
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
 
-            Date timeBegin1 = null;
-            Date timeEnd1 = null;
-            Date timeBegin2 = null;
-            Date timeEnd2 = null;
-            Date timeBegin3 = null;
-            Date timeEnd3 = null;
+            Date timeBegin1 = new Date();
+            Date timeEnd1 = new Date();
+            Date timeBegin2 = new Date();
+            Date timeEnd2 = new Date();
+            Date timeBegin3 = new Date();
+            Date timeEnd3 = new Date();
 
             // parse string into date object
             try {
@@ -503,18 +515,10 @@ public class AddWalkActivity extends AppCompatActivity{
                 Toast.makeText(AddWalkActivity.this, R.string.parseError, Toast.LENGTH_SHORT).show();
             }
 
-            long timeDifference1 = 0;
-            long timeDifference2 = 0;
-            long timeDifference3 = 0;
-
             // calculate time difference between begin and end
-            try {
-                timeDifference1 = timeEnd1.getTime() - timeBegin1.getTime();
-                timeDifference2 = timeEnd2.getTime() - timeBegin2.getTime();
-                timeDifference3 = timeEnd3.getTime() - timeBegin3.getTime();
-            } catch (java.lang.NullPointerException e) {
-                Toast.makeText(AddWalkActivity.this, R.string.nullError, Toast.LENGTH_SHORT).show();
-            }
+            long timeDifference1 = timeEnd1.getTime() - timeBegin1.getTime();
+            long timeDifference2 = timeEnd2.getTime() - timeBegin2.getTime();
+            long timeDifference3 = timeEnd3.getTime() - timeBegin3.getTime();
 
             // add differences together and calculate total hours and minutes
             long timeTotalMs = timeDifference1 + timeDifference2 + timeDifference3;
@@ -534,8 +538,8 @@ public class AddWalkActivity extends AppCompatActivity{
             }
             String timeTotalStr = timeTotalHours + ":" + timeTotalMinsStr;
 
-            Date timeGoal = null;
-            Date timeTotal = null;
+            Date timeGoal = new Date();
+            Date timeTotal = new Date();
 
             try {
                 timeGoal = format.parse(timeGoalStr);
@@ -545,12 +549,7 @@ public class AddWalkActivity extends AppCompatActivity{
             }
 
             // calculate extra time by subtracting goal time from total time
-            long timeExtraMs = 0;
-            try {
-                timeExtraMs = timeTotal.getTime() - timeGoal.getTime();
-            } catch (java.lang.NullPointerException e) {
-                Toast.makeText(AddWalkActivity.this, R.string.nullError, Toast.LENGTH_SHORT).show();
-            }
+            long timeExtraMs = timeTotal.getTime() - timeGoal.getTime();
 
             // make time string from milliseconds
             long timeExtraHours = timeExtraMs / 1000 / 60 / 60;

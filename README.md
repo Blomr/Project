@@ -1,5 +1,15 @@
 # PostNL Werktijden & Salaris
   
+Houd overzichtelijk je werktijden bij. Krijg gelijk inzicht wat je te veel of te weinig hebt gewerkt en zie
+wat je aan het einde van de maand qua salaris ontvangt.
+
+![screenshot1](/doc/screenshot1.png) ![screenshot2](/doc/screenshot2.png)
+![screenshot3](/doc/screenshot3.png) ![screenshot4](/doc/screenshot4.png)
+
+Gemaakt door Remco Blom
+
+2016 © Copyright Remco Blom. Alle rechten voorbehouden.
+
 
 ### Proposal
   

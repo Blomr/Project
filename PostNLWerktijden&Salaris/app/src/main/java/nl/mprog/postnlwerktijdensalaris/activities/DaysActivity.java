@@ -53,8 +53,15 @@ public class DaysActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_days);
 
-        // get id from intent
-        idMonth = getIntent().getIntExtra("idMonth", 0);
+        titleMonthView = (TextView) findViewById(R.id.titleMonth);
+
+        // get id from intent or savedinstancestate
+        if (savedInstanceState != null) {
+            idMonth = savedInstanceState.getInt("idMonth", 0);
+        }
+        else {
+            idMonth = getIntent().getIntExtra("idMonth", 0);
+        }
 
         // if there is no id, set content for making a new month
         if (idMonth == 0) {
@@ -72,14 +79,13 @@ public class DaysActivity extends AppCompatActivity {
         // if there is an id, get objects with idMonth from database and set in listview
         else {
             ListView listViewDays = (ListView) findViewById(R.id.listViewDays);
-            titleMonthView = (TextView) findViewById(R.id.titleMonth);
 
-            final DatabaseHandler db = new DatabaseHandler(this);
-            final ArrayList<Day> listItems = db.getDaysOfMonth(idMonth);
+            final DatabaseHandler dbHandler = new DatabaseHandler(this);
+            final ArrayList<Day> listItems = dbHandler.getDaysOfMonth(idMonth);
             final DayAdapter adapter = new DayAdapter(this, R.layout.custom_listitem_layout, listItems);
             listViewDays.setAdapter(adapter);
 
-            String titleMonth = db.getMonthName(idMonth);
+            String titleMonth = dbHandler.getMonthName(idMonth);
             titleMonthView.setText(titleMonth);
             titleMonthView.setVisibility(View.VISIBLE);
 
@@ -128,7 +134,7 @@ public class DaysActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.deleteDay(idMonth, idDay, sharedPrefBundle);
+                            dbHandler.deleteDay(idMonth, idDay, sharedPrefBundle);
                             listItems.remove(position);
                             adapter.notifyDataSetChanged();
                         }
@@ -168,6 +174,7 @@ public class DaysActivity extends AppCompatActivity {
         Intent goToWalks = new Intent(DaysActivity.this, WalksActivity.class);
         goToWalks.putExtra("idMonth", idMonth);
         startActivity(goToWalks);
+        finish();
     }
 
     /**
@@ -221,6 +228,15 @@ public class DaysActivity extends AppCompatActivity {
         backButton.setVisibility(View.INVISIBLE);
 
         editTitle.setText(titleMonthView.getText().toString());
+    }
+
+    /**
+     * Saves idMonth if screen orientation changes.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("idMonth", idMonth);
     }
 
     /**

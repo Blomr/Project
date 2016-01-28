@@ -22,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 import nl.mprog.postnlwerktijdensalaris.modelclasses.Day;
 import nl.mprog.postnlwerktijdensalaris.modelclasses.District;
@@ -753,8 +754,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         dayValues.put(DAYS_COLUMN_TIMETOTAL, newDayTimeTotal);
         dayValues.put(DAYS_COLUMN_TIMEGOAL, newDayTimeGoal);
         dayValues.put(DAYS_COLUMN_TIMEEXTRA, newDayTimeExtra);
-        db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY + " = ?",
-                  new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
+        db.update(DAYS_TABLE_NAME, dayValues, DAYS_COLUMN_IDMONTH + " = ? AND " + DAYS_COLUMN_IDDAY
+                  + " = ?", new String[]{Integer.toString(idMonth), Integer.toString(idDay)});
 
         // parse month's time string into date
         Date oldMonthTime = strToDateParser(oldMonthTimeStr);
@@ -780,6 +781,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
+     * Deletes specific row from districts table.
+     */
+    public void deleteDistrict(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DISTRICTS_TABLE_NAME, DISTRICTS_COLUMN_ID + " = ?",
+                new String[]{Integer.toString(id)});
+        db.close();
+    }
+
+    /**
      * Updates specific month's name in months table.
      */
     public void editMonthName(int idMonth, String monthName) {
@@ -787,7 +798,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(MONTHS_COLUMN_MONTH, monthName);
         db.update(MONTHS_TABLE_NAME, values, MONTHS_COLUMN_ID + " = ?",
-                  new String[]{Integer.toString(idMonth)});
+                new String[]{Integer.toString(idMonth)});
         db.close();
     }
 
@@ -1106,7 +1117,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Parses a time string of HH:mm into a date object.
      */
     private Date strToDateParser(String timeStr) {
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat format = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
         Date timeDate = null;
 
         if (timeStr.length() == 4) {

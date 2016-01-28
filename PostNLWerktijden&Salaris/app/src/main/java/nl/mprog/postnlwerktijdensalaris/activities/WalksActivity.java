@@ -53,9 +53,17 @@ public class WalksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_walks);
 
-        // get ids from intent
-        idMonth = getIntent().getIntExtra("idMonth", 0);
-        idDay = getIntent().getIntExtra("idDay", 0);
+        titleDayView = (TextView) findViewById(R.id.titleDay);
+
+        // get ids from intent or savedinstancestate
+        if (savedInstanceState != null) {
+            idMonth = savedInstanceState.getInt("idMonth", 0);
+            idDay = savedInstanceState.getInt("idDay", 0);
+        }
+        else {
+            idMonth = getIntent().getIntExtra("idMonth", 0);
+            idDay = getIntent().getIntExtra("idDay", 0);
+        }
 
         // if there is no idDay, set edittext and button to make new day
         if (idDay == 0) {
@@ -71,40 +79,41 @@ public class WalksActivity extends AppCompatActivity {
         // if there is an idDay, get arraylist of objects with idMonth and idDay and adapt on listview
         else {
             ListView listViewWalks = (ListView) findViewById(R.id.listViewWalks);
-            titleDayView = (TextView) findViewById(R.id.titleDay);
 
             // get arraylist of objects from database
-            final DatabaseHandler db = new DatabaseHandler(this);
-            final ArrayList<Walk> listItems = db.getWalksOfDay(idMonth, idDay);
+            final DatabaseHandler dbHandler = new DatabaseHandler(this);
+            final ArrayList<Walk> listItems = dbHandler.getWalksOfDay(idMonth, idDay);
             final WalkAdapter adapter = new WalkAdapter(this, R.layout.custom_listitem_layout, listItems);
             listViewWalks.setAdapter(adapter);
 
             // make title visible
-            String titleDay = db.getDayName(idMonth, idDay);
+            String titleDay = dbHandler.getDayName(idMonth, idDay);
             titleDayView.setText(titleDay);
             titleDayView.setVisibility(View.VISIBLE);
 
             // check if settings has already districts
             checkForDistricts();
 
-            // set listener on item clicks
-            listViewWalks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // set listener on item clicks, if there are districts
+            if (dbHandler.getDistricts().size() > 0) {
+                listViewWalks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    // get idWalk from list item
-                    TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
-                    int idWalk = Integer.parseInt(idWalkView.getText().toString());
+                        // get idWalk from list item
+                        TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                        int idWalk = Integer.parseInt(idWalkView.getText().toString());
 
-                    // go to AddWalkActivity
-                    Intent goToAddWalk = new Intent(WalksActivity.this, AddWalkActivity.class);
-                    goToAddWalk.putExtra("idMonth", idMonth);
-                    goToAddWalk.putExtra("idDay", idDay);
-                    goToAddWalk.putExtra("idWalk", idWalk);
-                    startActivity(goToAddWalk);
-                    finish();
-                }
-            });
+                        // go to AddWalkActivity
+                        Intent goToAddWalk = new Intent(WalksActivity.this, AddWalkActivity.class);
+                        goToAddWalk.putExtra("idMonth", idMonth);
+                        goToAddWalk.putExtra("idDay", idDay);
+                        goToAddWalk.putExtra("idWalk", idWalk);
+                        startActivity(goToAddWalk);
+                        finish();
+                    }
+                });
+            }
 
             // set listener on long item clicks
             listViewWalks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -133,7 +142,7 @@ public class WalksActivity extends AppCompatActivity {
                     builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            db.deleteWalk(idMonth, idDay, idWalk, sharedPrefBundle);
+                            dbHandler.deleteWalk(idMonth, idDay, idWalk, sharedPrefBundle);
                             listItems.remove(position);
                             adapter.notifyDataSetChanged();
                         }
@@ -175,6 +184,7 @@ public class WalksActivity extends AppCompatActivity {
         goToAddWalk.putExtra("idMonth", idMonth);
         goToAddWalk.putExtra("idDay", idDay);
         startActivity(goToAddWalk);
+        finish();
     }
 
     /**
@@ -225,8 +235,8 @@ public class WalksActivity extends AppCompatActivity {
      * If there's none, display message and hide plus button.
      */
     public void checkForDistricts() {
-        DatabaseHandler db = new DatabaseHandler(this);
-        if (db.getDistricts().size() != 0) {
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+        if (dbHandler.getDistricts().size() != 0) {
             ImageView addButton = (ImageView) findViewById(R.id.addButtonWalks);
             addButton.setVisibility(View.VISIBLE);
         }
@@ -246,6 +256,16 @@ public class WalksActivity extends AppCompatActivity {
         backButton.setVisibility(View.INVISIBLE);
 
         editTitle.setText(titleDayView.getText().toString());
+    }
+
+    /**
+     * Saves idMonth and idDay if screen orientation changes.
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("idMonth", idMonth);
+        outState.putInt("idDay", idDay);
     }
 
     /**

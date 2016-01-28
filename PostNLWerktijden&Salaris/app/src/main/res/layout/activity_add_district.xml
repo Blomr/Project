@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/addDistrict"
+        android:id="@+id/addDistrictTitle"
         android:textSize="22sp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"/>
@@ -42,7 +42,7 @@
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:id="@+id/editDistrictCode"
-            android:hint="00A"
+            android:hint="@string/twoZeroesA"
             android:maxLength="5"
             android:gravity="center"
             android:layout_alignBaseline="@id/textDistrictCode"

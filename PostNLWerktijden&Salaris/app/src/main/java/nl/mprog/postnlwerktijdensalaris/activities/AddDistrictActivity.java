@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import nl.mprog.postnlwerktijdensalaris.databasehandler.DatabaseHandler;
@@ -32,7 +33,8 @@ public class AddDistrictActivity extends AppCompatActivity {
     String busyMin;
     String calmHour;
     String calmMin;
-    int id;
+    int idDistrict;
+    DatabaseHandler dbHandler;
 
     /**
      * Sets layout and texts in edittexts if id is not 0.
@@ -49,16 +51,17 @@ public class AddDistrictActivity extends AppCompatActivity {
         editCalmHour = (EditText) findViewById(R.id.editCalmHour);
         editCalmMin = (EditText) findViewById(R.id.editCalmMin);
 
-        // get id from intent
-        id = getIntent().getIntExtra("id", 0);
+        // initialize textview of title
+        TextView titleView = (TextView) findViewById(R.id.addDistrictTitle);
 
-        // if item was clicked, set object values in edittexts
-        if (id != 0) {
-            DatabaseHandler dbHandler = new DatabaseHandler(this);
-            District districtObj = dbHandler.getDistrict(id);
-            System.out.println(districtObj.timeGoalBusy);
-            System.out.println(districtObj.timeGoalCalm);
-            System.out.println(districtObj.districtCode);
+        // get id from intent
+        idDistrict = getIntent().getIntExtra("idDistrict", 0);
+
+        // if item was clicked, set object values in edittexts and set title
+        if (idDistrict != 0) {
+            titleView.setText(R.string.editDistrict);
+            dbHandler = new DatabaseHandler(this);
+            District districtObj = dbHandler.getDistrict(idDistrict);
 
             busyHour = districtObj.timeGoalBusy.substring(0, districtObj.timeGoalBusy.indexOf(":"));
             busyMin = districtObj.timeGoalBusy.substring(districtObj.timeGoalBusy.indexOf(":") + 1);
@@ -70,6 +73,11 @@ public class AddDistrictActivity extends AppCompatActivity {
             editBusyMin.setText(busyMin);
             editCalmHour.setText(calmHour);
             editCalmMin.setText(calmMin);
+        }
+
+        // if plus button was clicked, set other title
+        else {
+            titleView.setText(R.string.addDistrict);
         }
     }
 
@@ -86,12 +94,16 @@ public class AddDistrictActivity extends AppCompatActivity {
         calmMin = editCalmMin.getText().toString();
 
         // if one of edittexts is empty, make string variable equal to 0 or 00
-        if (busyHour.equals("") && busyMin.equals("")) {
+        if (busyHour.equals("")) {
             busyHour = "0";
+        }
+        if (busyMin.equals("")) {
             busyMin = "00";
         }
-        if (calmHour.equals("") && calmMin.equals("")) {
+        if (calmHour.equals("")) {
             calmHour = "0";
+        }
+        if (calmMin.equals("")) {
             calmMin = "00";
         }
 
@@ -120,9 +132,9 @@ public class AddDistrictActivity extends AppCompatActivity {
             String timeGoalBusy = busyHour + ":" + busyMin;
             String timeGoalCalm = calmHour + ":" + calmMin;
 
-            District districtObj = new District(id, districtCode, timeGoalBusy, timeGoalCalm);
-            DatabaseHandler dbHandler = new DatabaseHandler(this);
-            if (id == 0) {
+            District districtObj = new District(idDistrict, districtCode, timeGoalBusy, timeGoalCalm);
+            dbHandler = new DatabaseHandler(this);
+            if (idDistrict == 0) {
                 dbHandler.addDistrict(districtObj);
             }
             else {
@@ -130,9 +142,7 @@ public class AddDistrictActivity extends AppCompatActivity {
             }
 
             // go to DistrictsActivity
-            Intent goToDistricts = new Intent(this, DistrictsActivity.class);
-            startActivity(goToDistricts);
-            finish();
+            onBackPressed();
         }
     }
 
@@ -140,7 +150,20 @@ public class AddDistrictActivity extends AppCompatActivity {
      * Handles clicks on cancel button. Goes to DistrictsActivity.
      */
     public void onClickCancel(View view) {
+        onBackPressed();
+    }
+
+    /**
+     * Overrides back button, goes to DistrictsActivity.
+     */
+    @Override
+    public void onBackPressed() {
         Intent goToDistricts = new Intent(this, DistrictsActivity.class);
+        goToDistricts.putExtra("fromSettings", true);
+        goToDistricts.putExtra("prevActivity", getIntent().getStringExtra("prevActivity"));
+        goToDistricts.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+        goToDistricts.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+        goToDistricts.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
         startActivity(goToDistricts);
         finish();
     }

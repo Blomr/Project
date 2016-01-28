@@ -11,7 +11,7 @@ Om al mijn werktijden overzichtelijk te houden, makkelijk de extra gewerkte tijd
 te weten te komen en inzicht te krijgen over het te ontvangen salaris, heb ik een
 handige app gemaakt.
 
-De app start in een maanden-scherm, vanuit daar kan je nieuw maanden toevoegen.
+De app start in een maanden-scherm, vanuit daar kan je nieuwe maanden toevoegen.
 Door te klikken op een maand kom je in het dagen-scherm terecht. Hier zie je alle
 dagen die je hebt toegevoegd in deze maand. Vanuit hier kan je ook nieuwe dagen 
 toevoegen. Als je op een dag klikt, kom je in het lopen-scherm terecht. Hier zie
@@ -19,12 +19,12 @@ je alle wijken die je hebt gelopen en toegevoegd die dag. Ook vanuit hier kan je
 nieuwe lopen toevoegen. In het loop-toevoegen-scherm kan je de wijkcode, of het
 een piek- of daldag is en de begin- en eindtijden invullen. Door op opslaan te 
 klikken wordt de loop opgeslagen en veranderen de gegevens in de dag en maand.
-Ook kan je vanuit alle schermen bij in de instellingen komen. De instellingen
+Ook kan je vanuit alle schermen bij de instellingen komen. De instellingen
 bestaan uit twee onderdelen: 'contracturen en salaris' en 'wijken'. In de eerste
 kan je je contracturen en bijbehorende salarissen per uur opgeven. Deze zijn nodig 
 om voor iedere maand het totale salaris uit te kunnen rekenen. In de tweede kan je
 wijken toevoegen met bijbehorende piekdag- en daldagtijden. Deze zijn dan te
-selecteren in het scherm waar je een loop toevoegd.
+selecteren in het scherm waar je een loop toevoegt.
 
 ### Technisch ontwerp
 
@@ -42,7 +42,7 @@ Deze activities zijn subclasses van AppCompatActivity en komen overeen met de sc
 die ik beschreef in het vorige hoofdstuk.
 
 Alle activities, op AddWalk-, ContractAndSalary en AddDistrictActivity na, maken gebruik
-van listviews. Voor deze listviews heb ik zelf een listitem-layout gemaakt. Hierbij zit
+van listviews. Voor deze listviews heb ik zelf een listitem-layout gemaakt. Hierbij staat
 in elke hoek een textview, in de rechterbovenhoek drie onder elkaar en boven in het midden,
 maar deze is altijd onzichtbaar.
 
@@ -116,6 +116,7 @@ De databaseHandler heeft de volgende methods:
 - deleteMonth
 - deleteDay
 - deleteWalk
+- deleteDistrict
 - editMonthName
 - editDayName
 - editWalk
@@ -124,7 +125,7 @@ De databaseHandler heeft de volgende methods:
 Ik denk dat de namen van deze methods duidelijk de functie uitleggen. Naast deze methods heb ik ook drie
 private methods geschreven. De eerste is salaryCalculator, deze berekent het bijbehorende salaris van de
 tijd die in een maand is gewerkt. De twee is msToTimeStrConverter, deze zet een long-waarde in 
-milliseconden om in een String met een tijdnotatie van HH:mm. De derde is strTotDateParser, deze zet een
+milliseconden om in een string met een tijdnotatie van HH:mm. De derde is strTotDateParser, deze zet een
 tijd-string van HH:mm om in een Date-object. Door deze private methods werden het aantal regels code een
 stuk minder.
 

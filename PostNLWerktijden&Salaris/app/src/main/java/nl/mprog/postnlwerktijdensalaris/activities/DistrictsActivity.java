@@ -10,6 +10,8 @@
 
 package nl.mprog.postnlwerktijdensalaris.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -42,10 +44,10 @@ public class DistrictsActivity extends AppCompatActivity {
 
         // get districts from database
         DatabaseHandler dbHandler = new DatabaseHandler(this);
-        ArrayList<District> listItems = dbHandler.getDistricts();
+        final ArrayList<District> listItems = dbHandler.getDistricts();
 
         // adapt arraylist of district objects on listview
-        DistrictAdapter adapter = new DistrictAdapter(this, R.layout.custom_listitem_layout, listItems);
+        final DistrictAdapter adapter = new DistrictAdapter(this, R.layout.custom_listitem_layout, listItems);
         listViewDistricts.setAdapter(adapter);
 
         // set listener on item clicks
@@ -57,9 +59,49 @@ public class DistrictsActivity extends AppCompatActivity {
 
                 // put id in intent, go to AddDistrictActivity
                 Intent goToAddDistrict = new Intent(DistrictsActivity.this, AddDistrictActivity.class);
-                goToAddDistrict.putExtra("id", idDistrict);
+                goToAddDistrict.putExtra("idDistrict", idDistrict);
+                goToAddDistrict.putExtra("fromSettings", true);
+                goToAddDistrict.putExtra("prevActivity", getIntent().getStringExtra("prevActivity"));
+                goToAddDistrict.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+                goToAddDistrict.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+                goToAddDistrict.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
                 startActivity(goToAddDistrict);
                 finish();
+            }
+        });
+
+        // set listener on long item clicks
+        listViewDistricts.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                // get id from list item
+                TextView idDistrictView = (TextView) view.findViewById(R.id.listItemUpCenter);
+                final int idDistrict = Integer.parseInt(idDistrictView.getText().toString());
+
+                // make alert dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(DistrictsActivity.this);
+                builder.setMessage(R.string.messageDeleteDistrict);
+
+                // if ok button is pressed, delete district
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        DatabaseHandler dbHandler = new DatabaseHandler(DistrictsActivity.this);
+                        dbHandler.deleteDistrict(idDistrict);
+                        listItems.remove(position);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+                // if cancel is pressed, go back to activity
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
             }
         });
     }
@@ -69,7 +111,24 @@ public class DistrictsActivity extends AppCompatActivity {
      */
     public void onClickAddDistrict(View view) {
         Intent goToAddDistrict = new Intent(this, AddDistrictActivity.class);
+        goToAddDistrict.putExtra("fromSettings", true);
+        goToAddDistrict.putExtra("prevActivity", getIntent().getStringExtra("prevActivity"));
+        goToAddDistrict.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+        goToAddDistrict.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+        goToAddDistrict.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
         startActivity(goToAddDistrict);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent goToSettings = new Intent(this, SettingsActivity.class);
+        goToSettings.putExtra("fromSettings", true);
+        goToSettings.putExtra("prevActivity", getIntent().getStringExtra("prevActivity"));
+        goToSettings.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+        goToSettings.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+        goToSettings.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
+        startActivity(goToSettings);
         finish();
     }
 

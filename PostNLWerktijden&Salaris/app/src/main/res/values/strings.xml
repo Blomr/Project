@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PostNL Werktijden &amp; Salaris</string>
     <string name="cancel">annuleren</string>
-    <string name="ok">ok</string>
+    <string name="ok">OK</string>
     <string name="messageDeleteMonth">Weet u zeker dat u deze maand wil verwijderen?</string>
     <string name="messageDeleteWalk">Weet u zeker dat u deze loop wil verwijderen?</string>
     <string name="messageInputTitle">Vul een titel in</string>
@@ -38,6 +38,11 @@
     <string name="settings">Instellingen</string>
     <string name="parseError">Parse error, email ontwikkelaar</string>
     <string name="nullError">Null error, email ontwikkelaar</string>
+    <string name="messageDeleteDistrict">Weet u zeker dat u deze wijk wil verwijderen?</string>
+    <string name="messageAddDistrict">Niet mogelijk om een loop toe te voegen, voeg een wijk toe</string>
+    <string name="editWalk">Loop aanpassen</string>
+    <string name="editDistrict">Wijk aanpassen</string>
+    <string name="twoZeroesA">00A</string>
     <string-array name="settingsListView">
         <item>Contracturen en salaris</item>
         <item>Wijken</item>

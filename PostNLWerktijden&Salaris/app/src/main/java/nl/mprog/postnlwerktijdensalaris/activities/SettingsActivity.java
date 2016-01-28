@@ -16,8 +16,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import nl.mprog.postnlwerktijdensalaris.R;
+import nl.mprog.postnlwerktijdensalaris.databasehandler.DatabaseHandler;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -52,7 +54,13 @@ public class SettingsActivity extends AppCompatActivity {
                 // if last button is clicked, go to DistrictsActivity
                 else {
                     Intent goToDistricts = new Intent(SettingsActivity.this, DistrictsActivity.class);
+                    goToDistricts.putExtra("fromSettings", true);
+                    goToDistricts.putExtra("prevActivity", prevActivity);
+                    goToDistricts.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+                    goToDistricts.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+                    goToDistricts.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
                     startActivity(goToDistricts);
+                    finish();
                 }
             }
         });
@@ -65,7 +73,8 @@ public class SettingsActivity extends AppCompatActivity {
     public void onBackPressed() {
 
         // get previous activity from intent and make new intent
-        Intent goToPrevActivity;
+        Intent goToPrevActivity = new Intent(this, MonthsActivity.class);
+        boolean noDistricts = false;
         switch (prevActivity) {
             case "Days":
                 goToPrevActivity = new Intent(this, DaysActivity.class);
@@ -74,19 +83,28 @@ public class SettingsActivity extends AppCompatActivity {
                 goToPrevActivity = new Intent(this, WalksActivity.class);
                 break;
             case "AddWalk":
-                goToPrevActivity = new Intent(this, AddWalkActivity.class);
+                DatabaseHandler dbHandler = new DatabaseHandler(this);
+                int districts = dbHandler.getDistricts().size();
+                if (districts > 0) {
+                    goToPrevActivity = new Intent(this, AddWalkActivity.class);
+                }
+                else {
+                    noDistricts = true;
+                    Toast.makeText(SettingsActivity.this, R.string.messageAddDistrict,
+                                   Toast.LENGTH_SHORT).show();
+                }
                 break;
-            default:
-                goToPrevActivity = new Intent(this, MonthsActivity.class);
         }
 
-        // put boolean and ids in intent
-        goToPrevActivity.putExtra("fromSettings", true);
-        goToPrevActivity.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
-        goToPrevActivity.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
-        goToPrevActivity.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
-        startActivity(goToPrevActivity);
-        finish();
+        // if there are districts, put boolean and ids in intent
+        if (!noDistricts) {
+            goToPrevActivity.putExtra("fromSettings", true);
+            goToPrevActivity.putExtra("idMonth", getIntent().getIntExtra("idMonth", 0));
+            goToPrevActivity.putExtra("idDay", getIntent().getIntExtra("idDay", 0));
+            goToPrevActivity.putExtra("idWalk", getIntent().getIntExtra("idWalk", 0));
+            startActivity(goToPrevActivity);
+            finish();
+        }
     }
 
     /**

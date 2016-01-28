@@ -43,8 +43,8 @@ public class MonthsActivity extends AppCompatActivity {
         listViewMonths = (ListView) findViewById(R.id.listViewMonths);
 
         // get arraylist of all months in database and adapt on listview
-        final DatabaseHandler db = new DatabaseHandler(this);
-        final ArrayList<Month> listItems = db.getMonths();
+        final DatabaseHandler dbHandler = new DatabaseHandler(this);
+        final ArrayList<Month> listItems = dbHandler.getMonths();
         final MonthAdapter adapter = new MonthAdapter(this, R.layout.custom_listitem_layout, listItems);
         listViewMonths.setAdapter(adapter);
 
@@ -82,7 +82,7 @@ public class MonthsActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        db.deleteMonth(idMonth);
+                        dbHandler.deleteMonth(idMonth);
                         listItems.remove(position);
                         adapter.notifyDataSetChanged();
                     }
@@ -119,6 +119,7 @@ public class MonthsActivity extends AppCompatActivity {
     public void onClickAddMonth(View view) {
         Intent goToDays = new Intent(MonthsActivity.this, DaysActivity.class);
         startActivity(goToDays);
+        finish();
     }
 
     /**
@@ -126,5 +127,6 @@ public class MonthsActivity extends AppCompatActivity {
      */
     public void onClickExit(View view) {
         finish();
+        System.exit(0);
     }
 }
