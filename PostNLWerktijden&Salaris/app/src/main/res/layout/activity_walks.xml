@@ -7,14 +7,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Walks">
+    tools:context=".activities.WalksActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/titleDay"
-        android:visibility="invisible"
         android:textSize="22sp"
+        android:visibility="invisible"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
         android:layout_marginTop="5dp"
@@ -23,12 +23,22 @@
     <ImageView
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:id="@+id/backButtonWalks"
+        android:src="@drawable/backbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickBack"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/settingsButtonWalks"
         android:src="@drawable/settingsicon"
-        android:layout_marginBottom="20dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/settingsButtonWalks"
+        android:layout_marginBottom="20dp"
         android:onClick="onClickSettings"/>
 
     <ListView
@@ -38,46 +48,45 @@
         android:layout_below="@id/settingsButtonWalks"/>
 
     <ImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:id="@+id/addButtonWalks"
         android:src="@drawable/plusbutton"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:onClick="onClickAddWalk"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/okButtonDay"
-        android:text="ok"
+        android:text="@string/ok"
+        android:visibility="gone"
         android:layout_toLeftOf="@id/settingsButtonWalks"
         android:layout_toStartOf="@id/settingsButtonWalks"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
-        android:visibility="gone"
         android:onClick="onClickOkWalks"/>
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editTitleDay"
-        android:hint="vul de datum in"
-        android:layout_toLeftOf="@id/okButtonDay"
-        android:layout_toStartOf="@id/okButtonDay"
+        android:hint="@string/hintInputDay"
+        android:visibility="gone"
         android:layout_alignBottom="@id/okButtonDay"
-        android:visibility="gone"/>
+        android:layout_toLeftOf="@id/okButtonDay"
+        android:layout_toStartOf="@id/okButtonDay"/>
 
     <TextView
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:id="@+id/addDistrictMessage"
-        android:text="Voeg een wijk toe in de instellingen om verder te gaan."
+        android:text="@string/addDistractMessage"
         android:textSize="20sp"
+        android:visibility="invisible"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="invisible"/>
+        android:layout_centerVertical="true"/>
 
 </RelativeLayout>

@@ -4,12 +4,12 @@
  * The databasehandler is a subclass of the SQLiteOpenHelper.
  * It contains methods to create, update and delete rows in the four tables.
  * The four tables are: Months, Days, Walks and Districts.
- * They are corresponding with the same name classes.
+ * They are corresponding with the same name activities.
  *
  * Made by Remco Blom - mProg Project
  */
 
-package nl.mprog.postnlwerktijdensalaris;
+package nl.mprog.postnlwerktijdensalaris.databasehandler;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,6 +22,11 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Day;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.District;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Month;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Walk;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -141,7 +146,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Creates row in months table and returns id.
      */
-    public int addMonth(MonthObject monthObj) {
+    public int addMonth(Month monthObj) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(MONTHS_COLUMN_MONTH, monthObj.month);
@@ -157,7 +162,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Creates row in days table, updates month row in months table and returns id of day row.
      */
-    public int addDay(DayObject dayObj) {
+    public int addDay(Day dayObj) {
         SQLiteDatabase db = getReadableDatabase();
         int idDay = 0;
         boolean foundFreeId = false;
@@ -209,7 +214,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Creates row in walks table, updates corresponding day row in days table and updates
      * corresponding month row in months table.
      */
-    public void addWalk(WalkObject walkObj, Bundle sharedPref) {
+    public void addWalk(Walk walkObj, Bundle sharedPref) {
         SQLiteDatabase db = getReadableDatabase();
 
         // read from walks table and initialize free id
@@ -272,7 +277,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.insert(WALKS_TABLE_NAME, null, walkValues);
 
         // add district code to districts of day
-        districts = districts + walkObj.districtCode + " ";
+        districts = districts + walkObj.districtCode + "  ";
 
         // parse time strings into date objects
         Date dayTimeTotal = strToDateParser(dayTimeTotalStr);
@@ -297,53 +302,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date walkTimeExtra = strToDateParser(walkObj.timeExtra);
 
         // get new day times by adding walk times to old day times
-        long timeTotalMs = 0;
-        long timeGoalMs = 0;
-        long timeExtraMs = 0;
-
-        try {
-            timeTotalMs = dayTimeTotal.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            timeGoalMs = dayTimeGoal.getTime() + walkTimeGoal.getTime() + ZERO_TIME_VALUE * 2;
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long timeTotalMs = dayTimeTotal.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
+        long timeGoalMs = dayTimeGoal.getTime() + walkTimeGoal.getTime() + ZERO_TIME_VALUE * 2;
 
         // add, subtract or invert times depending on boolean values
+        long timeExtraMs;
         if (!timeDayNegative && !timeWalkNegative) {
-            try {
-                timeExtraMs = dayTimeExtra.getTime() + walkTimeExtra.getTime() + ZERO_TIME_VALUE * 2;
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            timeExtraMs = dayTimeExtra.getTime() + walkTimeExtra.getTime() + ZERO_TIME_VALUE * 2;
         }
         else if (!timeDayNegative && timeWalkNegative) {
-            try {
-                timeExtraMs = dayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
-                              + ZERO_TIME_VALUE);
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            timeExtraMs = dayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
+                          + ZERO_TIME_VALUE);
         }
         else if (timeDayNegative && !timeWalkNegative) {
-            try {
-                timeExtraMs = -1 * (dayTimeExtra.getTime() + ZERO_TIME_VALUE)
-                              + walkTimeExtra.getTime() + ZERO_TIME_VALUE;
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            timeExtraMs = -1 * (dayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                          + walkTimeExtra.getTime() + ZERO_TIME_VALUE;
         }
         else {
-            try {
-                timeExtraMs = -1 * (dayTimeExtra.getTime() + ZERO_TIME_VALUE)
-                              - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            timeExtraMs = -1 * (dayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                          - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
 
         // convert milliseconds into time strings
@@ -363,13 +340,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date oldMonthTime = strToDateParser(monthTime);
 
         // add time of walk to total time of month
-        long newMonthTimeMs = 0;
-        try {
-            newMonthTimeMs = oldMonthTime.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
+        long newMonthTimeMs = oldMonthTime.getTime() + walkTimeTotal.getTime() + ZERO_TIME_VALUE * 2;
         monthTime = msToTimeStrConverter(newMonthTimeMs);
 
         // calculate corresponding salary of new total time of month
@@ -387,7 +358,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Creates row in districts table.
      */
-    public void addDistrict(DistrictObject districtObj) {
+    public void addDistrict(District districtObj) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DISTRICTS_COLUMN_DISTRICTCODE, districtObj.districtCode);
@@ -400,7 +371,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets specific row from walks table and returns values in walk object.
      */
-    public WalkObject getWalk(int idMonth, int idDay, int idWalk) {
+    public Walk getWalk(int idMonth, int idDay, int idWalk) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH + " = ? AND "
                        + WALKS_COLUMN_IDDAY + " = ? AND " + WALKS_COLUMN_IDWALK + " = ?";
@@ -423,7 +394,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
-        return new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1, timeEnd1,
+        return new Walk(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1, timeEnd1,
                               timeBegin2, timeEnd2, timeBegin3, timeEnd3, timeGoal, timeExtra,
                               timeTotal);
     }
@@ -431,7 +402,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets specific row from districts table and returns values in district object.
      */
-    public DistrictObject getDistrict(int idDistrict) {
+    public District getDistrict(int idDistrict) {
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + DISTRICTS_TABLE_NAME + " WHERE " + DISTRICTS_COLUMN_ID
                        + " = ?";
@@ -445,15 +416,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
-        return new DistrictObject(idDistrict, districtCode, timeGoalBusy, timeGoalCalm);
+        return new District(idDistrict, districtCode, timeGoalBusy, timeGoalCalm);
     }
 
     /**
      * Gets all walk rows of a specific day id from walks table and returns objects in an arraylist.
      */
-    public ArrayList<WalkObject> getWalksOfDay(int idMonth, int idDay) {
+    public ArrayList<Walk> getWalksOfDay(int idMonth, int idDay) {
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<WalkObject> walkObjects = new ArrayList<>();
+        ArrayList<Walk> walkObjects = new ArrayList<>();
         String query = "SELECT * FROM " + WALKS_TABLE_NAME + " WHERE " + WALKS_COLUMN_IDMONTH + " = ? AND "
                        + WALKS_COLUMN_IDDAY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(idMonth),
@@ -474,7 +445,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String timeExtra = cursor.getString(12);
             String timeTotal = cursor.getString(13);
 
-            WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1,
+            Walk walkObj = new Walk(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1,
                                  timeEnd1, timeBegin2, timeEnd2, timeBegin3, timeEnd3, timeGoal, timeExtra,
                                  timeTotal);
 
@@ -490,9 +461,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets all day rows of a specific month id from days table and returns objects in an arraylist.
      */
-    public ArrayList<DayObject> getDaysOfMonth(int idMonth) {
+    public ArrayList<Day> getDaysOfMonth(int idMonth) {
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<DayObject> dayObjects = new ArrayList<>();
+        ArrayList<Day> dayObjects = new ArrayList<>();
         String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(idMonth)});
         cursor.moveToFirst();
@@ -505,7 +476,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String timeGoal = cursor.getString(5);
             String timeExtra = cursor.getString(6);
 
-            DayObject dayObj = new DayObject(idMonth, idDay, day, districts, timeTotal, timeGoal,
+            Day dayObj = new Day(idMonth, idDay, day, districts, timeTotal, timeGoal,
                                timeExtra);
 
             dayObjects.add(dayObj);
@@ -520,9 +491,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets all month rows of months table.
      */
-    public ArrayList<MonthObject> getMonths() {
+    public ArrayList<Month> getMonths() {
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<MonthObject> monthObjects = new ArrayList<>();
+        ArrayList<Month> monthObjects = new ArrayList<>();
         String query = "SELECT * FROM " + MONTHS_TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -534,7 +505,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             double salary = cursor.getDouble(3);
             String time = cursor.getString(4);
 
-            MonthObject monthObj = new MonthObject(id, month, days, salary, time);
+            Month monthObj = new Month(id, month, days, salary, time);
 
             monthObjects.add(monthObj);
             cursor.moveToNext();
@@ -548,9 +519,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Gets all district rows of districts table.
      */
-    public ArrayList<DistrictObject> getDistricts() {
+    public ArrayList<District> getDistricts() {
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<DistrictObject> districtObjects = new ArrayList<>();
+        ArrayList<District> districtObjects = new ArrayList<>();
         String query = "SELECT * FROM " + DISTRICTS_TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
@@ -561,7 +532,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             String timeGoalBusy = cursor.getString(2);
             String timeGoalCalm = cursor.getString(3);
 
-            DistrictObject districtObj = new DistrictObject(id, districtCode, timeGoalBusy, timeGoalCalm);
+            District districtObj = new District(id, districtCode, timeGoalBusy, timeGoalCalm);
 
             districtObjects.add(districtObj);
             cursor.moveToNext();
@@ -597,7 +568,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String query = "SELECT * FROM " + DAYS_TABLE_NAME + " WHERE " + DAYS_COLUMN_IDMONTH +
                        " = ? AND " + DAYS_COLUMN_IDDAY + " = ?";
         Cursor cursor = db.rawQuery(query, new String[]{Integer.toString(idMonth),
-                        Integer.toString(idDay)});
+                Integer.toString(idDay)});
         cursor.moveToFirst();
 
         String dayName = cursor.getString(2);
@@ -609,7 +580,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes specific month row from months table
+     * Deletes specific month row from months table.
      */
     public void deleteMonth(int idMonth) {
         SQLiteDatabase db = getWritableDatabase();
@@ -654,14 +625,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date oldMonthTime = strToDateParser(oldMonthTimeStr);
         Date dayTimeTotal = strToDateParser(dayTimeTotalStr);
 
-        long newMonthTimeMs = 0;
-        try {
-            newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (dayTimeTotal.getTime()
-                             + ZERO_TIME_VALUE);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-
+        long newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (dayTimeTotal.getTime()
+                              + ZERO_TIME_VALUE);
         String newMonthTime = msToTimeStrConverter(newMonthTimeMs);
         double newSalaryTotal = salaryCalculator(newMonthTimeMs, sharedPref);
 
@@ -752,55 +717,28 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date walkTimeExtra = strToDateParser(walkTimeExtraStr);
 
         // get new day times by distracting walk times of old day times
-        long newDayTimeTotalMs = 0;
-        long newDayTimeGoalMs = 0;
-        long newDayTimeExtraMs = 0;
-
-        try {
-            newDayTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (walkTimeTotal.getTime()
-                                + ZERO_TIME_VALUE);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
-        try {
-            newDayTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (walkTimeGoal.getTime()
-                               + ZERO_TIME_VALUE);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long newDayTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (walkTimeTotal.getTime()
+                            + ZERO_TIME_VALUE);
+        long newDayTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (walkTimeGoal.getTime()
+                           + ZERO_TIME_VALUE);
 
         // add, subtract or invert times depending on boolean values
+        long newDayTimeExtraMs;
         if (!oldDayTimeNeg && !walkTimeNeg) {
-            try {
-                newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
-                                    + ZERO_TIME_VALUE);
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE - (walkTimeExtra.getTime()
+                                + ZERO_TIME_VALUE);
         }
         else if (!oldDayTimeNeg && walkTimeNeg) {
-            try {
-                newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE + walkTimeExtra.getTime()
-                                    + ZERO_TIME_VALUE;
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            newDayTimeExtraMs = oldDayTimeExtra.getTime() + ZERO_TIME_VALUE + walkTimeExtra.getTime()
+                                + ZERO_TIME_VALUE;
         }
         else if (oldDayTimeNeg && !walkTimeNeg) {
-            try {
-                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
-                                    - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                                - (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
         else {
-            try {
-                newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
-                                    + (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
-            } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
-            }
+            newDayTimeExtraMs = -1 * (oldDayTimeExtra.getTime() + ZERO_TIME_VALUE)
+                                + (walkTimeExtra.getTime() + ZERO_TIME_VALUE);
         }
 
         // convert milliseconds into time strings
@@ -822,13 +760,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date oldMonthTime = strToDateParser(oldMonthTimeStr);
 
         // subtract walk's total time from month's time
-        long newMonthTimeMs = 0;
-        try {
-            newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (walkTimeTotal.getTime()
-                             + ZERO_TIME_VALUE);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long newMonthTimeMs = oldMonthTime.getTime() + ZERO_TIME_VALUE - (walkTimeTotal.getTime()
+                              + ZERO_TIME_VALUE);
         String newMonthTime = msToTimeStrConverter(newMonthTimeMs);
 
         // calculate new salary of month
@@ -874,7 +807,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
      * Updates specific walk in walks table and updates corresponding day in days table and
      * month in months table.
      */
-    public void editWalk(WalkObject walkObj, Bundle sharedPref) {
+    public void editWalk(Walk walkObj, Bundle sharedPref) {
 
         // read from walks table and initialize variables of corresponding ids in new object
         SQLiteDatabase db = getReadableDatabase();
@@ -898,7 +831,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         cursor.close();
 
-        WalkObject oldWalkObj = new WalkObject(walkObj.id1, walkObj.id2, walkObj.id3,
+        Walk oldWalkObj = new Walk(walkObj.id1, walkObj.id2, walkObj.id3,
                                 districtCode, dayType, timeBegin1, timeEnd1, timeBegin2, timeEnd2,
                                 timeBegin3, timeEnd3, timeGoal, timeExtra, timeTotal);
 
@@ -917,7 +850,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         cursor.close();
 
-        DayObject oldDayObj = new DayObject(walkObj.id1, walkObj.id2, day, districts,
+        Day oldDayObj = new Day(walkObj.id1, walkObj.id2, day, districts,
                               timeTotal, timeGoal, timeExtra);
 
         // read from months table and initialize variables of corresponding id in new object
@@ -933,7 +866,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
 
-        MonthObject oldMonthObj = new MonthObject(walkObj.id1, month, days, salary, time);
+        Month oldMonthObj = new Month(walkObj.id1, month, days, salary, time);
 
         // update walk's row of corresponding ids with values of new walk object
         db = getWritableDatabase();
@@ -963,26 +896,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date newWalkTimeTotal = strToDateParser(walkObj.timeTotal);
 
         // subtract old walk's time total from day's time and add new walk's time
-        long newDayTimeTotalMs = 0;
-        try {
-            newDayTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeTotal.getTime()
-                             + ZERO_TIME_VALUE) + newWalkTimeTotal.getTime() + ZERO_TIME_VALUE;
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long newDayTimeTotalMs = oldDayTimeTotal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeTotal.getTime()
+                                 + ZERO_TIME_VALUE) + newWalkTimeTotal.getTime() + ZERO_TIME_VALUE;
         String newDayTimeTotal = msToTimeStrConverter(newDayTimeTotalMs);
 
         Date oldDayTimeGoal = strToDateParser(oldDayObj.timeGoal);
         Date oldWalkTimeGoal = strToDateParser(oldWalkObj.timeGoal);
         Date newWalkTimeGoal = strToDateParser(walkObj.timeGoal);
 
-        long newDayTimeGoalMs = 0;
-        try {
-            newDayTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeGoal.getTime()
-                            + ZERO_TIME_VALUE) + newWalkTimeGoal.getTime() + ZERO_TIME_VALUE;
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long newDayTimeGoalMs = oldDayTimeGoal.getTime() + ZERO_TIME_VALUE - (oldWalkTimeGoal.getTime()
+                                + ZERO_TIME_VALUE) + newWalkTimeGoal.getTime() + ZERO_TIME_VALUE;
         String newDayTimeGoal = msToTimeStrConverter(newDayTimeGoalMs);
 
         // if there is a minus char in string, remove it and set boolean to true
@@ -1076,7 +999,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /**
      * Updates specific district in districts table.
      */
-    public void editDistrict(DistrictObject districtObj) {
+    public void editDistrict(District districtObj) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DISTRICTS_COLUMN_DISTRICTCODE, districtObj.districtCode);
@@ -1116,12 +1039,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Date timeContract = strToDateParser(contractHoursStr + ":" + contractMinsStr);
 
         // subtract contract time from month time to calculate overtime
-        long timeExtraMonthMs = 0;
-        try {
-            timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + ZERO_TIME_VALUE);
-        } catch (java.lang.NullPointerException e) {
-            e.printStackTrace();
-        }
+        long timeExtraMonthMs = newMonthTimeMs - (timeContract.getTime() + ZERO_TIME_VALUE);
 
         // calculate month's hours and minutes
         long monthHours = newMonthTimeMs / 1000 / 60 / 60;
@@ -1154,7 +1072,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         // adding all salary values together to calculate total salary
         double newSalaryTotal = salaryContractHours + salaryContractMins + salaryExtraHours +
-                salaryExtraMins;
+                                salaryExtraMins;
 
         // round to two decimals
         DecimalFormat twoDecFormat = new DecimalFormat("#.##");

@@ -1,6 +1,14 @@
-package nl.mprog.postnlwerktijdensalaris;
+/**
+ * Walk.java
+ *
+ * Class for making Walk objects.
+ *
+ * Made by Remco Blom - mProg Project
+ */
 
-public class WalkObject {
+package nl.mprog.postnlwerktijdensalaris.modelclasses;
+
+public class Walk {
     public int id1;
     public int id2;
     public int id3;
@@ -16,9 +24,9 @@ public class WalkObject {
     public String timeExtra;
     public String timeTotal;
 
-    public WalkObject(int id1, int id2, int id3, String districtCode, String dayType, String timeBegin1,
-                      String timeEnd1, String timeBegin2, String timeEnd2, String timeBegin3,
-                      String timeEnd3, String timeGoal, String timeExtra, String timeTotal) {
+    public Walk(int id1, int id2, int id3, String districtCode, String dayType, String timeBegin1,
+                String timeEnd1, String timeBegin2, String timeEnd2, String timeBegin3,
+                String timeEnd3, String timeGoal, String timeExtra, String timeTotal) {
 
         this.id1 = id1;
         this.id2 = id2;

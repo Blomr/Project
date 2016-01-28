@@ -1,5 +1,43 @@
 <resources>
     <string name="app_name">PostNL Werktijden &amp; Salaris</string>
+    <string name="cancel">annuleren</string>
+    <string name="ok">ok</string>
+    <string name="messageDeleteMonth">Weet u zeker dat u deze maand wil verwijderen?</string>
+    <string name="messageDeleteWalk">Weet u zeker dat u deze loop wil verwijderen?</string>
+    <string name="messageInputTitle">Vul een titel in</string>
+    <string name="messageDeleteDay">Weet u zeker dat u deze dag wil verwijderen?</string>
+    <string name="invalidMinutes">Ongeldige invoer minuten</string>
+    <string name="invalidHours">Ongeldige invoer uren</string>
+    <string name="invalidDistrictCode">Ongeldige invoer wijkcode</string>
+    <string name="invalidBusyCalmDay">Ongeldige invoer piekdag en daldag</string>
+    <string name="invalidFirstLine">Ongeldige invoer eerste regel</string>
+    <string name="twoZeroes">00</string>
+    <string name="oneZero">0</string>
+    <string name="invalidCents">Ongeldige invoer centen</string>
+    <string name="addDistrict">Wijk toevoegen</string>
+    <string name="districtCode">Wijkcode:</string>
+    <string name="timeGoalBusy">Tijd piekdag:</string>
+    <string name="colon">:</string>
+    <string name="timeGoalCalm">Tijd daldag:</string>
+    <string name="save">opslaan</string>
+    <string name="addWalk">Loop toevoegen</string>
+    <string name="district">Wijk:</string>
+    <string name="dayType">Type dag:</string>
+    <string name="minus">-</string>
+    <string name="timeGoal">Richttijd:</string>
+    <string name="hintTitleMonth">Vul de maand in</string>
+    <string name="districts">Wijken</string>
+    <string name="hintInputDay">vul de datum in</string>
+    <string name="addDistractMessage">Voeg een wijk toe in de instellingen om verder te gaan.</string>
+    <string name="contractAndSalary">Contracturen en salaris</string>
+    <string name="contractHours">Contracturen:</string>
+    <string name="salaryHour">Salaris per uur:</string>
+    <string name="euro">€</string>
+    <string name="comma">,</string>
+    <string name="salaryExtraHour">Salaris overuur:</string>
+    <string name="settings">Instellingen</string>
+    <string name="parseError">Parse error, email ontwikkelaar</string>
+    <string name="nullError">Null error, email ontwikkelaar</string>
     <string-array name="settingsListView">
         <item>Contracturen en salaris</item>
         <item>Wijken</item>

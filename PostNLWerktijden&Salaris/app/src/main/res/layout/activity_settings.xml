@@ -7,23 +7,33 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Settings">
+    tools:context=".activities.SettingsActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Instellingen"
+        android:id="@+id/titleSettings"
+        android:text="@string/settings"
         android:textSize="22sp"
-        android:id="@+id/settingsTitle"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
         android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/backButtonSettings"
+        android:src="@drawable/backbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickBack"/>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/listViewSettings"
-        android:layout_below="@id/settingsTitle"
-        android:entries="@array/settingsListView"/>
+        android:entries="@array/settingsListView"
+        android:layout_below="@id/titleSettings"/>
 
 </RelativeLayout>

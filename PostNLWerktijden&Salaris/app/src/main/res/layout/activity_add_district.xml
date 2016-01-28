@@ -7,116 +7,140 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".AddDistrict">
+    tools:context=".activities.AddDistrictActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Wijk toevoegen"
+        android:text="@string/addDistrict"
         android:textSize="22sp"
-        android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/backButtonAddDistrict"
+        android:src="@drawable/backbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickBack"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_centerInParent="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Wijkcode: "
-            android:id="@+id/textWijkcode"/>
+            android:id="@+id/textDistrictCode"
+            android:text="@string/districtCode"/>
 
         <EditText
             android:layout_width="70dp"
             android:layout_height="wrap_content"
             android:id="@+id/editDistrictCode"
-            android:layout_toRightOf="@id/textWijkcode"
-            android:layout_toEndOf="@id/textWijkcode"
-            android:layout_alignBaseline="@id/textWijkcode"
+            android:hint="00A"
+            android:maxLength="5"
+            android:gravity="center"
+            android:layout_alignBaseline="@id/textDistrictCode"
+            android:layout_toRightOf="@id/textDistrictCode"
+            android:layout_toEndOf="@id/textDistrictCode"
             android:layout_marginLeft="30dp"
             android:layout_marginStart="30dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tijd piekdag: "
-            android:id="@+id/textTijdPiekdag"
-            android:layout_marginTop="30dp"
-            android:layout_below="@id/textWijkcode"/>
-
-        <EditText
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:id="@+id/piekdagHour"
-            android:layout_alignLeft="@id/editDistrictCode"
-            android:layout_alignStart="@id/editDistrictCode"
-            android:layout_alignBaseline="@id/textTijdPiekdag"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" : "
-            android:id="@+id/colon1"
-            android:layout_toRightOf="@id/piekdagHour"
-            android:layout_toEndOf="@id/piekdagHour"
-            android:layout_alignBottom="@id/textTijdPiekdag"/>
-
-        <EditText
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:id="@+id/piekdagMin"
-            android:layout_toRightOf="@id/colon1"
-            android:layout_toEndOf="@id/colon1"
-            android:layout_alignBaseline="@id/textTijdPiekdag"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tijd daldag: "
-            android:id="@+id/textTijdDaldag"
-            android:layout_below="@id/textTijdPiekdag"
+            android:id="@+id/textTimeGoalBusy"
+            android:text="@string/timeGoalBusy"
+            android:layout_below="@id/textDistrictCode"
             android:layout_marginTop="30dp"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
+            android:id="@+id/editBusyHour"
+            android:hint="@string/oneZero"
             android:inputType="number"
-            android:id="@+id/daldagHour"
-            android:layout_toRightOf="@id/textTijdDaldag"
-            android:layout_toEndOf="@id/textTijdDaldag"
-            android:layout_alignBaseline="@id/textTijdDaldag"
-            android:layout_alignLeft="@id/piekdagHour"
-            android:layout_alignStart="@id/piekdagHour"/>
+            android:maxLength="1"
+            android:gravity="center"
+            android:layout_alignLeft="@id/editDistrictCode"
+            android:layout_alignStart="@id/editDistrictCode"
+            android:layout_alignBaseline="@id/textTimeGoalBusy"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" : "
-            android:id="@+id/colon2"
-            android:layout_toRightOf="@id/daldagHour"
-            android:layout_toEndOf="@id/daldagHour"
-            android:layout_alignBottom="@id/textTijdDaldag"/>
+            android:id="@+id/colon1"
+            android:text="@string/colon"
+            android:layout_toRightOf="@id/editBusyHour"
+            android:layout_toEndOf="@id/editBusyHour"
+            android:layout_alignBottom="@id/textTimeGoalBusy"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
+            android:id="@+id/editBusyMin"
+            android:hint="@string/twoZeroes"
             android:inputType="number"
-            android:id="@+id/daldagMin"
+            android:maxLength="2"
+            android:gravity="center"
+            android:layout_toRightOf="@id/colon1"
+            android:layout_toEndOf="@id/colon1"
+            android:layout_alignBaseline="@id/textTimeGoalBusy"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textTimeGoalCalm"
+            android:text="@string/timeGoalCalm"
+            android:layout_below="@id/textTimeGoalBusy"
+            android:layout_marginTop="30dp"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editCalmHour"
+            android:hint="@string/oneZero"
+            android:inputType="number"
+            android:maxLength="1"
+            android:gravity="center"
+            android:layout_toRightOf="@id/textTimeGoalCalm"
+            android:layout_toEndOf="@id/textTimeGoalCalm"
+            android:layout_alignBaseline="@id/textTimeGoalCalm"
+            android:layout_alignLeft="@id/editBusyHour"
+            android:layout_alignStart="@id/editBusyHour"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/colon2"
+            android:text="@string/colon"
+            android:layout_toRightOf="@id/editCalmHour"
+            android:layout_toEndOf="@id/editCalmHour"
+            android:layout_alignBottom="@id/textTimeGoalCalm"/>
+
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editCalmMin"
+            android:hint="@string/twoZeroes"
+            android:inputType="number"
+            android:maxLength="2"
+            android:gravity="center"
             android:layout_toRightOf="@id/colon2"
             android:layout_toEndOf="@id/colon2"
-            android:layout_alignBaseline="@id/textTijdDaldag"/>
+            android:layout_alignBaseline="@id/textTimeGoalCalm"/>
 
     </RelativeLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="opslaan"
+        android:text="@string/save"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
@@ -125,7 +149,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="annuleren"
+        android:text="@string/cancel"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"

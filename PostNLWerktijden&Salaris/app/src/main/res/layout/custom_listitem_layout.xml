@@ -6,59 +6,59 @@
     android:paddingTop="5dp">
 
     <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:id="@+id/listItemUpLeft"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentStart="true"/>
 
     <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:id="@+id/listItemDownLeft"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentStart="true"/>
 
     <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:id="@+id/listItemUpRight1"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentEnd="true"/>
 
     <TextView
-        android:id="@+id/listItemUpRight2"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:id="@+id/listItemUpRight2"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/listItemUpRight1"/>
 
     <TextView
-        android:id="@+id/listItemUpRight3"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:id="@+id/listItemUpRight3"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/listItemUpRight2"/>
 
     <TextView
-        android:id="@+id/listItemDownRight"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:id="@+id/listItemDownRight"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"/>
 
     <TextView
-        android:id="@+id/listItemUpCenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/listItemUpCenter"
+        android:visibility="invisible"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        android:visibility="invisible"/>
+        android:layout_alignParentTop="true"/>
 
 </RelativeLayout>

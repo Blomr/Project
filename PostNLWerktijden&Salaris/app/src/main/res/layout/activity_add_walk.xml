@@ -7,48 +7,58 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".AddWalk">
+    tools:context=".activities.AddWalkActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Loop toevoegen"
+        android:text="@string/addWalk"
         android:textSize="22sp"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_marginTop="5dp"/>
 
     <ImageView
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:id="@+id/backButtonAddWalk"
+        android:src="@drawable/backbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickBack"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/settingsButtonAddWalk"
         android:src="@drawable/settingsicon"
-        android:layout_marginBottom="20dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/settingsButtonAddWalk"
+        android:layout_marginBottom="20dp"
         android:onClick="onClickSettings"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:gravity="center_horizontal">
 
         <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/gridDistrictDayType"
             android:rowCount="2"
-            android:columnCount="2"
-            android:id="@+id/gridWijkTypeDag">
+            android:columnCount="2">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Wijk: "
-                android:textSize="20sp"
-                android:id="@+id/wijk"/>
+                android:id="@+id/textDistrict"
+                android:text="@string/district"
+                android:textSize="20sp"/>
 
             <Spinner
                 android:layout_width="120dp"
@@ -58,14 +68,13 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Type dag: "
+                android:text="@string/dayType"
                 android:textSize="20sp"/>
 
             <Spinner
                 android:layout_width="120dp"
                 android:layout_height="50dp"
                 android:id="@+id/spinnerDayType"/>
-
         </GridLayout>
 
         <GridLayout
@@ -78,177 +87,187 @@
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
+                android:id="@+id/editBeginHour1"
+                android:hint="@string/oneZero"
                 android:inputType="number"
-                android:id="@+id/beginHour1"
-                android:onClick="onClickBeginHour1"/>
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" : "
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
+                android:id="@+id/editBeginMin1"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/beginMin1"
-                android:onClick="onClickBeginMin1"/>
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="   -   "
+                android:text="@string/minus"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+
+            <EditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editEndHour1"
+                android:hint="@string/oneZero"
+                android:inputType="number"
+                android:maxLength="2"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
+                android:id="@+id/editEndMin1"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/endHour1"
-                android:onClick="onClickEndHour1"/>
+                android:maxLength="2"
+                android:gravity="center"/>
+
+            <EditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editBeginHour2"
+                android:hint="@string/oneZero"
+                android:inputType="number"
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" : "
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
+                android:id="@+id/editBeginMin2"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/endMin1"
-                android:onClick="onClickEndMin1"/>
-
-            <EditText
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
-                android:inputType="number"
-                android:id="@+id/beginHour2"
-                android:onClick="onClickBeginHour2"/>
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" : "
+                android:text="@string/minus"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+
+            <EditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editEndHour2"
+                android:hint="@string/oneZero"
+                android:inputType="number"
+                android:maxLength="2"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
+                android:id="@+id/editEndMin2"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/beginMin2"
-                android:onClick="onClickBeginMin2"/>
+                android:maxLength="2"
+                android:gravity="center"/>
+
+            <EditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editBeginHour3"
+                android:hint="@string/oneZero"
+                android:inputType="number"
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="   -   "
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
+                android:id="@+id/editBeginMin3"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/endHour2"
-                android:onClick="onClickEndHour2"/>
+                android:maxLength="2"
+                android:gravity="center"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" : "
+                android:text="@string/minus"
+                android:textSize="20sp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"/>
+
+            <EditText
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/editEndHour3"
+                android:hint="@string/oneZero"
+                android:inputType="number"
+                android:maxLength="2"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/colon"
                 android:textSize="20sp"/>
 
             <EditText
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
+                android:id="@+id/editEndMin3"
+                android:hint="@string/twoZeroes"
                 android:inputType="number"
-                android:id="@+id/endMin2"
-                android:onClick="onClickEndMin2"/>
-
-            <EditText
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
-                android:inputType="number"
-                android:id="@+id/beginHour3"
-                android:onClick="onClickBeginHour3"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" : "
-                android:textSize="20sp"/>
-
-            <EditText
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
-                android:inputType="number"
-                android:id="@+id/beginMin3"
-                android:onClick="onClickBeginMin3"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="   -   "
-                android:textSize="20sp"/>
-
-            <EditText
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:hint="0"
-                android:gravity="center"
-                android:inputType="number"
-                android:id="@+id/endHour3"
-                android:onClick="onClickEndHour3"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" : "
-                android:textSize="20sp"/>
-
-            <EditText
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:hint="00"
-                android:gravity="center"
-                android:inputType="number"
-                android:id="@+id/endMin3"
-                android:onClick="onClickEndMin3"/>
+                android:maxLength="2"
+                android:gravity="center"/>
         </GridLayout>
 
-        <GridLayout
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:rowCount="1"
-            android:columnCount="2"
             android:layout_marginTop="40dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Richttijd: "
+                android:text="@string/timeGoal"
                 android:textSize="20sp"/>
 
             <TextView
@@ -256,23 +275,23 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/timeGoal"
                 android:textSize="20sp"/>
-        </GridLayout>
+        </LinearLayout>
 
     </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="opslaan"
+        android:text="@string/save"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:onClick="onClickSave"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="annuleren"
+        android:text="@string/cancel"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"

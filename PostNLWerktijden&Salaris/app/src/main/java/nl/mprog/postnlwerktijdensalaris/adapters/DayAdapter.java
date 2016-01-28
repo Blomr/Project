@@ -1,4 +1,12 @@
-package nl.mprog.postnlwerktijdensalaris;
+/**
+ * DayAdapter.java
+ *
+ * Custom adapter for adding content into listView of Days.java.
+ *
+ * Made by Remco Blom - mProg Project
+ */
+
+package nl.mprog.postnlwerktijdensalaris.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,26 +17,37 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Day;
+import nl.mprog.postnlwerktijdensalaris.R;
+
 public class DayAdapter extends ArrayAdapter {
 
-    private ArrayList<DayObject> dayListItems;
+    private ArrayList<Day> dayListItems;
 
-    public DayAdapter(Context context, int textViewResourceId, ArrayList<DayObject> listItems) {
+    /**
+     * Constructor for DayAdapter objects.
+     */
+    public DayAdapter(Context context, int textViewResourceId, ArrayList<Day> listItems) {
         super(context, textViewResourceId, listItems);
         this.dayListItems = listItems;
     }
 
+    /**
+     * Sets layout of listview and sets values of list item object in right textviews.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        // inflate layout into view
         View view = convertView;
         if (view == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            view = inflater.inflate(R.layout.listview_layout, parent, false);
+            view = inflater.inflate(R.layout.custom_listitem_layout, parent, false);
         }
 
-        DayObject listItemObj = dayListItems.get(position);
+        Day listItemObj = dayListItems.get(position);
 
+        // set list item object values in textviews
         TextView textViewUpLeft = (TextView) view.findViewById(R.id.listItemUpLeft);
         textViewUpLeft.setText(listItemObj.day);
 
@@ -38,6 +57,7 @@ public class DayAdapter extends ArrayAdapter {
         TextView textViewUpRight = (TextView) view.findViewById(R.id.listItemUpRight1);
         textViewUpRight.setText(listItemObj.timeTotal);
 
+        // if time extra is negative, use minus instead of plus
         TextView textViewDownRight = (TextView) view.findViewById(R.id.listItemDownRight);
         String timeGoalExtra;
         if (listItemObj.timeExtra.charAt(0) == '-') {

@@ -7,17 +7,34 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Months">
+    tools:context=".activities.MonthsActivity">
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/postnllogo"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"/>
 
     <ImageView
         android:layout_width="36dp"
         android:layout_height="36dp"
+        android:id="@+id/exitButton"
+        android:src="@drawable/exitbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickExit"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/settingsButtonMonths"
         android:src="@drawable/settingsicon"
-        android:layout_marginBottom="20dp"
+        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:id="@+id/settingsButtonMonths"
+        android:layout_marginBottom="20dp"
         android:onClick="onClickSettings"/>
 
     <ListView
@@ -27,11 +44,11 @@
         android:layout_below="@id/settingsButtonMonths"/>
 
     <ImageView
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/plusbutton"
+        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:onClick="onClickAddMonth"/>
+
 </RelativeLayout>

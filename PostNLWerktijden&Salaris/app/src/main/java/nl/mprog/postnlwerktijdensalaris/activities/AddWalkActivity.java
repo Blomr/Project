@@ -1,9 +1,18 @@
-package nl.mprog.postnlwerktijdensalaris;
+/**
+ * AddWalkActivity.java
+ *
+ * In this activity the user is able to add a walk to
+ * the database. After adding the walk, content of the corresponding
+ * day and month will also change.
+ *
+ * Made by Remco Blom - mProg Project
+ */
+
+package nl.mprog.postnlwerktijdensalaris.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +26,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class AddWalk extends AppCompatActivity{
+import nl.mprog.postnlwerktijdensalaris.databasehandler.DatabaseHandler;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.District;
+import nl.mprog.postnlwerktijdensalaris.R;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Walk;
+
+public class AddWalkActivity extends AppCompatActivity{
 
     int idMonth;
     int idDay;
@@ -60,32 +74,32 @@ public class AddWalk extends AppCompatActivity{
 
     /**
      * Sets layout and listeners, initialize variables and if exist loads shared preferences
-     * into editTexts. Sets content of selected item in layout, if id is not 0.
+     * into edittexts. Sets content of selected item in layout, if id is not 0.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.addwalk);
+        setContentView(R.layout.activity_add_walk);
 
-        // initialize variables from intent
+        // get ids and boolean from intent
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
         idWalk = getIntent().getIntExtra("idWalk", 0);
         boolean fromSettings = getIntent().getBooleanExtra("fromSettings", false);
 
-        // initialize editTexts
-        editBeginHour1 = (EditText) findViewById(R.id.beginHour1);
-        editBeginMin1 = (EditText) findViewById(R.id.beginMin1);
-        editEndHour1 = (EditText) findViewById(R.id.endHour1);
-        editEndMin1 = (EditText) findViewById(R.id.endMin1);
-        editBeginHour2 = (EditText) findViewById(R.id.beginHour2);
-        editBeginMin2 = (EditText) findViewById(R.id.beginMin2);
-        editEndHour2 = (EditText) findViewById(R.id.endHour2);
-        editEndMin2 = (EditText) findViewById(R.id.endMin2);
-        editBeginHour3 = (EditText) findViewById(R.id.beginHour3);
-        editBeginMin3 = (EditText) findViewById(R.id.beginMin3);
-        editEndHour3 = (EditText) findViewById(R.id.endHour3);
-        editEndMin3 = (EditText) findViewById(R.id.endMin3);
+        // initialize edittexts
+        editBeginHour1 = (EditText) findViewById(R.id.editBeginHour1);
+        editBeginMin1 = (EditText) findViewById(R.id.editBeginMin1);
+        editEndHour1 = (EditText) findViewById(R.id.editEndHour1);
+        editEndMin1 = (EditText) findViewById(R.id.editEndMin1);
+        editBeginHour2 = (EditText) findViewById(R.id.editBeginHour2);
+        editBeginMin2 = (EditText) findViewById(R.id.editBeginMin2);
+        editEndHour2 = (EditText) findViewById(R.id.editEndHour2);
+        editEndMin2 = (EditText) findViewById(R.id.editEndMin2);
+        editBeginHour3 = (EditText) findViewById(R.id.editBeginHour3);
+        editBeginMin3 = (EditText) findViewById(R.id.editBeginMin3);
+        editEndHour3 = (EditText) findViewById(R.id.editEndHour3);
+        editEndMin3 = (EditText) findViewById(R.id.editEndMin3);
 
         // if user went to settings, load latest changes from shared preferences
         if (fromSettings) {
@@ -112,10 +126,10 @@ public class AddWalk extends AppCompatActivity{
         timeGoalView = (TextView) findViewById(R.id.timeGoal);
 
         // get all district codes from database
-        DatabaseHandler db = new DatabaseHandler(this);
-        final ArrayList<DistrictObject> districtObjects = db.getDistricts();
+        DatabaseHandler dbHandler = new DatabaseHandler(this);
+        final ArrayList<District> districtObjects = dbHandler.getDistricts();
         districtCodes = new ArrayList<>();
-        for (DistrictObject districtObj : districtObjects) {
+        for (District districtObj : districtObjects) {
             districtCodes.add(districtObj.districtCode);
         }
 
@@ -137,9 +151,9 @@ public class AddWalk extends AppCompatActivity{
         // get day types of current selected item and adapt into second spinner
         spinnerDayType = (Spinner) findViewById(R.id.spinnerDayType);
         String districtCode = spinnerDistrict.getSelectedItem().toString();
-        DistrictObject currentObj = null;
+        District currentObj = null;
         final ArrayList<String> dayTypes = new ArrayList<>();
-        for (DistrictObject districtObj : districtObjects) {
+        for (District districtObj : districtObjects) {
             if (districtObj.districtCode.equals(districtCode)) {
                 currentObj = districtObj;
                 if (!districtObj.timeGoalBusy.equals("0:00")) {
@@ -180,7 +194,7 @@ public class AddWalk extends AppCompatActivity{
                 String clickedItem = spinnerDistrict.getItemAtPosition(position).toString();
 
                 // search for district code that is equal to the clicked item
-                for (DistrictObject districtObj : districtObjects) {
+                for (District districtObj : districtObjects) {
                     if (districtObj.districtCode.equals(clickedItem)) {
 
                         // if time is not equal to 0:00, add day type to spinner if it isn't in there
@@ -237,7 +251,7 @@ public class AddWalk extends AppCompatActivity{
                 String districtCode = spinnerDistrict.getSelectedItem().toString();
 
                 // search for district code that is equal to the selected item of district spinner
-                for (DistrictObject districtObj : districtObjects) {
+                for (District districtObj : districtObjects) {
                     if (districtObj.districtCode.equals(districtCode)) {
 
                         // set the right time goal that's corresponding with the clicked item
@@ -256,10 +270,10 @@ public class AddWalk extends AppCompatActivity{
             }
         });
 
-        // if id from intent is not 0, get walkobject from database and set into editTexts
+        // if id from intent is not 0, get walk object from database and set into edittexts
         if (idWalk != 0) {
-            db = new DatabaseHandler(this);
-            WalkObject walkObj = db.getWalk(idMonth, idDay, idWalk);
+            dbHandler = new DatabaseHandler(this);
+            Walk walkObj = dbHandler.getWalk(idMonth, idDay, idWalk);
 
             beginHour1 = walkObj.timeBegin1.substring(0, 2);
             editBeginHour1.setText(beginHour1);
@@ -333,8 +347,8 @@ public class AddWalk extends AppCompatActivity{
         prefsEditor.putString("spinnerDayType", spinnerDayType.getSelectedItem().toString());
         prefsEditor.apply();
 
-        // put addwalk as previous activity and ids in intent
-        Intent goToSettings = new Intent(AddWalk.this, Settings.class);
+        // put AddWalk as previous activity and ids in intent
+        Intent goToSettings = new Intent(AddWalkActivity.this, SettingsActivity.class);
         goToSettings.putExtra("prevActivity", "AddWalk");
         goToSettings.putExtra("idMonth", idMonth);
         goToSettings.putExtra("idDay", idDay);
@@ -350,40 +364,40 @@ public class AddWalk extends AppCompatActivity{
 
         // if editText is empty, set default value of zero
         if (editBeginHour1.getText().toString().equals("")) {
-            editBeginHour1.setText("0");
+            editBeginHour1.setText(R.string.oneZero);
         }
         if (editBeginMin1.getText().toString().equals("")) {
-            editBeginMin1.setText("00");
+            editBeginMin1.setText(R.string.twoZeroes);
         }
         if (editEndHour1.getText().toString().equals("")) {
-            editEndHour1.setText("0");
+            editEndHour1.setText(R.string.oneZero);
         }
         if (editEndMin1.getText().toString().equals("")) {
-            editEndMin1.setText("00");
+            editEndMin1.setText(R.string.twoZeroes);
         }
         if (editBeginHour2.getText().toString().equals("")) {
-            editBeginHour2.setText("0");
+            editBeginHour2.setText(R.string.oneZero);
         }
         if (editBeginMin2.getText().toString().equals("")) {
-            editBeginMin2.setText("00");
+            editBeginMin2.setText(R.string.twoZeroes);
         }
         if (editEndHour2.getText().toString().equals("")) {
-            editEndHour2.setText("0");
+            editEndHour2.setText(R.string.oneZero);
         }
         if (editEndMin2.getText().toString().equals("")) {
-            editEndMin2.setText("00");
+            editEndMin2.setText(R.string.twoZeroes);
         }
         if (editBeginHour3.getText().toString().equals("")) {
-            editBeginHour3.setText("0");
+            editBeginHour3.setText(R.string.oneZero);
         }
         if (editBeginMin3.getText().toString().equals("")) {
-            editBeginMin3.setText("00");
+            editBeginMin3.setText(R.string.twoZeroes);
         }
         if (editEndHour3.getText().toString().equals("")) {
-            editEndHour3.setText("0");
+            editEndHour3.setText(R.string.oneZero);
         }
         if (editEndMin3.getText().toString().equals("")) {
-            editEndMin3.setText("00");
+            editEndMin3.setText(R.string.twoZeroes);
         }
 
         // check for correct input
@@ -391,15 +405,7 @@ public class AddWalk extends AppCompatActivity{
                 && editBeginMin1.getText().toString().equals("00")
                 && editBeginHour1.getText().toString().equals("0")
                 && editBeginMin1.getText().toString().equals("00")) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer eerste regel", Toast.LENGTH_SHORT).show();
-        }
-        else if (editBeginHour1.getText().toString().length() > 2
-                || editEndHour1.getText().toString().length() > 2
-                || editBeginHour2.getText().toString().length() > 2
-                || editEndHour2.getText().toString().length() > 2
-                || editBeginHour3.getText().toString().length() > 2
-                || editEndHour3.getText().toString().length() > 2) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer uren", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddWalkActivity.this, R.string.invalidFirstLine, Toast.LENGTH_SHORT).show();
         }
         else if (editBeginMin1.getText().toString().length() != 2
                 || editEndMin1.getText().toString().length() != 2
@@ -407,35 +413,23 @@ public class AddWalk extends AppCompatActivity{
                 || editEndMin2.getText().toString().length() != 2
                 || editBeginMin3.getText().toString().length() != 2
                 || editEndMin3.getText().toString().length() != 2) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer minuten", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AddWalkActivity.this, R.string.invalidMinutes, Toast.LENGTH_SHORT).show();
         }
-        else if ((Integer.parseInt(editBeginHour1.getText().toString()) < 0
-                || Integer.parseInt(editBeginHour1.getText().toString()) >= 24)
-                || (Integer.parseInt(editEndHour1.getText().toString()) < 0
-                || Integer.parseInt(editEndHour1.getText().toString()) >= 24)
-                || (Integer.parseInt(editBeginHour2.getText().toString()) < 0
-                || Integer.parseInt(editBeginHour2.getText().toString()) >= 24)
-                || (Integer.parseInt(editEndHour2.getText().toString()) < 0
-                || Integer.parseInt(editEndHour2.getText().toString()) >= 24)
-                || (Integer.parseInt(editBeginHour3.getText().toString()) < 0
-                || Integer.parseInt(editBeginHour3.getText().toString()) >= 24)
-                || (Integer.parseInt(editEndHour3.getText().toString()) < 0
-                || Integer.parseInt(editEndHour3.getText().toString()) >= 24)) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer uren", Toast.LENGTH_SHORT).show();
+        else if (Integer.parseInt(editBeginHour1.getText().toString()) >= 24
+                || Integer.parseInt(editEndHour1.getText().toString()) >= 24
+                || Integer.parseInt(editBeginHour2.getText().toString()) >= 24
+                || Integer.parseInt(editEndHour2.getText().toString()) >= 24
+                || Integer.parseInt(editBeginHour3.getText().toString()) >= 24
+                || Integer.parseInt(editEndHour3.getText().toString()) >= 24) {
+            Toast.makeText(AddWalkActivity.this, R.string.invalidHours, Toast.LENGTH_SHORT).show();
         }
-        else if ((Integer.parseInt(editBeginMin1.getText().toString()) < 0
-                || Integer.parseInt(editBeginMin1.getText().toString()) >= 60)
-                || (Integer.parseInt(editEndMin1.getText().toString()) < 0
-                || Integer.parseInt(editEndMin1.getText().toString()) >= 60)
-                || (Integer.parseInt(editBeginMin2.getText().toString()) < 0
-                || Integer.parseInt(editBeginMin2.getText().toString()) >= 60)
-                || (Integer.parseInt(editEndMin2.getText().toString()) < 0
-                || Integer.parseInt(editEndMin2.getText().toString()) >= 60)
-                || (Integer.parseInt(editBeginMin3.getText().toString()) < 0
-                || Integer.parseInt(editBeginMin3.getText().toString()) >= 60)
-                || (Integer.parseInt(editEndMin3.getText().toString()) < 0
-                || Integer.parseInt(editEndMin3.getText().toString()) >= 60)) {
-            Toast.makeText(AddWalk.this, "Ongeldige invoer minuten2", Toast.LENGTH_SHORT).show();
+        else if (Integer.parseInt(editBeginMin1.getText().toString()) >= 60
+                || Integer.parseInt(editEndMin1.getText().toString()) >= 60
+                || Integer.parseInt(editBeginMin2.getText().toString()) >= 60
+                || Integer.parseInt(editEndMin2.getText().toString()) >= 60
+                || Integer.parseInt(editBeginMin3.getText().toString()) >= 60
+                || Integer.parseInt(editEndMin3.getText().toString()) >= 60) {
+            Toast.makeText(AddWalkActivity.this, R.string.invalidMinutes, Toast.LENGTH_SHORT).show();
         }
 
         // if input is correct, begin saving to database
@@ -506,7 +500,7 @@ public class AddWalk extends AppCompatActivity{
                 timeBegin3 = format.parse(timeBegin3Str);
                 timeEnd3 = format.parse(timeEnd3Str);
             } catch (java.text.ParseException e) {
-                e.printStackTrace();
+                Toast.makeText(AddWalkActivity.this, R.string.parseError, Toast.LENGTH_SHORT).show();
             }
 
             long timeDifference1 = 0;
@@ -519,7 +513,7 @@ public class AddWalk extends AppCompatActivity{
                 timeDifference2 = timeEnd2.getTime() - timeBegin2.getTime();
                 timeDifference3 = timeEnd3.getTime() - timeBegin3.getTime();
             } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
+                Toast.makeText(AddWalkActivity.this, R.string.nullError, Toast.LENGTH_SHORT).show();
             }
 
             // add differences together and calculate total hours and minutes
@@ -547,7 +541,7 @@ public class AddWalk extends AppCompatActivity{
                 timeGoal = format.parse(timeGoalStr);
                 timeTotal = format.parse(timeTotalStr);
             } catch (java.text.ParseException e) {
-                e.printStackTrace();
+                Toast.makeText(AddWalkActivity.this, R.string.parseError, Toast.LENGTH_SHORT).show();
             }
 
             // calculate extra time by subtracting goal time from total time
@@ -555,7 +549,7 @@ public class AddWalk extends AppCompatActivity{
             try {
                 timeExtraMs = timeTotal.getTime() - timeGoal.getTime();
             } catch (java.lang.NullPointerException e) {
-                e.printStackTrace();
+                Toast.makeText(AddWalkActivity.this, R.string.nullError, Toast.LENGTH_SHORT).show();
             }
 
             // make time string from milliseconds
@@ -575,7 +569,7 @@ public class AddWalk extends AppCompatActivity{
                 timeExtraStr = "-" + timeExtraStr;
             }
 
-            WalkObject walkObj = new WalkObject(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1Str,
+            Walk walkObj = new Walk(idMonth, idDay, idWalk, districtCode, dayType, timeBegin1Str,
                     timeEnd1Str, timeBegin2Str, timeEnd2Str, timeBegin3Str, timeEnd3Str, timeGoalStr,
                     timeExtraStr, timeTotalStr);
 
@@ -591,7 +585,7 @@ public class AddWalk extends AppCompatActivity{
             bundle.putInt("extraCents", sharedPref.getInt("extraCents", 0));
 
             // depending on idWalk, add or update row in database
-            DatabaseHandler db = new DatabaseHandler(AddWalk.this);
+            DatabaseHandler db = new DatabaseHandler(AddWalkActivity.this);
             if (idWalk == 0) {
                 db.addWalk(walkObj, bundle);
             }
@@ -606,7 +600,7 @@ public class AddWalk extends AppCompatActivity{
             }
 
             // go to walks
-            Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+            Intent goToWalks = new Intent(AddWalkActivity.this, WalksActivity.class);
             goToWalks.putExtra("idMonth", idMonth);
             goToWalks.putExtra("idDay", idDay);
             startActivity(goToWalks);
@@ -615,7 +609,7 @@ public class AddWalk extends AppCompatActivity{
     }
 
     /**
-     * Handles clicks on cancel button.
+     * Handles clicks on cancel button. Goes to WalksActivity.
      */
     public void onClickCancel(View view) {
         if (prefsEditor != null) {
@@ -623,8 +617,8 @@ public class AddWalk extends AppCompatActivity{
             prefsEditor.apply();
         }
 
-        // go to walks
-        Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+        // go to WalksActivity
+        Intent goToWalks = new Intent(AddWalkActivity.this, WalksActivity.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);
         startActivity(goToWalks);
@@ -632,7 +626,7 @@ public class AddWalk extends AppCompatActivity{
     }
 
     /**
-     * Override back button
+     * Overrides back button. Goes to WalksActivity.
      */
     @Override
     public void onBackPressed() {
@@ -641,10 +635,17 @@ public class AddWalk extends AppCompatActivity{
             prefsEditor.apply();
         }
 
-        Intent goToWalks = new Intent(AddWalk.this, Walks.class);
+        Intent goToWalks = new Intent(AddWalkActivity.this, WalksActivity.class);
         goToWalks.putExtra("idMonth", idMonth);
         goToWalks.putExtra("idDay", idDay);
         startActivity(goToWalks);
         finish();
+    }
+
+    /**
+     * Goes to WalksActivity.
+     */
+    public void onClickBack(View view) {
+        onBackPressed();
     }
 }

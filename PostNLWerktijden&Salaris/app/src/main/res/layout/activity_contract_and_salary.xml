@@ -7,30 +7,39 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".ContractAndSalary">
+    tools:context=".activities.ContractAndSalaryActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Contracturen en salaris"
+        android:id="@+id/titleContractAndSalary"
+        android:text="@string/contractAndSalary"
         android:textSize="22sp"
-        android:id="@+id/contractAndSalaryTitle"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
         android:layout_marginTop="5dp"/>
+
+    <ImageView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/backButtonContractAndSalary"
+        android:src="@drawable/backbutton"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:onClick="onClickBack"/>
 
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:rowCount="3"
         android:columnCount="5"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_centerInParent="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Contracturen: " />
+            android:text="@string/contractHours"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,96 +50,109 @@
             android:layout_height="wrap_content"
             android:id="@+id/contractHours"
             android:inputType="number"
+            android:maxLength="3"
             android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" : "/>
+            android:text="@string/colon"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/contractMins"
             android:inputType="number"
+            android:maxLength="2"
             android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Salaris per uur: "/>
+            android:text="@string/salaryHour"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="     €  "/>
+            android:text="@string/euro"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/salaryEuro"
             android:inputType="number"
+            android:maxLength="2"
             android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" , "/>
+            android:text="@string/comma"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/salaryCents"
             android:inputType="number"
+            android:maxLength="2"
             android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Salaris overuur: "/>
+            android:text="@string/salaryExtraHour"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="     €  "/>
+            android:text="@string/euro"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/extraEuro"
             android:inputType="number"
+            android:maxLength="2"
             android:gravity="center"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" , "/>
+            android:text="@string/comma"/>
 
         <EditText
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:id="@+id/extraCents"
             android:inputType="number"
+            android:maxLength="2"
             android:gravity="center"/>
-
     </GridLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="opslaan"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:text="@string/save"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:onClick="onClickSave"/>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="annuleren"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
+        android:text="@string/cancel"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:onClick="onClickCancel"/>
 
 </RelativeLayout>

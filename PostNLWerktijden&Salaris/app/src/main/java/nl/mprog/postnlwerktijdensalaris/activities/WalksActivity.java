@@ -1,4 +1,14 @@
-package nl.mprog.postnlwerktijdensalaris;
+/**
+ * WalksActivity.java
+ *
+ * In this activity the user is able to see the walks he added to
+ * the corresponding day. It is also possible to add new walks by pressing
+ * the plus button.
+ *
+ * Made by Remco Blom - mProg Project
+ */
+
+package nl.mprog.postnlwerktijdensalaris.activities;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,53 +29,75 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class Walks extends AppCompatActivity {
+import nl.mprog.postnlwerktijdensalaris.R;
+import nl.mprog.postnlwerktijdensalaris.adapters.WalkAdapter;
+import nl.mprog.postnlwerktijdensalaris.databasehandler.DatabaseHandler;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Day;
+import nl.mprog.postnlwerktijdensalaris.modelclasses.Walk;
+
+public class WalksActivity extends AppCompatActivity {
 
     EditText editTitle;
     Button okButton;
-    ImageView addButton;
+    ImageView backButton;
     TextView titleDayView;
     int idMonth;
     int idDay;
 
+    /**
+     * Sets layout, adding content depending on idMonth and idDay from intent.
+     * Sets also listeners on clicks and long clicks.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.walks);
+        setContentView(R.layout.activity_walks);
 
+        // get ids from intent
         idMonth = getIntent().getIntExtra("idMonth", 0);
         idDay = getIntent().getIntExtra("idDay", 0);
-        addButton = (ImageView) findViewById(R.id.addButtonWalks);
 
+        // if there is no idDay, set edittext and button to make new day
         if (idDay == 0) {
             editTitle = (EditText) findViewById(R.id.editTitleDay);
             okButton = (Button) findViewById(R.id.okButtonDay);
+            backButton = (ImageView) findViewById(R.id.backButtonWalks);
 
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);
+            backButton.setVisibility(View.INVISIBLE);
         }
+
+        // if there is an idDay, get arraylist of objects with idMonth and idDay and adapt on listview
         else {
             ListView listViewWalks = (ListView) findViewById(R.id.listViewWalks);
             titleDayView = (TextView) findViewById(R.id.titleDay);
 
+            // get arraylist of objects from database
             final DatabaseHandler db = new DatabaseHandler(this);
-            final ArrayList<WalkObject> listItems = db.getWalksOfDay(idMonth, idDay);
-            final WalkAdapter adapter = new WalkAdapter(this, R.layout.listview_layout, listItems);
+            final ArrayList<Walk> listItems = db.getWalksOfDay(idMonth, idDay);
+            final WalkAdapter adapter = new WalkAdapter(this, R.layout.custom_listitem_layout, listItems);
             listViewWalks.setAdapter(adapter);
 
+            // make title visible
             String titleDay = db.getDayName(idMonth, idDay);
             titleDayView.setText(titleDay);
             titleDayView.setVisibility(View.VISIBLE);
 
+            // check if settings has already districts
             checkForDistricts();
 
+            // set listener on item clicks
             listViewWalks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    // get idWalk from list item
                     TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
                     int idWalk = Integer.parseInt(idWalkView.getText().toString());
 
-                    Intent goToAddWalk = new Intent(Walks.this, AddWalk.class);
+                    // go to AddWalkActivity
+                    Intent goToAddWalk = new Intent(WalksActivity.this, AddWalkActivity.class);
                     goToAddWalk.putExtra("idMonth", idMonth);
                     goToAddWalk.putExtra("idDay", idDay);
                     goToAddWalk.putExtra("idWalk", idWalk);
@@ -74,11 +106,16 @@ public class Walks extends AppCompatActivity {
                 }
             });
 
+            // set listener on long item clicks
             listViewWalks.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                    // get idWalk from list item
                     TextView idWalkView = (TextView) view.findViewById(R.id.listItemUpCenter);
                     final int idWalk = Integer.parseInt(idWalkView.getText().toString());
+
+                    // get shared preferences and put in bundle
                     final Bundle sharedPrefBundle = new Bundle();
                     SharedPreferences sharedPref = getSharedPreferences("contractAndSalary", MODE_PRIVATE);
                     sharedPrefBundle.putInt("contractHours", sharedPref.getInt("contractHours", 0));
@@ -88,9 +125,12 @@ public class Walks extends AppCompatActivity {
                     sharedPrefBundle.putInt("extraEuro", sharedPref.getInt("extraEuro", 0));
                     sharedPrefBundle.putInt("extraCents", sharedPref.getInt("extraCents", 0));
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Walks.this);
-                    builder.setMessage("Weet u zeker dat u deze loop wil verwijderen?");
-                    builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    // make alert dialog
+                    AlertDialog.Builder builder = new AlertDialog.Builder(WalksActivity.this);
+                    builder.setMessage(R.string.messageDeleteWalk);
+
+                    // if ok button is clicked, delete walk
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             db.deleteWalk(idMonth, idDay, idWalk, sharedPrefBundle);
@@ -98,7 +138,9 @@ public class Walks extends AppCompatActivity {
                             adapter.notifyDataSetChanged();
                         }
                     });
-                    builder.setNegativeButton("annuleren", new DialogInterface.OnClickListener() {
+
+                    // if cancel button is clicked, go back to activity
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                         }
@@ -111,8 +153,13 @@ public class Walks extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles clicks on settings button. Goes to SettingsActivity.
+     */
     public void onClickSettings(View view) {
-        Intent goToSettings = new Intent(Walks.this, Settings.class);
+
+        // put Walks as previous activity and ids in intent
+        Intent goToSettings = new Intent(WalksActivity.this, SettingsActivity.class);
         goToSettings.putExtra("prevActivity", "Walks");
         goToSettings.putExtra("idMonth", idMonth);
         goToSettings.putExtra("idDay", idDay);
@@ -120,46 +167,67 @@ public class Walks extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Handles clicks on plus button. Goes to AddWalkActivity.
+     */
     public void onClickAddWalk(View view) {
-        Intent goToAddWalk = new Intent(Walks.this, AddWalk.class);
+        Intent goToAddWalk = new Intent(WalksActivity.this, AddWalkActivity.class);
         goToAddWalk.putExtra("idMonth", idMonth);
         goToAddWalk.putExtra("idDay", idDay);
         startActivity(goToAddWalk);
     }
 
+    /**
+     * Handles clicks on ok button if user makes new day.
+     */
     public void onClickOkWalks(View view) {
-        String getText = editTitle.getText().toString();
+        String title = editTitle.getText().toString();
 
-        if (!getText.equals("")) {
+        if (!title.equals("")) {
             editTitle.setVisibility(View.GONE);
             okButton.setVisibility(View.GONE);
 
+            // delete keyboard
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
+            backButton.setVisibility(View.VISIBLE);
+
+            // check if there are districts in settings
             checkForDistricts();
 
-            TextView title = (TextView) findViewById(R.id.titleDay);
-            title.setVisibility(View.VISIBLE);
-            title.setText(getText);
+            // set title from edittext in textview
+            TextView titleView = (TextView) findViewById(R.id.titleDay);
+            titleView.setVisibility(View.VISIBLE);
+            titleView.setText(title);
 
-            DatabaseHandler db = new DatabaseHandler(Walks.this);
+            // save day in database
+            DatabaseHandler db = new DatabaseHandler(WalksActivity.this);
             if (idDay == 0) {
-                DayObject dayObj = new DayObject(idMonth, 0, getText, "", "0:00", "0:00", "0:00");
+                Day dayObj = new Day(idMonth, 0, title, "", "0:00", "0:00", "0:00");
                 idDay = db.addDay(dayObj);
             }
+
+            // if day already existed, update in database
             else {
-                db.editDayName(idMonth, idDay, getText);
+                db.editDayName(idMonth, idDay, title);
             }
         }
+
+        // if edittext is empty, send user a message
         else {
-            Toast.makeText(Walks.this, "Vul een titel in", Toast.LENGTH_SHORT).show();
+            Toast.makeText(WalksActivity.this, R.string.messageInputTitle, Toast.LENGTH_SHORT).show();
         }
     }
 
+    /**
+     * Checks in database for rows in districts table.
+     * If there's none, display message and hide plus button.
+     */
     public void checkForDistricts() {
         DatabaseHandler db = new DatabaseHandler(this);
         if (db.getDistricts().size() != 0) {
+            ImageView addButton = (ImageView) findViewById(R.id.addButtonWalks);
             addButton.setVisibility(View.VISIBLE);
         }
         else {
@@ -168,19 +236,33 @@ public class Walks extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles clicks on title. Title becomes editable.
+     */
+    public void onClickTitle(View view) {
+        titleDayView.setVisibility(View.INVISIBLE);
+        editTitle.setVisibility(View.VISIBLE);
+        okButton.setVisibility(View.VISIBLE);
+        backButton.setVisibility(View.INVISIBLE);
+
+        editTitle.setText(titleDayView.getText().toString());
+    }
+
+    /**
+     * Overrides back button. Goes to DaysActivity.
+     */
     @Override
     public void onBackPressed() {
-        Intent goToDays = new Intent(Walks.this, Days.class);
+        Intent goToDays = new Intent(WalksActivity.this, DaysActivity.class);
         goToDays.putExtra("idMonth", idMonth);
         startActivity(goToDays);
         finish();
     }
 
-    public void onClickTitle(View view) {
-        titleDayView.setVisibility(View.INVISIBLE);
-        editTitle.setVisibility(View.VISIBLE);
-        okButton.setVisibility(View.VISIBLE);
-
-        editTitle.setText(titleDayView.getText().toString());
+    /**
+     * Goes to DaysActivity.
+     */
+    public void onClickBack(View view) {
+        onBackPressed();
     }
 }

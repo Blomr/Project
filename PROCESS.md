@@ -99,4 +99,13 @@
 - Vergeten een edit en delete voor districts te maken, dus gauw even toegevoegd.
 
 ### Dag 18 - Wo 27 jan
--
+- Comments toevoegen.
+- Variabelenamen aanpassen.
+- Classes onderverdeeld in packages.
+- Try-catches samenvoegen.
+- Layout-bestanden netjes maken, één landscape-versie gemaakt.
+- Postnl-logo, Exitbutton en backbuttons toegevoegd.
+- Onderschepping foute invoer verbeterd.
+
+### Dag 19 - Do 28 jan
+- 

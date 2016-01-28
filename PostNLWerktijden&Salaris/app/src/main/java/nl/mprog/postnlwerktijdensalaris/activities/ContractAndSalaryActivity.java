@@ -1,4 +1,15 @@
-package nl.mprog.postnlwerktijdensalaris;
+/**
+ * ContractAndSalaryActivity.java
+ *
+ * In this activity the user is able to change his contract hours and salary.
+ * If the user clicks the save button, the changes will be saved in
+ * shared preferences. The shared preferences will be used by the
+ * databasehandler.
+ *
+ * Made by Remco Blom - mProg Project
+ */
+
+package nl.mprog.postnlwerktijdensalaris.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -7,25 +18,24 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class ContractAndSalary extends AppCompatActivity {
+import nl.mprog.postnlwerktijdensalaris.R;
+
+public class ContractAndSalaryActivity extends AppCompatActivity {
 
     SharedPreferences sharedPref;
     SharedPreferences.Editor sharedPrefEdit;
-
     int contractHours;
     int contractMins;
     int salaryEuro;
     int salaryCents;
     int extraEuro;
     int extraCents;
-
     String contractHoursStr;
     String contractMinsStr;
     String salaryEuroStr;
     String salaryCentsStr;
     String extraEuroStr;
     String extraCentsStr;
-
     EditText editContractHours;
     EditText editContractMins;
     EditText editSalaryEuro;
@@ -34,12 +44,12 @@ public class ContractAndSalary extends AppCompatActivity {
     EditText editExtraCents;
 
     /**
-     * Sets layout, initialize variables and loads shared preferences into editTexts.
+     * Sets layout, initialize variables and loads shared preferences into edittexts.
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.contractandsalary);
+        setContentView(R.layout.activity_contract_and_salary);
 
         // initialize editTexts
         editContractHours = (EditText) findViewById(R.id.contractHours);
@@ -93,21 +103,22 @@ public class ContractAndSalary extends AppCompatActivity {
      */
     public void onClickSave(View view) {
 
-        // get values from editTexts
+        // get values from edittexts
         contractHours = Integer.parseInt(editContractHours.getText().toString());
-        contractMins = Integer.parseInt(editContractMins.getText().toString());
+        contractMinsStr = editContractMins.getText().toString();
         salaryEuro = Integer.parseInt(editSalaryEuro.getText().toString());
         salaryCentsStr = editSalaryCents.getText().toString();
         extraEuro = Integer.parseInt(editExtraEuro.getText().toString());
         extraCentsStr = editExtraCents.getText().toString();
 
         // check if input is correct
-        if (contractMins >= 60) {
-            Toast.makeText(ContractAndSalary.this, "Ongeldige invoer minuten", Toast.LENGTH_SHORT).show();
+        if (Integer.parseInt(contractMinsStr) >= 60 || contractMinsStr.length() != 2) {
+            Toast.makeText(ContractAndSalaryActivity.this, R.string.invalidMinutes, Toast.LENGTH_SHORT).show();
         }
-        else if (salaryCentsStr.length() > 2 || extraCentsStr.length() > 2) {
-            Toast.makeText(ContractAndSalary.this, "Ongeldige invoer centen", Toast.LENGTH_SHORT).show();
+        else if (salaryCentsStr.length() != 2 || extraCentsStr.length() != 2) {
+            Toast.makeText(ContractAndSalaryActivity.this, R.string.invalidCents, Toast.LENGTH_SHORT).show();
         }
+
         // if input is correct, delete zeroes in strings if necessary and convert into integers
         else {
             if (salaryCentsStr.charAt(0) == '0') {
@@ -135,9 +146,16 @@ public class ContractAndSalary extends AppCompatActivity {
     }
 
     /**
-     * Handles clicks on cancel button.
+     * Handles clicks on cancel button. Goes to SettingsActivity.
      */
     public void onClickCancel(View view) {
         finish();
+    }
+
+    /**
+     * Goes to SettingsActivity.
+     */
+    public void onClickBack(View view) {
+        onBackPressed();
     }
 }
