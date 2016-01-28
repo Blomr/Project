@@ -55,7 +55,8 @@ een adapter geschreven. De adapters heten als volgt:
 
 Zoals je ziet, heeft settings geen eigen adapter, dat komt omdat deze gebruik maakt van
 de standaard arrayadapter. De andere adapters plaatsen de content vanuit objecten die 
-gemaakt zijn door middel van de zelfgemaakte modelclasses. Deze modelclasses zijn:
+gemaakt zijn door middel van de zelfgemaakte modelclasses. Hieronder volgen de modelclasses
+met het hun variabelen en hun locaties in de list item:
 - Month.java 
 	- id (int) - bovenmidden
 	- month (String) - linksboven
@@ -94,4 +95,62 @@ gemaakt zijn door middel van de zelfgemaakte modelclasses. Deze modelclasses zij
 	- timeGoalBusy (String) - rechtsboven
 	- timeGoalCalm (String) - rechtsonder
 	
+Het opslaan, ophalen, aanpassen en verwijderen van deze data gaat met behulp van een database: SQLite.
+Ik heb een speciale class, databaseHandler, gemaakt die specifieke acties uitvoert in de database. De 
+activities kunnen deze class aanroepen. De database heeft vier tabellen: Months, Days, Walks en
+Districts. De kolommen in deze tabellen komen overeen met de variabelen in de modelclasses. Bij het
+ophalen en wegschrijven van informatie wordt dan ook grotendeels gebruik gemaakt van deze modelclasses.
+De databaseHandler heeft de volgende methods:
+- addMonth
+- addDay
+- addWalk
+- addDistrict
+- getWalk
+- getDistrict
+- getWalksOfDay
+- getDaysOfMonth
+- getMonths
+- getDistricts
+- getMonthName
+- getDayName
+- deleteMonth
+- deleteDay
+- deleteWalk
+- editMonthName
+- editDayName
+- editWalk
+- editDistrict
 
+Ik denk dat de namen van deze methods duidelijk de functie uitleggen. Naast deze methods heb ik ook drie
+private methods geschreven. De eerste is salaryCalculator, deze berekent het bijbehorende salaris van de
+tijd die in een maand is gewerkt. De twee is msToTimeStrConverter, deze zet een long-waarde in 
+milliseconden om in een String met een tijdnotatie van HH:mm. De derde is strTotDateParser, deze zet een
+tijd-string van HH:mm om in een Date-object. Door deze private methods werden het aantal regels code een
+stuk minder.
+
+### Uitdagingen
+
+Voor het project had ik nog niet met bepaalde dingen gewerkt die ik nodig had om mijn app te werken. De
+belangrijkste hiervan is het werken met een database. SQL was niet helemaal nieuw voor me, dus het duurde
+niet heel lang om de logica voor het maken van een database te begrijpen.
+
+Daarnaast had ik nog nooit eerder een custom adapter gemaakt. Dit vond ik aan het begin nog vrij lastig,
+omdat overal op internet het anders werd uitgelegd. Een andere student wees op een bepaalde bron en sindsdien
+werd ook het maken van een adapter helemaal logisch. 
+
+Voor het maken van een keuze tussen een aantal opties heb ik gebruik gemaakt van de spinner, die ik nog nooit
+eerder had gebruikt. Ik was in eerste instantie van plan om een dialoog met radio buttons te maken, maar daar
+ben ik toch op terug gekomen, omdat ik radio buttons wat ouderwets vond en het gebruik van een spinner beter
+vond werken.
+
+Ook heb ik voor het eerst gewerkt met tijd. Ik ben hier best lang mee bezig geweest. Vooral aan het begin
+kwamen er hele rare tijden op het scherm tevoorschijn. Een grote fout ontdekte ik al snel: met het rekenen
+ging ik er van uit dat de tijd 00:00 gelijk stond aan 0 milliseconden. Dit was niet het geval, dat was namelijk
+01:00. 00:00 stond gelijk aan -3.600.000. Daarom heb ik in veel van mijn tijdsberekeningen overal 3.600.000 bij
+moeten optellen om het resultaat kloppend te krijgen. Bij het toevoegen van de loop heb ik nog wel één aanpassing
+gedaan: in plaats van het opslaan van één begintijd en één eindtijd, sla ik er nu drie op. Dit komt goed van pas,
+omdat postbezorgers tijdens hun loop nog wel eens een pauze kunnen nemen.
+
+Ik heb nog een kleine aanpassing gedaan in het ontwerp. De toevoeg-knop stond op de ontwerptekeningen in de
+rechter onderhoek. Bij het langer worden van de listview zou deze knop echter een aantal gegevens bedekken.
+Dit is niet de bedoeling en daarom heb ik de knop naar het midden verplaatst.
