@@ -104,8 +104,11 @@
 - Classes onderverdeeld in packages.
 - Try-catches samenvoegen.
 - Layout-bestanden netjes maken, één landscape-versie gemaakt.
-- Postnl-logo, Exitbutton en backbuttons toegevoegd.
+- Postnl-logo, exitbutton en backbuttons toegevoegd.
 - Onderschepping foute invoer verbeterd.
 
 ### Dag 19 - Do 28 jan
-- 
+- Laatste bugs verwijderen.
+- Code netter maken. Ervoor zorgen dat de gele vlekken in code weggaat.
+- Readme aangepast.
+- Report toegevoegd. 
