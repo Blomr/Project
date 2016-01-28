@@ -57,39 +57,41 @@ Zoals je ziet, heeft settings geen eigen adapter, dat komt omdat deze gebruik ma
 de standaard arrayadapter. De andere adapters plaatsen de content vanuit objecten die 
 gemaakt zijn door middel van de zelfgemaakte modelclasses. Deze modelclasses zijn:
 - Month.java 
-	- id (int)
-	- month (String)
-	- days (int)
-	- salary (double)
-	- time (String)
+	- id (int) - bovenmidden
+	- month (String) - linksboven
+	- days (int) - linksonder
+	- salary (double) - rechtsboven
+	- time (String) - rechtsonder
+	
 - Day.java 
 	- id1 (int)
-	- id2 (int) 
-	- id3 (int) 
-	- day (String) 
-	- districts (String) 
-	- timeTotal (String) 
-	- timeGoal (String) 
-	- timeExtra (String)
+	- id2 (int) - bovenmidden
+	- day (String) - linksboven
+	- districts (String) - linksonder
+	- timeTotal (String) - rechtsboven
+	- timeGoal (String) - rechtsonder
+	- timeExtra (String) - rechtsonder
+	
 - Walk.java 
 	- id1 (int) 
 	- id2 (int) 
-	- id3 (int) 
-	- districtCode (String) 
+	- id3 (int) - bovenmidden
+	- districtCode (String) - linksboven
 	- dayType (String) 
-	- timeBegin1 (String) 
-	- timeEnd1 (String) 
-	- timeBegin2 (String) 
-	- timeEnd2 (String) 
-	- timeBegin3 (String)
-	- timeEnd3 (String) 
-	- timeGoal (String) 
-	- timeExtra (String) 
-	- timeTotal (String)
+	- timeBegin1 (String) - rechtsboven
+	- timeEnd1 (String) - rechtsboven
+	- timeBegin2 (String) - rechtsboven
+	- timeEnd2 (String) - rechtsboven
+	- timeBegin3 (String) - rechtsboven
+	- timeEnd3 (String) - rechtsboven
+	- timeGoal (String) - linksonder
+	- timeExtra (String) - linksonder
+	- timeTotal (String)- linksonder
+	
 - District.java 
-	- id (int) 
-	- districtCode (String) 
-	- timeGoalBusy (String) 
-	- timeGoalCalm (String)
-
+	- id (int) - bovenmidden
+	- districtCode (String) - linksboven
+	- timeGoalBusy (String) - rechtsboven
+	- timeGoalCalm (String) - rechtsonder
+	
 
