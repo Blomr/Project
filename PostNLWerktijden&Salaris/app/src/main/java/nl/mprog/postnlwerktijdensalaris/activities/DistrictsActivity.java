@@ -120,6 +120,9 @@ public class DistrictsActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Overrides back button. Goes to SettingsActivity.
+     */
     @Override
     public void onBackPressed() {
         Intent goToSettings = new Intent(this, SettingsActivity.class);
