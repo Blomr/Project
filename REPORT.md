@@ -28,3 +28,37 @@ selecteren in het scherm waar je een loop toevoegd.
 
 ### Technisch ontwerp
 
+Ik maak gebruik van de volgende activities:
+- MonthsActivity.java
+- DaysActivity.java
+- WalksActivity.java
+- AddWalkActivity.java
+- SettingsActivity.java
+- ContractAndSalaryActivity.java
+- DistrictsActivity.java
+- AddDistrictActivity.java
+
+Deze activities zijn subclasses van AppCompatActivity en komen overeen met de schermen
+die ik beschreef in het vorige hoofdstuk.
+
+Alle activities, op AddWalk-, ContractAndSalary en AddDistrictActivity na, maken gebruik
+van listviews. Voor deze listviews heb ik zelf een listitem-layout gemaakt. Hierbij zit
+in elke hoek een textview, in de rechterbovenhoek drie onder elkaar en boven in het midden,
+maar deze is altijd onzichtbaar.
+
+Om de listviews van content te voorzien heb ik voor iedere verschillende listview een
+een adapter geschreven. De adapters heten als volgt:
+- MonthAdapter.java
+- DayAdapter.java
+- WalkAdapter.java
+- DistrictAdapter.java
+
+Zoals je ziet, heeft settings geen eigen adapter, dat komt omdat deze gebruik maakt van
+de standaard arrayadapter. De andere adapters plaatsen de content vanuit objecten die 
+gemaakt zijn door middel van de zelfgemaakte modelclasses. Deze modelclasses zijn:
+- Month.java (id (int), month (String), days (int), salary (double), time (String))
+- Day.java (id1 (int), id2 (int), id3 (int), day (String), districts (String), timeTotal (String), timeGoal (String), timeExtra (String))
+- Walk.java (id1 (int), id2 (int), id3 (int), districtCode (String), dayType (String), timeBegin1 (String), timeEnd1 (String), timeBegin2 (String), timeEnd2 (String), timeBegin3 (String), timeEnd3 (String), timeGoal (String), timeExtra (String), timeTotal (String))
+- District.java (id (int), districtCode (String), timeGoalBusy (String), timeGoalCalm (String))
+
+
