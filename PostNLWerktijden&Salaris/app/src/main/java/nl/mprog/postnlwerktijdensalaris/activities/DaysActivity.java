@@ -54,6 +54,10 @@ public class DaysActivity extends AppCompatActivity {
         setContentView(R.layout.activity_days);
 
         titleMonthView = (TextView) findViewById(R.id.titleMonth);
+        editTitle = (EditText) findViewById(R.id.editTitleMonth);
+        okButton = (Button) findViewById(R.id.okButtonMonth);
+        backButton = (ImageView) findViewById(R.id.backButtonDays);
+        addButton = (ImageView) findViewById(R.id.addButtonDays);
 
         // get id from intent or savedinstancestate
         if (savedInstanceState != null) {
@@ -65,10 +69,7 @@ public class DaysActivity extends AppCompatActivity {
 
         // if there is no id, set content for making a new month
         if (idMonth == 0) {
-            editTitle = (EditText) findViewById(R.id.editTitleMonth);
-            okButton = (Button) findViewById(R.id.okButtonMonth);
-            addButton = (ImageView) findViewById(R.id.addButtonDays);
-            backButton = (ImageView) findViewById(R.id.backButtonDays);
+
 
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);

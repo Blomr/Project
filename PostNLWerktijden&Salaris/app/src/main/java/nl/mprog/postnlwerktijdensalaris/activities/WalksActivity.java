@@ -54,6 +54,9 @@ public class WalksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_walks);
 
         titleDayView = (TextView) findViewById(R.id.titleDay);
+        editTitle = (EditText) findViewById(R.id.editTitleDay);
+        okButton = (Button) findViewById(R.id.okButtonDay);
+        backButton = (ImageView) findViewById(R.id.backButtonWalks);
 
         // get ids from intent or savedinstancestate
         if (savedInstanceState != null) {
@@ -67,10 +70,6 @@ public class WalksActivity extends AppCompatActivity {
 
         // if there is no idDay, set edittext and button to make new day
         if (idDay == 0) {
-            editTitle = (EditText) findViewById(R.id.editTitleDay);
-            okButton = (Button) findViewById(R.id.okButtonDay);
-            backButton = (ImageView) findViewById(R.id.backButtonWalks);
-
             editTitle.setVisibility(View.VISIBLE);
             okButton.setVisibility(View.VISIBLE);
             backButton.setVisibility(View.INVISIBLE);

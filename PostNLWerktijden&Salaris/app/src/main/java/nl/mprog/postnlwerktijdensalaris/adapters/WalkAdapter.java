@@ -67,16 +67,22 @@ public class WalkAdapter extends ArrayAdapter {
         textViewUpRight1.setText(timeBeginEnd1);
 
         // if time begin and time end are both 0, don't display them
+        TextView textViewUpRight2 = (TextView) view.findViewById(R.id.listItemUpRight2);
         if (!listItemObj.timeBegin2.equals("00:00") && !listItemObj.timeEnd2.equals("00:00")) {
-            TextView textViewUpRight2 = (TextView) view.findViewById(R.id.listItemUpRight2);
             String timeBeginEnd2 = listItemObj.timeBegin2 + " - " + listItemObj.timeEnd2;
             textViewUpRight2.setText(timeBeginEnd2);
         }
+        else {
+            textViewUpRight2.setText("");
+        }
 
+        TextView textViewUpRight3 = (TextView) view.findViewById(R.id.listItemUpRight3);
         if (!listItemObj.timeBegin3.equals("00:00") && !listItemObj.timeEnd3.equals("00:00")) {
-            TextView textViewUpRight3 = (TextView) view.findViewById(R.id.listItemUpRight3);
             String timeBeginEnd3 = listItemObj.timeBegin3 + " - " + listItemObj.timeEnd3;
             textViewUpRight3.setText(timeBeginEnd3);
+        }
+        else {
+            textViewUpRight3.setText("");
         }
 
         TextView textViewUpCenter = (TextView) view.findViewById(R.id.listItemUpCenter);
